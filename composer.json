@@ -1,13 +1,13 @@
 {
-    "name": "your/library",
-    "description": "Description of your library",
+    "name": "firehed/webauthn",
+    "description": "Web Authentication",
     "keywords": [],
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Your Name",
-            "email": "you@example.com"
+            "name": "Eric Stern",
+            "email": "eric@ericstern.com"
         }
     ],
     "config": {
@@ -16,16 +16,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Your\\Library\\": "src"
+            "Firehed\\WebAuthn\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Your\\Library\\": "tests"
+            "Firehed\\WebAuthn\\": "tests"
         }
     },
     "require": {
-        "php": "^7.3 || ^8.0"
+        "php": "^8.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.0",
