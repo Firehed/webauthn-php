@@ -1,0 +1,49 @@
+{
+    "name": "your/library",
+    "description": "Description of your library",
+    "keywords": [],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "you@example.com"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Your\\Library\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Your\\Library\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^7.3 || ^8.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
+        "phpunit/phpunit": "^9.3",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "scripts": {
+        "test": [
+            "@phpunit",
+            "@phpstan",
+            "@phpcs"
+        ],
+        "autofix": "phpcbf",
+        "phpunit": "phpunit",
+        "phpstan": "phpstan analyse",
+        "phpstan-baseline": "phpstan analyse --generate-baseline",
+        "phpcs": "phpcs"
+    }
+}
