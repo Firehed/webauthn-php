@@ -1,19 +1,46 @@
-# php-library-template
-Repository template for PHP libraries. Sets up composer, CI with Github Actions, and more.
+Cleanup Tasks
 
-## Git
-- Configures `.gitignore` for common excludes in a PHP library
+- [ ] Pull across PublicKeyInterface
+- [ ] Pull across ECPublicKey
+- [ ] Move key formatting into COSE key/turn COSE into key parser?
+- [ ] Clearly define public scoped interfaces and classes
+  - Public:
+    - [ ] ResponseParser (interface?)
+    - [ ] Challenge (DTO / serialization-safety)
+    - [ ] RelyingParty
+  - Internal:
+    - [ ] Attestations
+    - [ ] AuthenticatorData
+  - TBD:
+    - [ ] BinaryString
+    - [ ] Certificate
+    - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
+    - [ ] Credential (same^ / figure out serialization BC)
+- [ ] Rework BinaryString to avoid binary in stack traces
+- [ ] Use BinaryString consistently
+- [ ] Establish required+best practices for data storage
+  - Relation to user
+  - Keep signCount up to date
+  - 7.1.22 ~ credential in use
+- [ ] Scan through repo for FIXMEs & missing verify steps
+  - [ ] Counter handling in (7.2.21)
+  - [ ] ClientExtensionResults (7.1.4, 7.1.17, 7.2.4, 7.2.18)
+  - [ ] TokenBinding (7.1.10, 7.2.14)
+  - [ ] isUserVerificationRequired - configurability (7.1.15, 7.2.17)
+  - [ ] Trust anchoring (7.1.20; result of AO.verify)
+  - [ ] How to let client apps assess trust ambiguity (7.1.21)
+  - [ ] Match algorithm in create() to createOptions (7.1.16)
+- [ ] BC plan for verification trust paths
 
-## Composer
-- Placeholders for library name, description, and PSR-4 autoloading
-- Scripts for testing
-- Requires current version of PHP
-- Includes testing tools (configured) as dev dependencies
+Testing:
 
-## Testing and CI
-CI is configured using Github Actions.
-
-- PHPUnit `^9.3` with default configuration (`src`/`tests`).
-- The tests workflow uses a build matrix to test against multiple versions of PHP, and with high and low Composer dependencies installed
-- PHPStan with strict ruleset, max level, and the PHPUnit extension
-- PHP Code Sniffer configured with PSR-12
+- [ ] Happy path w/ FidoU2F
+- [ ] Happy path with macOS/Safari WebAuthn
+- [ ] Challenge mismatch (create+get)
+- [ ] Origin mismatch (CDJ)
+- [ ] RPID mismatch (AuthenticatorData)
+- [ ] !userPresent
+- [ ] !userVerified & required
+- [ ] !userVerified & not required
+- [ ] PK mismatched in verify??
+- [ ] App-persisted data SerDe
