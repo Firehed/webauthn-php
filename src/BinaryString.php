@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+/**
+ * @internal
+ */
 class BinaryString
 {
     public function __construct(

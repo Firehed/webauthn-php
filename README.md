@@ -11,8 +11,8 @@ Cleanup Tasks
   - Internal:
     - [ ] Attestations
     - [ ] AuthenticatorData
+    - [x] BinaryString
   - TBD:
-    - [ ] BinaryString
     - [ ] Certificate
     - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
     - [ ] Credential (same^ / figure out serialization BC)
