@@ -6,8 +6,6 @@ namespace Firehed\WebAuthn;
 
 use UnexpectedValueException;
 
-use function Firehed\U2F\toBase64Web;
-
 class GetResponse
 {
     public function __construct(
@@ -62,8 +60,8 @@ class GetResponse
         }
 
         // 7.2.12
-        $b64w = toBase64Web($challenge->getChallenge());
-        if (!hash_equals($b64w, $C['challenge'])) {
+        $b64u = Codecs\Base64Url::encode($challenge->getChallenge());
+        if (!hash_equals($b64u, $C['challenge'])) {
             $this->fail('7.2.12', 'C.challenge');
         }
 
