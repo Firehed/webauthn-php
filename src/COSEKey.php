@@ -49,7 +49,7 @@ class COSEKey
     private const CURVE_ED25519 = 6; // OKP
     private const CURVE_ED448 = 7; // OKP
 
-
+    // FIXME: decodedCbor can contain binary data ~ x/y/d(privkey)
     public function __construct(private array $decodedCbor)
     {
         // Note: these limitations may be lifted in the future
@@ -79,12 +79,12 @@ class COSEKey
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
-        return new PublicKey\EllipticCurve(sprintf(
+        return new PublicKey\EllipticCurve(new BinaryString(sprintf(
             "%s%s%s",
             "\x04",
             $this->decodedCbor[self::INDEX_X_COORDINATE],
             $this->decodedCbor[self::INDEX_Y_COORDINATE],
-        ));
+        )));
     }
 
     public function __serialize(): array

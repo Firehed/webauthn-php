@@ -34,7 +34,7 @@ class ResponseParser
             throw new \UnexpectedValueException();
         }
         return new CreateResponse(
-            id: new BinaryString(self::byteArrayToBinaryString($response['rawId'])),
+            id: self::byteArrayToBinaryString($response['rawId']),
             ao: AttestationParser::parse(self::byteArrayToBinaryString($response['attestationObject'])),
             clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
         );
@@ -74,18 +74,18 @@ class ResponseParser
         // and have key handles looked up for verify??
 
         return new GetResponse(
-            id: new BinaryString(self::byteArrayToBinaryString($response['rawId'])),
-            rawAuthenticatorData: new BinaryString(self::byteArrayToBinaryString($response['authenticatorData'])),
+            id: self::byteArrayToBinaryString($response['rawId']),
+            rawAuthenticatorData: self::byteArrayToBinaryString($response['authenticatorData']),
             clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
-            signature: new BinaryString(self::byteArrayToBinaryString($response['signature'])),
+            signature: self::byteArrayToBinaryString($response['signature']),
         );
     }
 
     /**
      * @param int[] $bytes
      */
-    private static function byteArrayToBinaryString(array $bytes): string
+    private static function byteArrayToBinaryString(array $bytes): BinaryString
     {
-        return implode('', array_map('chr', $bytes));
+        return new BinaryString(implode('', array_map('chr', $bytes)));
     }
 }

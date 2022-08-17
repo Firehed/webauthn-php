@@ -16,8 +16,9 @@ Cleanup Tasks
     - [ ] Certificate
     - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
     - [ ] Credential (same^ / figure out serialization BC)
-- [ ] Rework BinaryString to avoid binary in stack traces
-- [ ] Use BinaryString consistently
+- [x] Rework BinaryString to avoid binary in stack traces
+- [x] Use BinaryString consistently
+  - [ ] COSEKey.decodedCbor
 - [ ] Establish required+best practices for data storage
   - Relation to user
   - Keep signCount up to date

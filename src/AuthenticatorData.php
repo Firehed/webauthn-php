@@ -22,17 +22,13 @@ use Firehed\CBOR\Decoder;
  */
 class AuthenticatorData
 {
-    /** @var bool */
-    private $isUserPresent;
+    private bool $isUserPresent;
 
-    /** @var bool */
-    private $isUserVerified;
+    private bool $isUserVerified;
 
-    /** @var string (binary) */
-    private $rpIdHash;
+    private BinaryString $rpIdHash;
 
-    /** @var int */
-    private $signCount;
+    private int $signCount;
 
     /**
      * @var ?AttestedCredentialData Attested Credential Data
@@ -46,8 +42,9 @@ class AuthenticatorData
      * @see https://w3c.github.io/webauthn/#sec-authenticator-data
      * WebAuthn 6.1
      */
-    public static function parse(string $bytes): AuthenticatorData
+    public static function parse(BinaryString $raw): AuthenticatorData
     {
+        $bytes = $raw->unwrap();
         assert(strlen($bytes) >= 37);
 
         $rpIdHash = substr($bytes, 0, 32);
@@ -61,7 +58,7 @@ class AuthenticatorData
         $authData = new AuthenticatorData();
         $authData->isUserPresent = $UP;
         $authData->isUserVerified = $UV;
-        $authData->rpIdHash = $rpIdHash;
+        $authData->rpIdHash = new BinaryString($rpIdHash);
         $authData->signCount = $signCount;
 
         $restOfBytes = substr($bytes, 37);
@@ -114,7 +111,7 @@ class AuthenticatorData
         return $this->ACD;
     }
 
-    public function getRpIdHash(): string
+    public function getRpIdHash(): BinaryString
     {
         return $this->rpIdHash;
     }

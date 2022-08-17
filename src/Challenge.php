@@ -9,17 +9,21 @@ namespace Firehed\WebAuthn;
 class Challenge
 {
     public function __construct(
-        private string $wrapped,
+        private BinaryString $wrapped,
     ) {
     }
 
     public static function random(int $length): Challenge
     {
-        return new Challenge(random_bytes($length));
+        return new Challenge(new BinaryString(random_bytes($length)));
     }
 
+    /**
+     * Caution: this returns raw binary
+     * TODO: adjust name/interface?
+     */
     public function getChallenge(): string
     {
-        return $this->wrapped;
+        return $this->wrapped->unwrap();
     }
 }

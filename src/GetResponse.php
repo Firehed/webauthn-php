@@ -11,7 +11,7 @@ class GetResponse
     public function __construct(
         private BinaryString $id,
         private BinaryString $rawAuthenticatorData,
-        private string $clientDataJson,
+        private BinaryString $clientDataJson,
         private BinaryString $signature,
     ) {
     }
@@ -44,8 +44,8 @@ class GetResponse
         // $storedCredential
 
         // 7.2.8
-        $cData = $this->clientDataJson;
-        $authData = AuthenticatorData::parse($this->rawAuthenticatorData->unwrap());
+        $cData = $this->clientDataJson->unwrap();
+        $authData = AuthenticatorData::parse($this->rawAuthenticatorData);
         $sig = $this->signature->unwrap();
 
         // 7.2.9
@@ -75,7 +75,7 @@ class GetResponse
 
         // 7.2.15
         $knownRpIdHash = hash('sha256', $rp->getId(), true);
-        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash())) {
+        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash()->unwrap())) {
             $this->fail('7.2.15', 'authData.rpIdHash');
         }
 

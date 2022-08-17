@@ -5,23 +5,25 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\Attestations;
 
 use Firehed\WebAuthn\Certificate;
+use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\AuthenticatorData;
 
 class FidoU2F implements AttestationStatementInterface
 {
+    // FIXME: $data contains binary :/
     public function __construct(
         private array $data,
     ) {
     }
 
     // 8.6
-    public function verify(AuthenticatorData $data, string $clientDataHash)
+    public function verify(AuthenticatorData $data, BinaryString $clientDataHash)
     {
         // 8.6.v.1 already done
         // // check data['sig'] is set?
         // 8.6.v.2
         assert(count($this->data['x5c']) === 1);
-        $attCert = new Certificate($this->data['x5c'][0]);
+        $attCert = new Certificate(new BinaryString($this->data['x5c'][0]));
         // TODO: Do all PEM decoding, blah blah
         // >  Let *certificate public key* be the public key conveyed by
         // > *attCert*. If *certificate public key* is not an Elliptic Curve
@@ -51,8 +53,8 @@ class FidoU2F implements AttestationStatementInterface
         $verificationData = sprintf(
             '%s%s%s%s%s',
             "\x00",
-            $rpIdHash,
-            $clientDataHash,
+            $rpIdHash->unwrap(),
+            $clientDataHash->unwrap(),
             $credentialId,
             $publicKeyU2F,
         );

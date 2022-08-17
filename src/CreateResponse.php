@@ -11,7 +11,7 @@ class CreateResponse
     public function __construct(
         private BinaryString $id,
         private Attestations\AttestationObject $ao,
-        private string $clientDataJson,
+        private BinaryString $clientDataJson,
     ) {
     }
 
@@ -28,7 +28,7 @@ class CreateResponse
         // 7.1.5 is done in the response parser
 
         // 7.1.6
-        $C = json_decode($this->clientDataJson, true);
+        $C = json_decode($this->clientDataJson->unwrap(), true);
         // {"type":"webauthn.create","challenge":"AAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAEC","origin":"http://localhost:8888"}
 
         // 7.1.7
@@ -51,7 +51,7 @@ class CreateResponse
         // TODO: tokenBinding (may not exist on localhost??)
 
         // 7.1.11
-        $hash = hash('sha256', $this->clientDataJson, true);
+        $hash = new BinaryString(hash('sha256', $this->clientDataJson->unwrap(), true));
 
         // 7.1.12
         // Happened in response parser
@@ -59,7 +59,7 @@ class CreateResponse
 
         // 7.1.13
         $knownRpIdHash = hash('sha256', $rp->getId(), true);
-        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash())) {
+        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash()->unwrap())) {
             $this->fail('7.1.13', 'authData.rpIdHash');
         }
 

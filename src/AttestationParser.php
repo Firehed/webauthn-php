@@ -14,10 +14,10 @@ class AttestationParser
      * `navigator.credentials.create(...)`'s  .response.attestationObject and
      * decodes it into an internal data format.
      */
-    public static function parse(string $cbor): Attestations\AttestationObject
+    public static function parse(BinaryString $cbor): Attestations\AttestationObject
     {
         $decoder = new Decoder();
-        $decoded = $decoder->decode($cbor);
+        $decoded = $decoder->decode($cbor->unwrap());
 
         assert(array_key_exists('fmt', $decoded));
         assert(array_key_exists('attStmt', $decoded));
@@ -28,7 +28,7 @@ class AttestationParser
             'fido-u2f' => new Attestations\FidoU2F($decoded['attStmt']),
         };
 
-        $ad = AuthenticatorData::parse($decoded['authData']);
+        $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
         return new Attestations\AttestationObject($ad, $stmt);
     }
 }

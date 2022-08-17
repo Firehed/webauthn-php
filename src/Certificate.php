@@ -1,35 +1,21 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
 class Certificate
 {
-    /** @var string (binary) */
-    private $binary;
-
-    public function __construct(string $binary)
+    public function __construct(private BinaryString $binary)
     {
-        $this->binary = $binary;
-    }
-
-    public function getBinary(): string
-    {
-        return $this->binary;
     }
 
     public function getPemFormatted(): string
     {
-        $data = base64_encode($this->binary);
+        $data = base64_encode($this->binary->unwrap());
         $pem  = "-----BEGIN CERTIFICATE-----\r\n";
         $pem .= chunk_split($data, 64);
         $pem .= "-----END CERTIFICATE-----";
         return $pem;
-    }
-
-    /** @return array{binary: string} */
-    public function __debugInfo(): array
-    {
-        return ['binary' => '0x' . bin2hex($this->binary)];
     }
 }

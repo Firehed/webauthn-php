@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\PublicKey;
 
+use Firehed\WebAuthn\BinaryString;
 use UnexpectedValueException;
 
 /**
@@ -19,10 +20,9 @@ use UnexpectedValueException;
  */
 class EllipticCurve implements PublicKeyInterface
 {
-    private string $binary = '';
-
-    public function __construct(string $key)
+    public function __construct(private BinaryString $binary)
     {
+        $key = $binary->unwrap();
         // RFC5480 2.2 - must be uncompressed value
         if ($key[0] !== "\x04") {
             throw new UnexpectedValueException(
@@ -34,7 +34,6 @@ class EllipticCurve implements PublicKeyInterface
                 'EC public key: length is not 65 bytes'
             );
         }
-        $this->binary = $key;
     }
 
     /**
@@ -62,7 +61,7 @@ class EllipticCurve implements PublicKeyInterface
                 .'0342' // BIT STRING, length 66
                     .'00' // prepend with NUL - pubkey will follow
         );
-        $der .= $this->binary;
+        $der .= $this->binary->unwrap();
 
         $pem  = "-----BEGIN PUBLIC KEY-----\r\n";
         $pem .= chunk_split(base64_encode($der), 64);
@@ -74,8 +73,8 @@ class EllipticCurve implements PublicKeyInterface
     public function __debugInfo(): array
     {
         return [
-            'x' => '0x' . bin2hex(substr($this->binary, 1, 32)),
-            'y' => '0x' . bin2hex(substr($this->binary, 33)),
+            'x' => '0x' . bin2hex(substr($this->binary->unwrap(), 1, 32)),
+            'y' => '0x' . bin2hex(substr($this->binary->unwrap(), 33)),
         ];
     }
 }
