@@ -25,7 +25,8 @@
         }
     },
     "require": {
-        "php": "^8.0"
+        "php": "^8.0",
+        "firehed/cbor": "^0.1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.0",
