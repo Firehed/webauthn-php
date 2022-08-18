@@ -44,4 +44,4 @@ Testing:
 - [ ] !userVerified & required
 - [ ] !userVerified & not required
 - [ ] PK mismatched in verify??
-- [ ] App-persisted data SerDe
+- [x] App-persisted data SerDe

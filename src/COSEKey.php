@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use DomainException;
+use Firehed\CBOR\Decoder;
 
 /**
  * @internal
@@ -14,6 +15,18 @@ use DomainException;
  *
  * @see RFC 8152
  * @link https://www.rfc-editor.org/rfc/rfc8152.html
+ *
+ * @see RFC 8230 (RSA key support - not yet implemented)
+ *
+ * FIXME: decodedCbor can contain binary data ~ x/y/d(privkey)
+ * @phpstan-type DecodedCbor array{
+ *   1: int,
+ *   3?: int,
+ *   -1?: int,
+ *   -2?: string,
+ *   -3?: string,
+ *   -4?: string,
+ * }
  */
 class COSEKey
 {
@@ -49,9 +62,16 @@ class COSEKey
     private const CURVE_ED25519 = 6; // OKP
     private const CURVE_ED448 = 7; // OKP
 
-    // FIXME: decodedCbor can contain binary data ~ x/y/d(privkey)
-    public function __construct(private array $decodedCbor)
+    /**
+     * @var DecodedCbor
+     */
+    private array $decodedCbor;
+
+    public function __construct(public readonly BinaryString $cbor)
     {
+        $decoder = new Decoder();
+        $decodedCbor = $decoder->decode($cbor->unwrap());
+
         // Note: these limitations may be lifted in the future
         if ($decodedCbor[self::INDEX_KEY_TYPE] !== self::KEY_TYPE_EC2) {
             throw new DomainException('Only EC2 keys supported');
@@ -71,11 +91,12 @@ class COSEKey
         if (strlen($decodedCbor[self::INDEX_Y_COORDINATE]) !== 32) {
             throw new DomainException('X coordinate not 32 bytes');
         }
+
+        $this->decodedCbor = $decodedCbor;
     }
 
     /**
-     * FIXME: this is absurd
-     * @deprecated
+     * FIXME: this indirection is not desirable
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
@@ -85,19 +106,5 @@ class COSEKey
             $this->decodedCbor[self::INDEX_X_COORDINATE],
             $this->decodedCbor[self::INDEX_Y_COORDINATE],
         )));
-    }
-
-    public function __serialize(): array
-    {
-        return [
-            'version' => 1,
-            'data' => $this->decodedCbor,
-        ];
-    }
-
-    public function __unserialize(array $data): void
-    {
-        assert($data['version'] === 1);
-        $this->decodedCbor = $data['data'];
     }
 }

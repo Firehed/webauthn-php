@@ -5,6 +5,8 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use Firehed\WebAuthn\Challenge;
+use Firehed\WebAuthn\Credential;
+use Firehed\WebAuthn\Codecs\Credential as CredentialCodec;
 
 const INDEX_SESSION_CHALLENGE = 'challenge';
 const INDEX_SESSION_CHALLENGE_CREATED = 'challenge_created';
@@ -102,8 +104,6 @@ function getUserByName(PDO $pdo, string $name): ?array
     }
 }
 
-use Firehed\WebAuthn\Credential;
-
 /**
  * @param array{id: string} $user
  */
@@ -127,10 +127,11 @@ function storeCredentialForUser(PDO $pdo, Credential $credential, array $user): 
     }
 
     $stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (?, ?, ?)');
+    $codec = new CredentialCodec();
     return $stmt->execute([
         $credentialId,
         $user['id'],
-        serialize($credential),
+        $codec->encode($credential),
     ]);
 }
 
@@ -140,5 +141,6 @@ function getStoredCredentialsForUser(PDO $pdo, array $user): array
     $stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');
     $stmt->execute([$user['id']]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    return array_map(fn ($row) => unserialize($row['credential']), $rows);
+    $codec = new CredentialCodec();
+    return array_map(fn ($row) => $codec->decode($row['credential']), $rows);
 }

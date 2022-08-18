@@ -9,21 +9,22 @@ class Credential
 {
     public function __construct(
         public readonly BinaryString $id,
-        private readonly COSEKey $coseKey,
+        public readonly COSEKey $coseKey,
         public readonly int $signCount,
     ) {
     }
 
+    // TODO: getStorageSafeId?
     public function getSafeId(): string
     {
         return bin2hex($this->id->unwrap());
     }
 
+    /**
+     * @internal
+     */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
         return $this->coseKey->getPublicKey();
     }
-    // getPublicKey(): PKI
-    // -> make COSEKey implement PKI & move formatter to same?
-    // { PKI: getPemFormatted(): string }
 }

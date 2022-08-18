@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Attestations;
 
-use Firehed\WebAuthn\Certificate;
-use Firehed\WebAuthn\BinaryString;
+use Firehed\CBOR\Decoder;
 use Firehed\WebAuthn\AuthenticatorData;
+use Firehed\WebAuthn\BinaryString;
+use Firehed\WebAuthn\Certificate;
 
 class FidoU2F implements AttestationStatementInterface
 {
@@ -34,8 +35,11 @@ class FidoU2F implements AttestationStatementInterface
         // 8.6.v.3
         $rpIdHash = $data->getRpIdHash();
         $attestedCredentialData = $data->getAttestedCredentialData();
+        assert($attestedCredentialData !== null);
         $credentialId = $attestedCredentialData['credentialId'];
-        $credentialPublicKey = $attestedCredentialData['credentialPublicKey'];
+        $credentialPublicKeyCbor = $attestedCredentialData['credentialPublicKey'];
+        $decoder = new Decoder();
+        $credentialPublicKey = $decoder->decode($credentialPublicKeyCbor->unwrap());
 
         // 8.6.v.4
         // isset & strlen===32
@@ -75,7 +79,7 @@ class FidoU2F implements AttestationStatementInterface
         // var_dump(__METHOD__, $result);
 
         // 8.6.v.7
-        // examine x5c and dig into attestation
+        // examine this->data[x5c] and dig into attestation
 
         // 8.6.v.8
         // return attestation?

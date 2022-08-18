@@ -4,20 +4,16 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use BadMethodCallException;
-use Firehed\CBOR\Decoder;
 
 /**
+ * @internal
+ *
+ * @link https://www.w3.org/TR/webauthn-2/#sctn-authenticator-data
+ *
  * @phpstan-type AttestedCredentialData array{
  *   aaguid: string,
  *   credentialId: string,
- *   credentialPublicKey: array{
- *     1: int,
- *     3?: int,
- *     -1: int,
- *     -2?: string,
- *     -3?: string,
- *     -4?: string,
- *   }
+ *   credentialPublicKey: BinaryString,
  * }
  */
 class AuthenticatorData
@@ -73,16 +69,11 @@ class AuthenticatorData
 
             $rawCredentialPublicKey = substr($restOfBytes, 18 + $credentialIdLength);
 
-            $decoder = new Decoder();
-            $credentialPublicKey = $decoder->decode($rawCredentialPublicKey);
-
             $authData->ACD = [
                 'aaguid' => $aaguid,
                 'credentialId' => $credentialId,
-                'credentialPublicKey' => $credentialPublicKey,
+                'credentialPublicKey' => new BinaryString($rawCredentialPublicKey),
             ];
-            // var_dump($decoder->getNumberOfBytesRead());
-            // cut rest of bytes down based on that ^ ?
         }
         if ($ED) {
             // @codeCoverageIgnoreStart
@@ -150,6 +141,7 @@ class AuthenticatorData
      *     },
      *   },
      * }
+     * FIXME: move key compoenents to COSEKey?
      */
     public function __debugInfo(): array
     {
