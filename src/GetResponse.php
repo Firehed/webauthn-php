@@ -24,8 +24,8 @@ class GetResponse
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,
-        Credential $storedCredential,
-    ) {
+        CredentialInterface $storedCredential,
+    ): CredentialInterface {
         // 7.2.1-7.2.x are done in client side js
 
         // js should contain
@@ -122,7 +122,7 @@ class GetResponse
         }
 
         // 7.2.21
-        $storedSignCount = $storedCredential->signCount;
+        $storedSignCount = $storedCredential->getSignCount();
         if ($authData->getSignCount() !== 0 || $storedSignCount !== 0) {
             if ($authData->getSignCount() > $storedSignCount) {
                 // $storedCredential = $storedCredential->withUpdatedSignCount($authData->getSignCount());

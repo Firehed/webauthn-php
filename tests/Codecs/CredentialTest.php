@@ -53,8 +53,8 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             'public key was not retained',
         );
         self::assertSame(
-            $credential->signCount,
-            $imported->signCount,
+            $credential->getSignCount(),
+            $imported->getSignCount(),
             'signCount was not retained',
         );
     }

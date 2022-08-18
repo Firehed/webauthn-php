@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Codecs;
 
-use Firehed\WebAuthn\Credential as CredentialObj;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
+use Firehed\WebAuthn\CredentialInterface;
+use Firehed\WebAuthn\Credential as CredentialObj;
 
 /**
  * Client applications SHOULD NOT attempt to manually encode or decode
@@ -63,17 +64,20 @@ class Credential
      * signCount is a big-endian unsigned long (32bit)
      *
      */
-    public function encode(CredentialObj $credential): string
+    public function encode(CredentialInterface $credential): string
     {
         $version = 1;
 
+        $rawId = $credential->getId()->unwrap();
+        $rawCbor = $credential->getCoseCbor()->unwrap();
+
         $versionSpecificFormat = sprintf(
             '%s%s%s%s%s',
-            pack('n', strlen($credential->id->unwrap())),
-            $credential->id->unwrap(),
-            pack('N', strlen($credential->coseKey->cbor->unwrap())),
-            $credential->coseKey->cbor->unwrap(),
-            pack('N', $credential->signCount),
+            pack('n', strlen($rawId)),
+            $rawId,
+            pack('N', strlen($rawCbor)),
+            $rawCbor,
+            pack('N', $credential->getSignCount()),
         );
 
         // append a checksum (crc32?) that import can validate?
@@ -84,7 +88,7 @@ class Credential
         return base64_encode($binary);
     }
 
-    public function decode(string $encoded): CredentialObj
+    public function decode(string $encoded): CredentialInterface
     {
         $binary = base64_decode($encoded, true);
         assert($binary !== false);

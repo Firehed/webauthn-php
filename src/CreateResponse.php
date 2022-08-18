@@ -22,7 +22,7 @@ class CreateResponse
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,
-    ) {
+    ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code
         // 7.1.4 is temporarily skpped
         // 7.1.5 is done in the response parser
@@ -104,15 +104,10 @@ class CreateResponse
         // associate credential with new user
         // done in client code
         $credential = $authData->getCredential();
+        assert($credential !== null);
         // var_dump($this, $challenge, $C, __LINE__);
 
         return $credential;
-        // return Credential
-        // - id
-        // - public key
-        // - sign count
-        // - attestation?
-        // - transports?
 
         // 7.1.24
         // fail registration if attestation is "verified but is not

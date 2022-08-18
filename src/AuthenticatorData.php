@@ -84,9 +84,9 @@ class AuthenticatorData
         return $authData;
     }
 
-    public function getCredential(): ?Credential
+    public function getCredential(): ?CredentialInterface
     {
-        if (!$this->ACD) {
+        if ($this->ACD === null) {
             return null;
         }
         return new Credential(
@@ -155,7 +155,7 @@ class AuthenticatorData
             'signCount' => $this->signCount,
         ];
 
-        if ($this->ACD) {
+        if ($this->ACD !== null) {
             // See RFC8152 section 7 (COSE key parameters)
             $pk = [
                 'kty' => $this->ACD['credentialPublicKey'][1], // MUST be 'EC2' (sec 13 tbl 21)

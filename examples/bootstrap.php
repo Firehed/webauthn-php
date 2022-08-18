@@ -5,7 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use Firehed\WebAuthn\Challenge;
-use Firehed\WebAuthn\Credential;
+use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\Codecs\Credential as CredentialCodec;
 
 const INDEX_SESSION_CHALLENGE = 'challenge';
@@ -107,7 +107,7 @@ function getUserByName(PDO $pdo, string $name): ?array
 /**
  * @param array{id: string} $user
  */
-function storeCredentialForUser(PDO $pdo, Credential $credential, array $user): bool
+function storeCredentialForUser(PDO $pdo, CredentialInterface $credential, array $user): bool
 {
     $credentialId = $credential->getSafeId();
 
@@ -135,7 +135,7 @@ function storeCredentialForUser(PDO $pdo, Credential $credential, array $user): 
     ]);
 }
 
-/** @return Credential[] */
+/** @return CredentialInterface[] */
 function getStoredCredentialsForUser(PDO $pdo, array $user): array
 {
     $stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');

@@ -12,14 +12,15 @@ Cleanup Tasks
     - [ ] Attestations
     - [ ] AuthenticatorData
     - [x] BinaryString
+    - [x] Credential
   - TBD:
     - [ ] Certificate
     - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
-    - [ ] Credential (same^ / figure out serialization BC)
 - [x] Rework BinaryString to avoid binary in stack traces
 - [x] Use BinaryString consistently
   - [ ] COSEKey.decodedCbor
 - [ ] Establish required+best practices for data storage
+  - [x] CredentialInterface + codec?
   - Relation to user
   - Keep signCount up to date
   - 7.1.22 ~ credential in use
