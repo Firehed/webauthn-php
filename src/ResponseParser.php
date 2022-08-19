@@ -35,7 +35,7 @@ class ResponseParser
         }
         return new CreateResponse(
             id: self::byteArrayToBinaryString($response['rawId']),
-            ao: AttestationParser::parse(self::byteArrayToBinaryString($response['attestationObject'])),
+            ao: Attestations\AttestationObject::fromCbor(self::byteArrayToBinaryString($response['attestationObject'])),
             clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
         );
     }
