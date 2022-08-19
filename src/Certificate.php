@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+/**
+ * @internal
+ */
 class Certificate
 {
     public function __construct(private BinaryString $binary)

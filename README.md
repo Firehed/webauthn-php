@@ -10,11 +10,11 @@ Cleanup Tasks
     - [ ] RelyingParty
   - Internal:
     - [x] Attestations
-    - [ ] AuthenticatorData
+    - [x] AuthenticatorData
     - [x] BinaryString
     - [x] Credential
+    - [x] Certificate
   - TBD:
-    - [ ] Certificate
     - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
 - [x] Rework BinaryString to avoid binary in stack traces
 - [x] Use BinaryString consistently
