@@ -116,6 +116,6 @@ class CreateResponse
 
     private function fail(string $section, string $desc): never
     {
-        throw new UnexpectedValueException(sprintf('%s %s incorrect', $section, $desc));
+        throw new Error\RegistrationError($section, $desc);
     }
 }
