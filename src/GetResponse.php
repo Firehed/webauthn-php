@@ -25,6 +25,7 @@ class GetResponse
         Challenge $challenge,
         RelyingParty $rp,
         CredentialInterface $credential,
+        UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.2.1-7.2.x are done in client side js
 
@@ -85,8 +86,7 @@ class GetResponse
         }
 
         // 7.2.17
-        $isUserVerificationRequired = true; // TODO: where to source this?
-        $isUserVerificationRequired = false;
+        $isUserVerificationRequired = ($uv === UserVerificationRequirement::Required);
         if ($isUserVerificationRequired && !$authData->isUserVerified()) {
             $this->fail('7.2.17', 'authData.isUserVerified');
         }

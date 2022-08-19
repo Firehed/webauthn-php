@@ -28,7 +28,7 @@ Cleanup Tasks
   - [x] Counter handling in (7.2.21)
   - [ ] ClientExtensionResults (7.1.4, 7.1.17, 7.2.4, 7.2.18)
   - [ ] TokenBinding (7.1.10, 7.2.14)
-  - [ ] isUserVerificationRequired - configurability (7.1.15, 7.2.17)
+  - [x] isUserVerificationRequired - configurability (7.1.15, 7.2.17)
   - [ ] Trust anchoring (7.1.20; result of AO.verify)
   - [ ] How to let client apps assess trust ambiguity (7.1.21)
   - [ ] Match algorithm in create() to createOptions (7.1.16)

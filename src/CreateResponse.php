@@ -22,6 +22,7 @@ class CreateResponse
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,
+        UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code
         // 7.1.4 is temporarily skpped
@@ -69,8 +70,7 @@ class CreateResponse
         }
 
         // 7.1.15
-        $isUserVerificationRequired = true; // TODO: where to source this?
-        $isUserVerificationRequired = false;
+        $isUserVerificationRequired = ($uv === UserVerificationRequirement::Required);
         if ($isUserVerificationRequired && !$authData->isUserVerified()) {
             $this->fail('7.1.15', 'authData.isUserVerified');
         }
