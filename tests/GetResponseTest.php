@@ -29,37 +29,44 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         ));
     }
 
+    // 7.2.11
     public function testCDJTypeMismatchIsError(): void
     {
         // override CDJ
     }
 
+    // 7.2.12
     public function testCDJChallengeMismatchIsError(): void
     {
         // override CDJ
     }
 
+    // 7.2.13
     public function testCDJOriginMismatchIsError(): void
     {
         // override CDJ
     }
 
+    // 7.2.15
     public function testRelyingPartyIdMismatchIsError(): void
     {
         // override authData
     }
 
+    // 7.2.16
     public function testUserNotPresentIsError(): void
     {
         // override authData
     }
 
+    // 7.2.17
     public function testUserVerifiedNotPresentWhenRequiredIsError(): void
     {
         // (default data ok)
         // call verify with UVR::Required
     }
 
+    // 7.2.20
     public function testIncorrectSignatureIsError(): void
     {
         // override sig

@@ -38,11 +38,11 @@ Testing:
 
 - [ ] Happy path w/ FidoU2F
 - [ ] Happy path with macOS/Safari WebAuthn
-- [ ] Challenge mismatch (create+get)
-- [ ] Origin mismatch (CDJ)
-- [ ] RPID mismatch (AuthenticatorData)
-- [ ] !userPresent
-- [ ] !userVerified & required
-- [ ] !userVerified & not required
+- [s] Challenge mismatch (create+get)
+- [s] Origin mismatch (CDJ)
+- [s] RPID mismatch (AuthenticatorData)
+- [s] !userPresent
+- [s] !userVerified & required
+- [s] !userVerified & not required
 - [ ] PK mismatched in verify??
 - [x] App-persisted data SerDe
