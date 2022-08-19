@@ -22,10 +22,10 @@ Cleanup Tasks
 - [ ] Establish required+best practices for data storage
   - [x] CredentialInterface + codec?
   - Relation to user
-  - Keep signCount up to date
+  - [x] Keep signCount up to date (7.2.21)
   - 7.1.22 ~ credential in use
 - [ ] Scan through repo for FIXMEs & missing verify steps
-  - [ ] Counter handling in (7.2.21)
+  - [x] Counter handling in (7.2.21)
   - [ ] ClientExtensionResults (7.1.4, 7.1.17, 7.2.4, 7.2.18)
   - [ ] TokenBinding (7.1.10, 7.2.14)
   - [ ] isUserVerificationRequired - configurability (7.1.15, 7.2.17)

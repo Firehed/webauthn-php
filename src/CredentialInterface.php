@@ -37,4 +37,9 @@ interface CredentialInterface
      * @internal
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface;
+
+    /**
+     * @internal
+     */
+    public function withUpdatedSignCount(int $newSignCount): CredentialInterface;
 }

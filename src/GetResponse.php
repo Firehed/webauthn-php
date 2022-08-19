@@ -24,7 +24,7 @@ class GetResponse
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,
-        CredentialInterface $storedCredential,
+        CredentialInterface $credential,
     ): CredentialInterface {
         // 7.2.1-7.2.x are done in client side js
 
@@ -41,7 +41,7 @@ class GetResponse
         // 7.2.7
         // get credential from JS credential.id
         // (index into possible credential list?)
-        // $storedCredential
+        // $credential
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
@@ -98,7 +98,7 @@ class GetResponse
         $hash = hash('sha256', $cData, true);
 
         // 7.2.20
-        $credentialPublicKey = $storedCredential->getPublicKey();
+        $credentialPublicKey = $credential->getPublicKey();
 
         // Spec note: the signature is over the concatenation of the authData
         // and the hash of clientDataJSON. Due to the above checks (relying
@@ -122,11 +122,10 @@ class GetResponse
         }
 
         // 7.2.21
-        $storedSignCount = $storedCredential->getSignCount();
+        $storedSignCount = $credential->getSignCount();
         if ($authData->getSignCount() !== 0 || $storedSignCount !== 0) {
             if ($authData->getSignCount() > $storedSignCount) {
-                // $storedCredential = $storedCredential->withUpdatedSignCount($authData->getSignCount());
-                // FIXME: update counter
+                $credential = $credential->withUpdatedSignCount($authData->getSignCount());
             } else {
                 // FIXME: throw/alert for risk
             }
@@ -137,7 +136,7 @@ class GetResponse
 
         // Send back the (updated?) credential so that the sign counter can be
         // updated.
-        return $storedCredential;
+        return $credential;
     }
 
     private function fail(string $section, string $desc): never

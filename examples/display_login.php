@@ -11,6 +11,7 @@ $username = $body['username'];
 
 $pdo = getSqliteConnection();
 $user = getUserByName($pdo, $username);
+assert($user !== null);
 
 header('Content-type: text/plain');
 
@@ -21,7 +22,7 @@ $creds = getStoredCredentialsForUser($pdo, $user);
 
 $idFromRequest = $response->getSafeId();
 // wacky array search
-$foundCredential = array_reduce($creds, function ($carry, WebAuthn\Credential $cred) use ($idFromRequest) {
+$foundCredential = array_reduce($creds, function ($carry, WebAuthn\CredentialInterface $cred) use ($idFromRequest) {
     // if we found from previous pass, short-circuit
     if ($carry) {
         return $carry;
@@ -44,7 +45,12 @@ $challenge = getActiveChallenge(true);
 $rp = new WebAuthn\RelyingParty('http://localhost:8888');
 
 $result = $response->verify($challenge, $rp, $foundCredential);
+storeCredentialForUser($pdo, $result, $user);
 
-var_dump($result);
+echo <<<OUT
+Old sign count: {$foundCredential->getSignCount()}
 
-echo "If you got here, verify was ok!";
+Updated sign count: {$result->getSignCount()}
+
+If you got here, verify was OK!
+OUT;

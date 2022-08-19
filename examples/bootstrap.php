@@ -105,34 +105,56 @@ function getUserByName(PDO $pdo, string $name): ?array
 }
 
 /**
+ * Persists a credential to external storage, associated with the provided
+ * user. If it is already stored, update it (this is done to track the
+ * monotonically increasing signnature counter)
+ *
  * @param array{id: string} $user
  */
 function storeCredentialForUser(PDO $pdo, CredentialInterface $credential, array $user): bool
 {
     $credentialId = $credential->getSafeId();
 
+    // Check if the credential already exists
     $stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE id = ?');
     $stmt->execute([$credentialId]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if (count($rows) === 1) {
-        if ($rows[0]['user_id'] !== $user['id']) {
-            error_log('credential attached to a different user (7.1.22)');
-            return false;
-        }
-        // Already stored, do nothing.
-        return true;
-    } elseif (count($rows) > 1) {
+
+    // This should be unreachable!
+    if (count($rows) > 1) {
         error_log('UNIQUE KEY VIOLATION???');
         return false;
     }
 
-    $stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (?, ?, ?)');
     $codec = new CredentialCodec();
-    return $stmt->execute([
-        $credentialId,
-        $user['id'],
-        $codec->encode($credential),
+
+    // The credential is stored.
+    if (count($rows) === 1) {
+        // This credential is associated with a different user! Error out.
+        if ($rows[0]['user_id'] !== $user['id']) {
+            error_log('credential attached to a different user (7.1.22)');
+            return false;
+        }
+
+        // Already stored, update it (track the new sign count)
+        $stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
+    } else {
+        // Brand new credential = insert it.
+        $stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (:id, :user_id, :encoded)');
+    }
+
+    $result = $stmt->execute([
+        'id' => $credentialId,
+        'user_id' => $user['id'],
+        'encoded' => $codec->encode($credential),
     ]);
+    if (!$result) {
+        return false;
+    }
+
+    // If no rows were affected, something went wrong. This is mostly for the
+    // UPDATE(user_id) sanity-check.
+    return $stmt->rowCount() === 1;
 }
 
 /** @return CredentialInterface[] */

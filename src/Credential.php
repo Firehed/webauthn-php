@@ -40,4 +40,13 @@ class Credential implements CredentialInterface
     {
         return $this->coseKey->getPublicKey();
     }
+
+    public function withUpdatedSignCount(int $newSignCount): CredentialInterface
+    {
+        return new Credential(
+            $this->id,
+            $this->coseKey,
+            $newSignCount,
+        );
+    }
 }
