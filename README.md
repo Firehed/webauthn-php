@@ -9,7 +9,7 @@ Cleanup Tasks
     - [ ] Challenge (DTO / serialization-safety)
     - [ ] RelyingParty
   - Internal:
-    - [ ] Attestations
+    - [x] Attestations
     - [ ] AuthenticatorData
     - [x] BinaryString
     - [x] Credential

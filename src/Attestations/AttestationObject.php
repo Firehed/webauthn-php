@@ -9,6 +9,8 @@ use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 
 /**
+ * @internal
+ *
  * @see s6.5
  * @link https://www.w3.org/TR/webauthn-2/#sctn-attestation
  */

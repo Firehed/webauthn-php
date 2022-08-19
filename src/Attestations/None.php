@@ -7,6 +7,9 @@ namespace Firehed\WebAuthn\Attestations;
 use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 
+/**
+ * @internal
+ */
 class None implements AttestationStatementInterface
 {
     public function __construct(

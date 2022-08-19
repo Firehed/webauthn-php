@@ -9,6 +9,9 @@ use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
 
+/**
+ * @internal
+ */
 class FidoU2F implements AttestationStatementInterface
 {
     // FIXME: $data contains binary :/
