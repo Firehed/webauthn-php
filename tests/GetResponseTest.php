@@ -13,11 +13,56 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
 {
     private CredentialInterface $credential;
 
+    private RelyingParty $rp;
+
+    private Challenge $challenge;
+
     public function setUp(): void
     {
         $codec = new Codecs\Credential();
-        $credential = $codec->decode('AQBAdNgcVUDDGH2BZC8No6bNvCDgn+HW36AeRHtqbX4EICbjJO6XnpTQNz1GVG/D+Fm9w5Sj5VtCFdtcJ7QRMS0UXQAAAE2lAQIDJiABIVggi2VjhUOZ3BdYJd9cJBHhhC+3yrxVjIlNHuak+SUYf0giWCAmEgP3PlrtjKb0XxB4Y3j6y6/QBn6ljfpcewJaRdv4hQAAAAA=');
-        $this->credential = $credential;
+        $this->credential = $codec->decode('AQBAdNgcVUDDGH2BZC8No6bNvCDgn+HW36AeRHtqbX4EICbjJO6XnpTQNz1GVG/D+Fm9w5Sj5VtCFdtcJ7QRMS0UXQAAAE2lAQIDJiABIVggi2VjhUOZ3BdYJd9cJBHhhC+3yrxVjIlNHuak+SUYf0giWCAmEgP3PlrtjKb0XxB4Y3j6y6/QBn6ljfpcewJaRdv4hQAAAAA=');
+
+        $this->rp = new RelyingParty('http://localhost:8888');
+
+        $this->challenge = new Challenge(new BinaryString(
+            base64_decode('kV49XeHREZYSMN8miCxRren46C7TyGM0jm9n6fS8Gmw=', true)
+        ));
+    }
+
+    public function testCDJTypeMismatchIsError(): void
+    {
+        // override CDJ
+    }
+
+    public function testCDJChallengeMismatchIsError(): void
+    {
+        // override CDJ
+    }
+
+    public function testCDJOriginMismatchIsError(): void
+    {
+        // override CDJ
+    }
+
+    public function testRelyingPartyIdMismatchIsError(): void
+    {
+        // override authData
+    }
+
+    public function testUserNotPresentIsError(): void
+    {
+        // override authData
+    }
+
+    public function testUserVerifiedNotPresentWhenRequiredIsError(): void
+    {
+        // (default data ok)
+        // call verify with UVR::Required
+    }
+
+    public function testIncorrectSignatureIsError(): void
+    {
+        // override sig
     }
 
     public function testVerifyReturnsCredentialWithUpdatedCounter(): void
@@ -326,18 +371,30 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         $parser = new ResponseParser();
         $response = $parser->parseGetResponse($data);
 
-        $challenge = new Challenge(new BinaryString(base64_decode('kV49XeHREZYSMN8miCxRren46C7TyGM0jm9n6fS8Gmw=', true)));
-        $rp = new RelyingParty('http://localhost:8888');
 
         // Sanity-check: this was from the initial registration which must have
         // a sign counter of zero.
         assert($this->credential->getSignCount() === 0);
 
-        $updatedCredential = $response->verify($challenge, $rp, $this->credential);
+        $updatedCredential = $response->verify($this->challenge, $this->rp, $this->credential);
         self::assertGreaterThan(
             0,
             $updatedCredential->getSignCount(),
             'Updated credential should have increased sign count',
         );
+    }
+
+    /**
+     * Reserved for future use
+     * expected pass/fail behavior for verify when UV=0
+     * (override UV here?)
+     */
+    public function verify(): array
+    {
+        return [
+            'required' => [UserVerificationRequirement::Required, false],
+            'preferred' => [UserVerificationRequirement::Preferred, true],
+            'discouraged' => [UserVerificationRequirement::Discouraged, true],
+        ];
     }
 }
