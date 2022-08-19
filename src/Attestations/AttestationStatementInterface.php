@@ -12,5 +12,5 @@ use Firehed\WebAuthn\BinaryString;
  */
 interface AttestationStatementInterface
 {
-    public function verify(AuthenticatorData $data, BinaryString $clientDataHash);
+    public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult;
 }

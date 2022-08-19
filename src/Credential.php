@@ -9,6 +9,12 @@ namespace Firehed\WebAuthn;
  */
 class Credential implements CredentialInterface
 {
+    // Risk factors:
+    //   Create:
+    //    - attestation unacceptable under RP policy
+    //    - certificate chain
+    //   Get:
+    //     - counter bad
     public function __construct(
         private readonly BinaryString $id,
         private readonly COSEKey $coseKey,

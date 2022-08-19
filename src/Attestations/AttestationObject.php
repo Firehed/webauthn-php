@@ -42,9 +42,9 @@ class AttestationObject
     }
 
     /**
-     * @param string $hash the sha256 hash (raw) of clientDataJson
+     * @param BinaryString $clientDataHash the sha256 hash (raw) of clientDataJson
      */
-    public function verify(BinaryString $clientDataHash)
+    public function verify(BinaryString $clientDataHash): VerificationResult
     {
         return $this->stmt->verify($this->data, $clientDataHash);
     }

@@ -11,17 +11,26 @@ use Firehed\WebAuthn\Certificate;
 
 /**
  * @internal
+ *
+ * @see 8.6
+ * @link https://www.w3.org/TR/webauthn-2/#sctn-fido-u2f-attestation
  */
 class FidoU2F implements AttestationStatementInterface
 {
-    // FIXME: $data contains binary :/
+    /**
+     * @param array{
+     *   sig: string,
+     *   x5c: string[],
+     * } $data
+     * FIXME: $data contains binary :/
+     */
     public function __construct(
         private array $data,
     ) {
     }
 
     // 8.6
-    public function verify(AuthenticatorData $data, BinaryString $clientDataHash)
+    public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult
     {
         // 8.6.v.1 already done
         // // check data['sig'] is set?
@@ -80,11 +89,19 @@ class FidoU2F implements AttestationStatementInterface
             throw new \Exception('OpenSSL signature verification failed');
         }
         // var_dump(__METHOD__, $result);
+        //
+        $pem = $attCert->getPemFormatted();
+        // $crt = openssl_x509_read($pem);
+        // var_dump($pem);
 
         // 8.6.v.7
         // examine this->data[x5c] and dig into attestation
+        // figure out if Basic or AttCA (??) defined in 6.5.3
+        // FIXME: should not be hardcoded!
+        $type = AttestationType::Basic;
+        // "or uncertainty" ^^ what's the right thing to do here?
 
         // 8.6.v.8
-        // return attestation?
+        return new VerificationResult($type, [$attCert]);
     }
 }

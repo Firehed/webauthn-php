@@ -87,14 +87,32 @@ class CreateResponse
 
         // 7.1.19
         // Verification is format-specific.
-        // TODO: call attStmt->verify() here?
-        $this->ao->verify($hash);
+        $result = $this->ao->verify($hash);
 
         // 7.1.20
-        // get trust anchors for format
+        // get trust anchors for format (return value from verify() above?)
+        // -> format-specific metadata services?
 
         // 7.1.21
         // assess verification result
+        //
+        // In the original u2f-php lib, this was done with openssl:
+        // ```php
+        // $result = openssl_x509_checkpurpose(
+        //   [attestation trust path cerificate],
+        //   X509_PURPOSE_ANY,
+        //   [list of imported trusted CAs]
+        // );
+        // ```
+        //
+        // here, it would be something like
+        // ```php
+        $trustworthiness = match ($result->type) {
+            Attestations\AttestationType::None,
+            Attestations\AttestationType::Basic => null, // check if $rp permits this?
+            default => null, // openssl_x509_checkpurpose ?
+        };
+        // ```
 
         // 7.1.22
         // check that credentialId is not registered to another user
