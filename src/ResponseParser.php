@@ -7,6 +7,18 @@ namespace Firehed\WebAuthn;
 /**
  * Translates the library-official over-the-wire data formats into the
  * necessary data structures for subsequent authentication procedures.
+ *
+ * Observe that most of the Javascript API responses are returned as an
+ * ArrayBuffer, which does not have a default JSON encoding. As such, they are
+ * sent over the wire as an array of ordinal bytes; i.e. an ArrayBufer
+ * containing "ABC" would render as `[65, 66, 67]` (or `{"0": 65, "1": 66, "2":
+ * 67}`).
+ *
+ * This parser expects a specific wire format, documented as a JS example in
+ * each method's docblock. That format will be converted into an internal
+ * format for subsequent registration/verification procedures.
+ *
+ * @api
  */
 class ResponseParser
 {
@@ -69,7 +81,6 @@ class ResponseParser
         }
 
         // print_r($response);
-        var_dump("userHandle:", self::byteArrayToBinaryString($response['userHandle']));
         // if userHandle is provided, feed to the response to be read by app
         // and have key handles looked up for verify??
 

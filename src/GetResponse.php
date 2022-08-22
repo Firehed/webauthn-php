@@ -6,6 +6,11 @@ namespace Firehed\WebAuthn;
 
 use UnexpectedValueException;
 
+/**
+ * This is the internal representation of a PublicKeyCredential containing an
+ * AuthenticatorAssertionResponse; i.e. the result of calling
+ * `navigator.credentials.get()`.
+ */
 class GetResponse
 {
     public function __construct(
@@ -21,6 +26,12 @@ class GetResponse
         return bin2hex($this->id->unwrap());
     }
 
+    /**
+     * @see 7.2
+     * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
+     *
+     * @api
+     */
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,

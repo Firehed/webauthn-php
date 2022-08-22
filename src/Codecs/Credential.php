@@ -10,8 +10,11 @@ use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\Credential as CredentialObj;
 
 /**
+ * This codec is responsible for serializing a CredentialInterface object to
+ * and unserializing from a binary-safe string for storage and retreival.
+ *
  * Client applications SHOULD NOT attempt to manually encode or decode
- * credentials. The encoded representation of a credential should be treated as
+ * credentials. The encoded representation of a credential SHOULD be treated as
  * an opaque string without inspection or modification. This library makes
  * the following promises:
  *
@@ -49,6 +52,8 @@ use Firehed\WebAuthn\Credential as CredentialObj;
  *
  * The remainder of the string is a variable-length value that is specific to
  * the version.
+ *
+ * @api
  */
 class Credential
 {

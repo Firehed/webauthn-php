@@ -5,9 +5,11 @@ Cleanup Tasks
 - [ ] Move key formatting into COSE key/turn COSE into key parser?
 - [ ] Clearly define public scoped interfaces and classes
   - Public:
-    - [ ] ResponseParser (interface?)
+    - [x] ResponseParser (interface?)
     - [ ] Challenge (DTO / serialization-safety)
-    - [ ] RelyingParty
+    - [x] RelyingParty
+    - [x] CredentialInterface
+      - [ ] getId()? how to feed into nav.credentials.get{pk.allowCredentials}
   - Internal:
     - [x] Attestations
     - [x] AuthenticatorData
@@ -16,9 +18,11 @@ Cleanup Tasks
     - [x] Certificate
   - TBD:
     - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
+    - [ ] Errors
 - [x] Rework BinaryString to avoid binary in stack traces
 - [x] Use BinaryString consistently
   - [ ] COSEKey.decodedCbor
+  - [ ] Attestations\FidoU2F.data
 - [ ] Establish required+best practices for data storage
   - [x] CredentialInterface + codec?
   - Relation to user

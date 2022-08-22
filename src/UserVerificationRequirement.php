@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-// https://w3c.github.io/webauthn/#enum-userVerificationRequirement
+/**
+ * @link https://w3c.github.io/webauthn/#enum-userVerificationRequirement
+ *
+ * @api
+ */
 enum UserVerificationRequirement
 {
     case Required;

@@ -12,6 +12,8 @@ namespace Firehed\WebAuthn;
 interface CredentialInterface
 {
     /**
+     * @api
+     *
      * TODO: better name?
      */
     public function getSafeId(): string;

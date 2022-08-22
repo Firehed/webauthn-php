@@ -6,6 +6,11 @@ namespace Firehed\WebAuthn;
 
 use UnexpectedValueException;
 
+/**
+ * This is the internal representation of a PublicKeyCredential containing an
+ * AuthenticatorAttestationResponse; i.e. the result of calling
+ * `navigator.credentials.create()`.
+ */
 class CreateResponse
 {
     public function __construct(
@@ -16,8 +21,10 @@ class CreateResponse
     }
 
     /**
-     * Performs the verification described in s7.1: Registering a New
-     * Credential
+     * @see 7.1
+     * @link https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential
+     *
+     * @api
      */
     public function verify(
         Challenge $challenge,
