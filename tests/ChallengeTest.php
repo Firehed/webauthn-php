@@ -20,7 +20,7 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
 
         self::assertInstanceOf(Challenge::class, $unserialized);
         self::assertTrue(
-            hash_equals($challenge->getChallenge(), $unserialized->getChallenge()),
+            hash_equals($challenge->getUnwrappedBinary(), $unserialized->getUnwrappedBinary()),
             'Wrapped challenge changed',
         );
     }
@@ -31,7 +31,7 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
      * library. This helps ensure compatibility across versions and reduces the
      * risk of a point release breaking any active session data.
      */
-    public function testInflightDecode(): void
+    public function testInFlightDecode(): void
     {
         $serialized = 'O:26:"Firehed\WebAuthn\Challenge":1:{s:3:"b64";s:44:"ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=";}';
         $unserialized = unserialize($serialized);
@@ -40,7 +40,7 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(
             hash_equals(
                 base64_decode('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=', true),
-                $unserialized->getChallenge(),
+                $unserialized->getUnwrappedBinary(),
             ),
             'Decoding resulted in inaccurate challenge',
         );

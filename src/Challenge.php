@@ -8,6 +8,12 @@ namespace Firehed\WebAuthn;
  * The Challenge object has limited public-facing API:
  * - Create a challenge through the `::random()` method
  * - (Un)Serialization through passing it to \serialize and \unserialize
+ * - getBase64() for sending to clients for use in
+ *   CredetialCreationOptions/CredentialRequestOptions
+ *
+ * Methods marked as @internal are not for public use. The magic methods
+ * pertaining to object serialization are only to be called through the
+ * serialization functions `serialize` and `unserialize`, not directly.
  */
 class Challenge
 {
@@ -29,11 +35,37 @@ class Challenge
 
     /**
      * Caution: this returns raw binary
-     * TODO: adjust name/interface?
+     *
+     * @internal
      */
-    public function getChallenge(): string
+    public function getUnwrappedBinary(): string
     {
         return $this->wrapped->unwrap();
+    }
+
+    /**
+     * This produces a string that can be decoded with Javascript's `atob`
+     * function. The result of that will need to be further encoded into a
+     * BufferSource to be used in the `publicKey.challenge`; e.g. transformed
+     * into a `Uint8Array`:
+     *
+     * ```php
+     * header('Content-type: application/json');
+     * echo json_encode($challenge->getBase64());
+     * ```
+     *
+     * ```javascript
+     * const response = await fetch(request to above endpoint)
+     * const challengeB64 = await response.json()
+     * const challenge = atob(challengeB64)
+     * return Uint8Array.from(challenge, c => c.charCodeAt(0))
+     * ```
+     *
+     * @api
+     */
+    public function getBase64(): string
+    {
+        return base64_encode($this->wrapped->unwrap());
     }
 
     /**
@@ -41,7 +73,7 @@ class Challenge
      */
     public function __serialize(): array
     {
-        return ['b64' => base64_encode($this->wrapped->unwrap())];
+        return ['b64' => $this->getBase64()];
     }
 
     /**

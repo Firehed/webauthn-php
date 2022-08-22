@@ -7,4 +7,4 @@ require __DIR__ . '/bootstrap.php';
 $challenge = getActiveChallenge();
 
 header('Content-type: application/json');
-echo json_encode(base64_encode($challenge->getChallenge()));
+echo json_encode($challenge->getBase64());

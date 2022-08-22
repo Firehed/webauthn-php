@@ -72,7 +72,7 @@ class GetResponse
         }
 
         // 7.2.12
-        $b64u = Codecs\Base64Url::encode($challenge->getChallenge());
+        $b64u = Codecs\Base64Url::encode($challenge->getUnwrappedBinary());
         if (!hash_equals($b64u, $C['challenge'])) {
             $this->fail('7.2.12', 'C.challenge');
         }

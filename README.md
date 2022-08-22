@@ -7,7 +7,6 @@ Cleanup Tasks
   - Public:
     - [x] ResponseParser (interface?)
     - [x] Challenge (DTO / serialization-safety in session)
-      - [ ] getChallenge()? / unwrapping / encoding
     - [x] RelyingParty
     - [x] CredentialInterface
       - [ ] getId()? how to feed into nav.credentials.get{pk.allowCredentials}
