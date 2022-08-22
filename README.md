@@ -58,7 +58,7 @@ Naming?
 - [ ] CreateResponse/GetResponse -> Add interfaces?
 
 Nice to haves/Future scope:
-- [ ] Refactor FIDO attestation to not need AD.getAttestedCredentialData
+- [x] Refactor FIDO attestation to not need AD.getAttestedCredentialData
     - grab credential from AD
     - check PK type
 - [ ] ExpiringChallenge & ChallengeInterface

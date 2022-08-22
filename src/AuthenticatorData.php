@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
 use BadMethodCallException;
+use OutOfRangeException;
 
 /**
  * @internal
@@ -12,7 +14,7 @@ use BadMethodCallException;
  *
  * @phpstan-type AttestedCredentialData array{
  *   aaguid: string,
- *   credentialId: string,
+ *   credentialId: BinaryString,
  *   credentialPublicKey: BinaryString,
  * }
  */
@@ -45,10 +47,10 @@ class AuthenticatorData
 
         $rpIdHash = substr($bytes, 0, 32);
         $flags = ord(substr($bytes, 32, 1));
-        $UP = ($flags & 0x01) === 0x01; // bit 0
-        $UV = ($flags & 0x04) === 0x04; // bit 2
-        $AT = ($flags & 0x40) === 0x40; // bit 6
-        $ED = ($flags & 0x80) === 0x80; // bit 7
+        $UP = ($flags & 0x01) === 0x01; // bit 0: User Present
+        $UV = ($flags & 0x04) === 0x04; // bit 2: User Verified
+        $AT = ($flags & 0x40) === 0x40; // bit 6: Attested credential data incl.
+        $ED = ($flags & 0x80) === 0x80; // bit 7: Extension data incl.
         $signCount = unpack('N', substr($bytes, 33, 4))[1];
 
         $authData = new AuthenticatorData();
@@ -60,6 +62,7 @@ class AuthenticatorData
         $restOfBytes = substr($bytes, 37);
         $restOfBytesLength = strlen($restOfBytes);
         if ($AT) {
+            // https://www.w3.org/TR/2019/REC-webauthn-1-20190304/#sec-attested-credential-data
             assert($restOfBytesLength >= 18);
 
             $aaguid = substr($restOfBytes, 0, 16);
@@ -67,11 +70,15 @@ class AuthenticatorData
             assert($restOfBytesLength >= (18 + $credentialIdLength));
             $credentialId = substr($restOfBytes, 18, $credentialIdLength);
 
+            // This needs to peek into the remaining data to parse the start of
+            // the COSE format to know the legnth of the public key. Where ED=0
+            // this should go to the end of the string, but if that's set this
+            // will read too far.
             $rawCredentialPublicKey = substr($restOfBytes, 18 + $credentialIdLength);
 
             $authData->ACD = [
-                'aaguid' => $aaguid,
-                'credentialId' => $credentialId,
+                'aaguid' => new BinaryString($aaguid),
+                'credentialId' => new BinaryString($credentialId),
                 'credentialPublicKey' => new BinaryString($rawCredentialPublicKey),
             ];
         }
@@ -84,22 +91,26 @@ class AuthenticatorData
         return $authData;
     }
 
-    public function getCredential(): ?CredentialInterface
+    public function getAttestedCredential(): CredentialInterface
     {
         if ($this->ACD === null) {
-            return null;
+            throw new OutOfRangeException(
+                'The authenticator data does not contain an attested ' .
+                'credential. This is expected behavior for verify ' .
+                '(credentials.get()) results, and registration ' .
+                '(credentials.create()) results where publicKey.attestation ' .
+                '!= "direct". If you encountered this error on a ' .
+                'registration where attestation is direct, please file a bug ' .
+                'including the JSON request, the Javascript publicKey ' .
+                'creation object, and the type of authentictor that was used.'
+            );
         }
+
         return new Credential(
-            new BinaryString($this->ACD['credentialId']),
+            $this->ACD['credentialId'],
             new COSEKey($this->ACD['credentialPublicKey']),
             $this->signCount,
         );
-    }
-
-    /** @return ?AttestedCredentialData */
-    public function getAttestedCredentialData(): ?array
-    {
-        return $this->ACD;
     }
 
     public function getRpIdHash(): BinaryString

@@ -37,13 +37,24 @@ class EllipticCurve implements PublicKeyInterface
     }
 
     /**
-     * @return string The decoded public key.
-     *
-    public function getBinary(): string
-    {
-        return $this->binary;
-    }
+     * Returns a 32-byte string representing the 256-bit X-coordinate on the
+     * curve
      */
+    public function getXCoordinate(): string
+    {
+        $uncompressed = $this->binary->unwrap();
+        return substr($uncompressed, 1, 32);
+    }
+
+    /**
+     * Returns a 32-byte string representing the 256-bit Y-coordinate on the
+     * curve
+     */
+    public function getYCoordinate(): string
+    {
+        $uncompressed = $this->binary->unwrap();
+        return substr($uncompressed, 33, 32);
+    }
 
     // Prepends the pubkey format headers and builds a pem file from the raw
     // public key component
@@ -53,13 +64,13 @@ class EllipticCurve implements PublicKeyInterface
         // Just use an OID calculator to figure out *that* encoding
         $der = hex2bin(
             '3059' // SEQUENCE, length 89
-                .'3013' // SEQUENCE, length 19
-                    .'0607' // OID, length 7
-                        .'2a8648ce3d0201' // 1.2.840.10045.2.1 = EC Public Key
-                    .'0608' // OID, length 8
-                        .'2a8648ce3d030107' // 1.2.840.10045.3.1.7 = P-256 Curve
-                .'0342' // BIT STRING, length 66
-                    .'00' // prepend with NUL - pubkey will follow
+                . '3013' // SEQUENCE, length 19
+                    . '0607' // OID, length 7
+                        . '2a8648ce3d0201' // 1.2.840.10045.2.1 = EC Public Key
+                    . '0608' // OID, length 8
+                        . '2a8648ce3d030107' // 1.2.840.10045.3.1.7 = P-256 Curve
+                . '0342' // BIT STRING, length 66
+                    . '00' // prepend with NUL - pubkey will follow
         );
         $der .= $this->binary->unwrap();
 
@@ -73,8 +84,8 @@ class EllipticCurve implements PublicKeyInterface
     public function __debugInfo(): array
     {
         return [
-            'x' => '0x' . bin2hex(substr($this->binary->unwrap(), 1, 32)),
-            'y' => '0x' . bin2hex(substr($this->binary->unwrap(), 33)),
+            'x' => '0x' . bin2hex($this->getXCoordinate()),
+            'y' => '0x' . bin2hex($this->getYCoordinate()),
         ];
     }
 }

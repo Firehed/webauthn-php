@@ -8,6 +8,7 @@ use Firehed\CBOR\Decoder;
 use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
+use Firehed\WebAuthn\PublicKey\EllipticCurve;
 
 /**
  * @internal
@@ -37,31 +38,35 @@ class FidoU2F implements AttestationStatementInterface
         // 8.6.v.2
         assert(count($this->data['x5c']) === 1);
         $attCert = new Certificate(new BinaryString($this->data['x5c'][0]));
-        // TODO: Do all PEM decoding, blah blah
-        // >  Let *certificate public key* be the public key conveyed by
-        // > *attCert*. If *certificate public key* is not an Elliptic Curve
-        // > (EC) public key over the P-256 curve, terminate this algorithm and
-        // > return an appropriate error.
-        // var_dump($this, $attCert->getPemFormatted());
+
+        $certificatePublicKey = openssl_pkey_get_public($attCert->getPemFormatted());
+        assert($certificatePublicKey !== false);
+        $info = openssl_pkey_get_details($certificatePublicKey);
+        assert($info !== false);
+        if ($info['type'] !== OPENSSL_KEYTYPE_EC) {
+            throw new \Exception('Certificate PubKey is not Elliptic Curve');
+        }
+        // OID for P-156 curve
+        // http://oid-info.com/get/1.2.840.10045.3.1.7
+        // See also EllipticCurve
+        if ($info['ec']['curve_oid'] !== '1.2.840.10045.3.1.7') {
+            throw new \Exception('Certificate PubKey is not Elliptic Curve');
+        }
 
         // 8.6.v.3
         $rpIdHash = $data->getRpIdHash();
-        $attestedCredentialData = $data->getAttestedCredentialData();
-        assert($attestedCredentialData !== null);
-        $credentialId = $attestedCredentialData['credentialId'];
-        $credentialPublicKeyCbor = $attestedCredentialData['credentialPublicKey'];
-        $decoder = new Decoder();
-        $credentialPublicKey = $decoder->decode($credentialPublicKeyCbor->unwrap());
+        $attestedCredential = $data->getAttestedCredential();
+        $credentialId = $attestedCredential->getId();
+        $credentialPublicKey = $attestedCredential->getPublicKey();
+        assert($credentialPublicKey instanceof EllipticCurve);
 
         // 8.6.v.4
-        // isset & strlen===32
-        assert(isset($credentialPublicKey[-2]));
-        assert(isset($credentialPublicKey[-3]));
+        // The specific indexing is handled within the data structure
         $publicKeyU2F = sprintf(
             '%s%s%s',
             "\x04",
-            $credentialPublicKey[-2],
-            $credentialPublicKey[-3]
+            $credentialPublicKey->getXCoordinate(),
+            $credentialPublicKey->getYCoordinate(),
         );
 
 
@@ -71,7 +76,7 @@ class FidoU2F implements AttestationStatementInterface
             "\x00",
             $rpIdHash->unwrap(),
             $clientDataHash->unwrap(),
-            $credentialId,
+            $credentialId->unwrap(),
             $publicKeyU2F,
         );
 

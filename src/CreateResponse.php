@@ -128,9 +128,7 @@ class CreateResponse
         // 7.1.23
         // associate credential with new user
         // done in client code
-        $credential = $authData->getCredential();
-        assert($credential !== null);
-        // var_dump($this, $challenge, $C, __LINE__);
+        $credential = $authData->getAttestedCredential();
 
         return $credential;
 
