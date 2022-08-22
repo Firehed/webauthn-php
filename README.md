@@ -6,7 +6,8 @@ Cleanup Tasks
 - [ ] Clearly define public scoped interfaces and classes
   - Public:
     - [x] ResponseParser (interface?)
-    - [ ] Challenge (DTO / serialization-safety in session)
+    - [x] Challenge (DTO / serialization-safety in session)
+      - [ ] getChallenge()? / unwrapping / encoding
     - [x] RelyingParty
     - [x] CredentialInterface
       - [ ] getId()? how to feed into nav.credentials.get{pk.allowCredentials}
