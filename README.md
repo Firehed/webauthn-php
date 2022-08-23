@@ -128,8 +128,7 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
-// These values come from step 1
-$rp = $sameFromStep1;
+$rp = $valueFromSetup; // e.g. $diContainer->get(RelyingParty::class);
 $challenge = $_SESSION['webauthn_challenge'];
 
 try {
