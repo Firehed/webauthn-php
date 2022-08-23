@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../vendor/autoload.php';
 
 use Firehed\WebAuthn\Challenge;
+use Firehed\WebAuthn\CredentialContainer;
 use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\Codecs\Credential as CredentialCodec;
 
@@ -157,12 +158,17 @@ function storeCredentialForUser(PDO $pdo, CredentialInterface $credential, array
     return $stmt->rowCount() === 1;
 }
 
-/** @return CredentialInterface[] */
-function getStoredCredentialsForUser(PDO $pdo, array $user): array
+/**
+ * @param array{id: string} $user
+ * @return CredentialContainer
+ */
+function getStoredCredentialsForUser(PDO $pdo, array $user): CredentialContainer
 {
     $stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');
     $stmt->execute([$user['id']]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $codec = new CredentialCodec();
-    return array_map(fn ($row) => $codec->decode($row['credential']), $rows);
+    $creds = array_map(fn ($row) => $codec->decode($row['credential']), $rows);
+
+    return new CredentialContainer($creds);
 }

@@ -14,16 +14,19 @@ use UnexpectedValueException;
 class GetResponse
 {
     public function __construct(
-        private BinaryString $id,
+        private BinaryString $credentialId,
         private BinaryString $rawAuthenticatorData,
         private BinaryString $clientDataJson,
         private BinaryString $signature,
     ) {
     }
 
-    public function getSafeId(): string
+    /**
+     * @internal
+     */
+    public function getUsedCredentialId(): BinaryString
     {
-        return bin2hex($this->id->unwrap());
+        return $this->credentialId;
     }
 
     /**

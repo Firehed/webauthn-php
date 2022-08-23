@@ -14,6 +14,11 @@ class BinaryString
     ) {
     }
 
+    public function equals(BinaryString $other): bool
+    {
+        return $this->wrapped === $other->wrapped;
+    }
+
     public function __debugInfo()
     {
         return [

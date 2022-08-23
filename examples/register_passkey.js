@@ -125,10 +125,10 @@ const dologin = async (e) => {
     body: JSON.stringify({
       rawId: new Uint8Array(credential.rawId),
       type: credential.type,
-      authenticatorData: new Uint8Array(credential.response.authenticatorData),
-      clientDataJSON: new Uint8Array(credential.response.clientDataJSON),
-      signature: new Uint8Array(credential.response.signature),
-      userHandle: new Uint8Array(credential.response.userHandle),
+      authenticatorData: Array.from(new Uint8Array(credential.response.authenticatorData)),
+      clientDataJSON: Array.from(new Uint8Array(credential.response.clientDataJSON)),
+      signature: Array.from(new Uint8Array(credential.response.signature)),
+      userHandle: Array.from(new Uint8Array(credential.response.userHandle)),
       // see above
       username,
     }),

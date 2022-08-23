@@ -10,11 +10,7 @@ $user = getUserByName($pdo, $username);
 assert($user !== null);
 $creds = getStoredCredentialsForUser($pdo, $user);
 
-// TODO: how to better move this around
-$ids = array_map(function ($cred) {
-    // FIXME: getId() should be internal - how to deal with this?
-    return base64_encode($cred->getId()->unwrap());
-}, $creds);
+$ids = $creds->getBase64Ids();
 
 header('Content-type: application/json');
 echo json_encode($ids);

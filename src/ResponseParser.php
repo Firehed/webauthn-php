@@ -85,7 +85,7 @@ class ResponseParser
         // and have key handles looked up for verify??
 
         return new GetResponse(
-            id: self::byteArrayToBinaryString($response['rawId']),
+            credentialId: self::byteArrayToBinaryString($response['rawId']),
             rawAuthenticatorData: self::byteArrayToBinaryString($response['authenticatorData']),
             clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
             signature: self::byteArrayToBinaryString($response['signature']),

@@ -20,22 +20,9 @@ $response = $parser->parseGetResponse($body);
 
 $creds = getStoredCredentialsForUser($pdo, $user);
 
-$idFromRequest = $response->getSafeId();
-// wacky array search
-$foundCredential = array_reduce($creds, function ($carry, WebAuthn\CredentialInterface $cred) use ($idFromRequest) {
-    // if we found from previous pass, short-circuit
-    if ($carry) {
-        return $carry;
-    }
-    // if the stored credential id matches the request, yay
-    if ($cred->getSafeId() === $idFromRequest) {
-        return $cred;
-    }
-    // not found
-    return null;
-}, null);
+$foundCredential = $creds->findCredentialUsedByResponse($response);
 
-if (!$foundCredential) {
+if ($foundCredential === null) {
     header('HTTP/1.1 403 Unauthorized');
     error_log("No credential found!");
     return;

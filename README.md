@@ -128,7 +128,7 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
-$rp = $valueFromSetup; // e.g. $diContainer->get(RelyingParty::class);
+$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
 $challenge = $_SESSION['webauthn_challenge'];
 
 try {
@@ -153,11 +153,11 @@ CREATE TABLE user_credentials (
 $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($credential);
 $pdo = getDatabaseConnection();
-$stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (?, ?, ?);');
+$stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (:id, :user_id, :encoded);');
 $result = $stmt->execute([
-    $credential->getSafeId(),
-    $user->getId(), // $user comes from your authn process
-    $encodedCredential,
+    'id' => $credential->getSafeId(),
+    'user_id' => $user->getId(), // $user comes from your authn process
+    'encoded' => $encodedCredential,
 ]);
 
 // Continue with normal application flow, error handling, etc.
@@ -167,6 +167,137 @@ header('HTTP/1.1 200 OK');
 4) There is no step 4. The verified credential is now stored and associated with the user!
 
 ### Authenticating a user with an existing WebAuthn credential
+
+Note: this workflow may be a little different if supporting [passkeys](https://developer.apple.com/passkeys/).
+Updated samples will follow.
+
+Before starting, you will need to collect the username or id of the user trying to authenticate, and retreive the user info from storage.
+This assumes the same schema from the previous Registration example.
+
+1) Send the user's existing credential ids & a new Challenge
+
+```php
+<?php
+
+session_start();
+
+$userId = $alreadyKnownValue;
+$pdo = getDatabaseConnection();
+
+$stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');
+$stmt->execute([$userId]);
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$codec = new Codecs\Credential();
+$credentials = array_map(function ($row) use ($codec) {
+    return $codec->decode($row['credential']);
+}, $rows);
+
+/**
+ * This value will be re-used in a future step.
+ */
+$credentialContainer = new CredentialContainer($credentials);
+
+$challenge = Challenge::random();
+$_SESSION['webauthn_challenge'] = $challenge;
+
+// Send to user
+header('Content-type: application/json');
+echo json_encode([
+    'challenge' => $challenge->getBase64(),
+    'credential_ids' => $credentialContainer->getBase64Ids(),
+]);
+```
+
+2) In client Javascript code, read the data from above and provide it to the WebAuthn APIs.
+
+```javascript
+const response = await fetch('endpoint for step 1')
+const data = await response.json()
+
+// Format for WebAuthn API
+const getOptions = {
+    publicKey: {
+        challenge: Uint8Array.from(atob(data.challenge), c => c.charCodeAt(0)),
+        allowCredentials: data.credential_ids.map(id => ({
+            id: Uint8Array.from(atob(id), c => c.charCodeAt(0)),
+            type: 'public-key',
+        }))
+    },
+}
+
+// Similar to registration step 2
+
+// Call the WebAuthn browser API and get the response. This may throw, which you
+// should handle. Example: user cancels or never interacts with the device.
+const credential = await navigator.credentials.get(getOptions)
+
+// Format the credential to send to the server. This must match the format
+// handed by the ResponseParser class. The formatting code below can be used
+// without modification.
+const dataForResponseParser = {
+    rawId: Array.from(new Uint8Array(credential.rawId)),
+    type: credential.type,
+    authenticatorData: Array.from(new Uint8Array(credential.response.authenticatorData)),
+    clientDataJSON: Array.from(new Uint8Array(credential.response.clientDataJSON)),
+    signature: Array.from(new Uint8Array(credential.response.signature)),
+    userHandle: Array.from(new Uint8Array(credential.response.userHandle)),
+}
+
+// Send this to your endpoint - adjust to your needs.
+const request = new Request('/below parsing endpoint', {
+    body: JSON.stringify(dataForResponseParser),
+    headers: {
+        'Content-type: application/json',
+    },
+    method: 'POST',
+})
+const result = await fetch(request)
+// handle result - if it went ok, perform any client needs to finish auth process
+```
+
+3) Parse and verify the response. If successful, update the credential & finish app login process.
+
+```php
+<?php
+
+$json = file_get_contents('php://stdin');
+$data = json_decode($json, true);
+
+$parser = new ResponseParser();
+$getResponse = $parser->parseGetResponse($data);
+
+$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
+$challenge = $_SESSION['webauthn_challenge'];
+
+$foundCredential = $credentialContainer->findCredentialUsedByResponse($getResponse);
+if ($foundCredential === null) {
+    // The credentials associated with the authenticating user did not match the
+    // one used in the response. If you are using allowCredentials (as above),
+    // this should never happen.
+    header('HTTP/1.1 403 Unauthorized');
+    return;
+}
+
+try {
+    $updatedCredential = $response->verify($challenge, $rp, $foundCredential);
+} catch {
+    // Verification failed. Send an error to the user?
+    header('HTTP/1.1 403 Unauthorized');
+    return;
+}
+// Update the credential
+$codec = new Codecs\Credential();
+$encodedCredential = $codec->encode($updatedCredential);
+$stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
+$result = $stmt->execute([
+    'id' => $updatedCredential->getSafeId(),
+    'user_id' => $user->getId(), // $user comes from your authn process
+    'encoded' => $encodedCredential,
+]);
+
+header('HTTP/1.1 200 OK');
+// Send back whatever your webapp needs to finish authentication
+```
 
 Cleanup Tasks
 
