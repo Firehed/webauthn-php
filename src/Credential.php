@@ -22,7 +22,7 @@ class Credential implements CredentialInterface
     ) {
     }
 
-    public function getSafeId(): string
+    public function getStorageId(): string
     {
         return bin2hex($this->id->unwrap());
     }

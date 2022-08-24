@@ -42,9 +42,8 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $imported = $codec->decode($exported);
         // var_dump($exported, $imported);
 
-        self::assertSame(
-            $credential->getSafeId(),
-            $imported->getSafeId(),
+        self::assertTrue(
+            $credential->getId()->equals($imported->getId()),
             'id was not retained',
         );
         self::assertSame(

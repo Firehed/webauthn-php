@@ -14,9 +14,10 @@ interface CredentialInterface
     /**
      * @api
      *
-     * TODO: better name?
+     * Returns an encoded version of the credential's id guaranteed to return
+     * no binary characters.
      */
-    public function getSafeId(): string;
+    public function getStorageId(): string;
 
     /**
      * @internal

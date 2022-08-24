@@ -46,7 +46,7 @@ $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($updatedCredential);
 $stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
 $result = $stmt->execute([
-    'id' => $updatedCredential->getSafeId(),
+    'id' => $updatedCredential->getStorageId(),
     'user_id' => $_SESSION['authenticating_user_id'],
     'encoded' => $encodedCredential,
 ]);

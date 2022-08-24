@@ -42,7 +42,7 @@ $encodedCredential = $codec->encode($credential);
 $pdo = getDatabaseConnection();
 $stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (:id, :user_id, :encoded);');
 $result = $stmt->execute([
-    'id' => $credential->getSafeId(),
+    'id' => $credential->getStorageId(),
     'user_id' => $_SESSION['user_id'],
     'encoded' => $encodedCredential,
 ]);
@@ -52,5 +52,5 @@ header('HTTP/1.1 200 OK');
 header('Content-type: application/json');
 echo json_encode([
     'success' => true,
-    'credentialId' => $credential->getSafeId(),
+    'credentialId' => $credential->getStorageId(),
 ]);

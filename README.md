@@ -169,7 +169,7 @@ $encodedCredential = $codec->encode($credential);
 $pdo = getDatabaseConnection();
 $stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (:id, :user_id, :encoded);');
 $result = $stmt->execute([
-    'id' => $credential->getSafeId(),
+    'id' => $credential->getStorageId(),
     'user_id' => $user->getId(), // $user comes from your authn process
     'encoded' => $encodedCredential,
 ]);
@@ -324,7 +324,7 @@ $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($updatedCredential);
 $stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
 $result = $stmt->execute([
-    'id' => $updatedCredential->getSafeId(),
+    'id' => $updatedCredential->getStorageId(),
     'user_id' => $_SESSION['authenticating_user_id'],
     'encoded' => $encodedCredential,
 ]);
@@ -393,7 +393,7 @@ Blocked?
 Naming?
 - [ ] Codecs\Credential
 - [ ] Codecs - static vs instance?
-- [ ] Credential::getSafeId()
+- [x] Credential::getStorageId()
 - [ ] ResponseParser -> Codecs?
 - [ ] CreateResponse/GetResponse -> Add interfaces?
 
