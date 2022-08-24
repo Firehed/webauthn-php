@@ -424,10 +424,24 @@ Testing:
 - [ ] PK mismatched in verify??
 - [x] App-persisted data SerDe
 
+## Resources and Errata
 
-General resources:
+This library is a rework of [`u2f-php`](https://github.com/Firehed/u2f-php), which is built around a much earlier version of the spec known as U2F, pioneered by YubiCo with their YubiKey products.
+WebAuthn continues to support YubiKeys (and other U2F devices), as does this library.
+Instead of building a v2 of that library, a clean break was found to be easier:
+
+- There's no need to deal with moving the Composer package (the u2f name no longer makes sense)
+- A lot of the data storage mechanisms needed to be significantly reworked
+- The platform extensibility in WebAuthn did not translate well to the previous structures
+- Dropping support for older PHP versions & using new features simplified a lot
+
+WebAuthn spec:
+
 - https://www.w3.org/TR/webauthn-2/
 - https://www.w3.org/TR/2021/REC-webauthn-2-20210408/ (spec implemented to this version)
+
+General quickstart guide:
 - https://webauthn.guide/
 
+Intro to passkeys:
 - https://developer.apple.com/videos/play/wwdc2021/10106/
