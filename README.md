@@ -36,6 +36,8 @@ Send it to the user as base64.
 ```php
 <?php
 
+use Firehed\WebAuthn\Challenge;
+
 // Generate challenge
 $challenge = Challenge::random();
 
@@ -55,7 +57,7 @@ You will also need the registering user's identifier and some sort of username
 // See https://www.w3.org/TR/webauthn-2/#sctn-sample-registration for a more annotated example
 
 if (!window.PublicKeyCredential) {
-    // Browser does not support WebAuth. Exit and fall back to another flow.
+    // Browser does not support WebAuthn. Exit and fall back to another flow.
     return
 }
 
@@ -66,7 +68,7 @@ const userInfo = {
     id: 'abc123', // any unique id is fine; uuid or PK is preferable
 }
 
-const response = await fetch('above challenge endpoint')
+const response = await fetch('/readmeRegisterStep1.php')
 const challengeB64 = await response.json()
 const challenge = atob(challengeB64) // base64-decode
 
@@ -78,7 +80,7 @@ const createOptions = {
         user: {
             name: userInfo.name,
             displayName: 'User Name',
-            id: Uint8Array.from(user.id, c => charCodeAt(0)),
+            id: Uint8Array.from(userInfo.id, c => c.charCodeAt(0)),
         },
         challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
         pubKeyCredParams: [
@@ -106,10 +108,10 @@ const dataForResponseParser = {
 }
 
 // Send this to your endpoint - adjust to your needs.
-const request = new Request('/below parsing endpoint', {
+const request = new Request('/readmeRegisterStep3.php', {
     body: JSON.stringify(dataForResponseParser),
     headers: {
-        'Content-type: application/json',
+        'Content-type': 'application/json',
     },
     method: 'POST',
 })
@@ -122,7 +124,12 @@ const result = await fetch(request)
 ```php
 <?php
 
-$json = file_get_contents('php://stdin');
+use Firehed\WebAuthn\{
+    Codecs,
+    ResponseParser,
+};
+
+$json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
 $parser = new ResponseParser();
@@ -133,7 +140,7 @@ $challenge = $_SESSION['webauthn_challenge'];
 
 try {
     $credential = $createResponse->verify($challenge, $rp);
-} catch {
+} catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
     return;

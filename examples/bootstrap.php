@@ -56,15 +56,6 @@ function getActiveChallenge(bool $clear = false): Challenge
     }
 }
 
-function uuidv4(): string
-{
-    $bytes = random_bytes(16);
-    $hex = bin2hex($bytes);
-    $chunks = str_split($hex, 4);
-    $chunks[3][0] = '4';
-    return sprintf('%s%s-%s-%s-%s-%s%s%s', ...$chunks);
-}
-
 function getSqliteConnection(): PDO
 {
     $dbFile = __DIR__ . '/app.sqlite3';
@@ -91,18 +82,6 @@ function getSqliteConnection(): PDO
     }
 
     return $pdo;
-}
-
-function getUserByName(PDO $pdo, string $name): ?array
-{
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE name = ?');
-    $stmt->execute([$name]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if ($result !== []) {
-        return $result[0];
-    } else {
-        return null;
-    }
 }
 
 /**
