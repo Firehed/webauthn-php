@@ -330,7 +330,7 @@ Cleanup Tasks
 
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey
-- [ ] Move key formatting into COSE key/turn COSE into key parser?
+- [x] Move key formatting into COSE key/turn COSE into key parser?
 - [ ] Clearly define public scoped interfaces and classes
   - Public:
     - [x] ResponseParser (interface?)
@@ -396,6 +396,8 @@ Nice to haves/Future scope:
       - note: no way to do straight json to arraybuffer?
       - emit as jsonp?
 - [ ] Permit changing the Relying Party ID
+- [ ] Refactor COSEKey to support other key types, use enums & ADT-style composition
+- [ ] GetResponse userHandle
 
 Testing:
 - [ ] Happy path w/ FidoU2F

@@ -80,7 +80,8 @@ class ResponseParser
             throw new \UnexpectedValueException();
         }
 
-        // print_r($response);
+        // userHandle provides the user.id from registration
+        // var_dump(self::byteArrayToBinaryString($response['userHandle'])->unwrap());
         // if userHandle is provided, feed to the response to be read by app
         // and have key handles looked up for verify??
 

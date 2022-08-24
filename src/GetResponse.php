@@ -41,22 +41,27 @@ class GetResponse
         CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface {
-        // 7.2.1-7.2.x are done in client side js
+        // 7.2.1-7.2.4 are done in client side js & the ResponseParser
 
-        // js should contain
-        // {
-        //  clientDataJSON
-        //  authenticatorData
-        //  signature
-        //  ?userHandle
-        // }
+        // 7.2.5
+        // if allowCredentials != [], assert this.id in allowCredetials
+
+        // 7.2.6
+        // id the auth'd user & verify this.id is in their credentials
+        // if user came from existing data (session/cookie/etc),
+        //   a) verify that the user owns the passed credential
+        //   b) if this.userHandle is set, check for a match
+        // if not (e.g. passkeys ~ medication:conditional)
+        //   a) verify that this.userHandle is present & matches owner
         //
-        //
+        // upstream implication:
+        // - try to load user by userHandle
+        // - get their credentials & perform existing matching procedure
 
         // 7.2.7
         // get credential from JS credential.id
         // (index into possible credential list?)
-        // $credential
+        // $credential is this value.
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
