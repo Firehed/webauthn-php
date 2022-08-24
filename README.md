@@ -29,7 +29,7 @@ See https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts for mo
 
 This step takes place either when a user is first registering, or later on to supplement or replace their password.
 
-1) Create a new, random Challenge.
+1) Create an endpoint that will return a new, random Challenge.
 This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
@@ -181,28 +181,28 @@ Updated samples will follow.
 Before starting, you will need to collect the username or id of the user trying to authenticate, and retreive the user info from storage.
 This assumes the same schema from the previous Registration example.
 
-1) Send the user's existing credential ids & a new Challenge
+1) Create an endpoint that will return a Challenge and any credentials associated with the authenticating user:
 
 ```php
 <?php
 
+use Firehed\WebAuthn\{
+    Challenge,
+    Codecs,
+};
+
 session_start();
 
-$userId = $alreadyKnownValue;
 $pdo = getDatabaseConnection();
+$user = getUserByName($pdo, $_POST['username']);
+if ($user === null) {
+    header('HTTP/1.1 404 Not Found');
+    return;
+}
+$_SESSION['authenticating_user_id'] = $user['id'];
 
-$stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');
-$stmt->execute([$userId]);
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$codec = new Codecs\Credential();
-$credentials = array_map(function ($row) use ($codec) {
-    return $codec->decode($row['credential']);
-}, $rows);
-
-/**
- * This value will be re-used in a future step.
- */
-$credentialContainer = new CredentialContainer($credentials);
+// See examples/functions.php for how this works
+$credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
 $challenge = Challenge::random();
 $_SESSION['webauthn_challenge'] = $challenge;
@@ -218,7 +218,18 @@ echo json_encode([
 2) In client Javascript code, read the data from above and provide it to the WebAuthn APIs.
 
 ```javascript
-const response = await fetch('endpoint for step 1')
+// Get this from a form, etc.
+const username = document.getElementById('username').value
+
+// This can be any format you want, as long as it works with the above code
+const response = await fetch('/readmeLoginStep1.php', {
+    method: 'POST',
+    body: 'username=' + username,
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
+})
+
 const data = await response.json()
 
 // Format for WebAuthn API
@@ -251,10 +262,10 @@ const dataForResponseParser = {
 }
 
 // Send this to your endpoint - adjust to your needs.
-const request = new Request('/below parsing endpoint', {
+const request = new Request('/readmeLoginStep3.php', {
     body: JSON.stringify(dataForResponseParser),
     headers: {
-        'Content-type: application/json',
+        'Content-type': 'application/json',
     },
     method: 'POST',
 })
@@ -267,7 +278,14 @@ const result = await fetch(request)
 ```php
 <?php
 
-$json = file_get_contents('php://stdin');
+use Firehed\WebAuthn\{
+    Codecs,
+    ResponseParser,
+};
+
+session_start();
+
+$json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
 $parser = new ResponseParser();
@@ -275,6 +293,8 @@ $getResponse = $parser->parseGetResponse($data);
 
 $rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
 $challenge = $_SESSION['webauthn_challenge'];
+
+$credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 $foundCredential = $credentialContainer->findCredentialUsedByResponse($getResponse);
 if ($foundCredential === null) {
@@ -286,8 +306,8 @@ if ($foundCredential === null) {
 }
 
 try {
-    $updatedCredential = $response->verify($challenge, $rp, $foundCredential);
-} catch {
+    $updatedCredential = $getResponse->verify($challenge, $rp, $foundCredential);
+} catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
     return;
@@ -298,7 +318,7 @@ $encodedCredential = $codec->encode($updatedCredential);
 $stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
 $result = $stmt->execute([
     'id' => $updatedCredential->getSafeId(),
-    'user_id' => $user->getId(), // $user comes from your authn process
+    'user_id' => $_SESSION['authenticating_user_id'],
     'encoded' => $encodedCredential,
 ]);
 

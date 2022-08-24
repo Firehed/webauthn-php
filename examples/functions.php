@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Firehed\WebAuthn\{
+    Codecs,
+    CredentialContainer,
     RelyingParty,
 };
 
@@ -24,6 +26,18 @@ function createUser(PDO $pdo, string $username): array
         ];
     }
     return $response;
+}
+
+function getCredentialsForUserId(PDO $pdo, string $userId): CredentialContainer
+{
+    $stmt = $pdo->prepare('SELECT * FROM user_credentials WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $codec = new Codecs\Credential();
+    $credentials = array_map(function ($row) use ($codec) {
+        return $codec->decode($row['credential']);
+    }, $rows);
+    return new CredentialContainer($credentials);
 }
 
 function getDatabaseConnection(): PDO

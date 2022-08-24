@@ -1,0 +1,13 @@
+<!doctype HTML>
+<html>
+    <body>
+        <form id="form">
+            <input type="text" id="username" placeholder="username" autofocus autocomplete="username webauthn"/>
+            <input type="submit">Login with Credential</input>
+        </form>
+        <script src="/readmeLoginStep2.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            document.getElementById('form').addEventListener('submit', e => startLogin(e))
+        </script>
+    </body>
+</html>

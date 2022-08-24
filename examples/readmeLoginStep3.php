@@ -7,14 +7,20 @@ use Firehed\WebAuthn\{
     ResponseParser,
 };
 
-$json = file_get_contents('php://stdin');
+session_start();
+
+$pdo = getDatabaseConnection();
+
+$json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
+$rp = getRelyingParty();
 $challenge = $_SESSION['webauthn_challenge'];
+
+$credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 $foundCredential = $credentialContainer->findCredentialUsedByResponse($getResponse);
 if ($foundCredential === null) {
@@ -32,15 +38,24 @@ try {
     header('HTTP/1.1 403 Unauthorized');
     return;
 }
+
+// Authenticating has succeeded!
+
 // Update the credential
 $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($updatedCredential);
 $stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
 $result = $stmt->execute([
     'id' => $updatedCredential->getSafeId(),
-    'user_id' => $user->getId(), // $user comes from your authn process
+    'user_id' => $_SESSION['authenticating_user_id'],
     'encoded' => $encodedCredential,
 ]);
 
 header('HTTP/1.1 200 OK');
-// Send back whatever your webapp needs to finish authentication
+// Send back whatever your webapp needs to finish authentication on the client
+// side and update any additional state
+header('Content-type: application/json');
+echo json_encode([
+    'success' => true,
+    'user_id' => $_SESSION['authenticating_user_id'],
+]);
