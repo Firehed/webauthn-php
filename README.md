@@ -1,15 +1,22 @@
-# WebAuthn for PHP
+# Web Authentication for PHP
 
 A way to move beyond passwords
 
-## What is WebAuthn?
+## What is Web Authentication?
+Web Authentication, frequently referenced as `WebAuthn`, is a set of technologies and APIs to provide user authentication using modern cryptography.
+Instead of passwords and hashing, WebAuthn allows users to generate encryption keypairs, provide the public key to the server, and authenticate by signing server-generated challenges using the private key that never leaves their possession.
 
-## Crash Course
+This means that servers _never touch sensitive data_ and _cannot leak authentication information_ should a breach ever occur.
+This also means that users do not have to manage passwords for individual websites, and can instead rely on tools provided by operating systems, browsers, and hardware security keys.
+
+## Using this library: A Crash Course
 
 This will cover the basic workflows for integrating this library to your web application.
-Classes referenced in the examples omit the `Firehed\WebAuthn` namespace prefix for brevity.
+Classes referenced in the examples may omit the `Firehed\WebAuthn` namespace prefix for brevity.
 
-Note: there's a complete set of examples in the [`examples`](examples) directory.
+### Sample Code
+There's a complete set of working examples in the [`examples`](examples) directory.
+Application logic is kept to a bare minimum in order to highlight the most important workflow steps.
 
 ### Setup
 
