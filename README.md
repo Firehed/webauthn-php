@@ -350,7 +350,6 @@ Cleanup Tasks
     - [x] Challenge (DTO / serialization-safety in session)
     - [x] RelyingParty
     - [x] CredentialInterface
-      - [ ] getId()? how to feed into nav.credentials.get{pk.allowCredentials}
   - Internal:
     - [x] Attestations
     - [x] AuthenticatorData
@@ -364,11 +363,11 @@ Cleanup Tasks
 - [x] Use BinaryString consistently
   - [ ] COSEKey.decodedCbor
   - [ ] Attestations\FidoU2F.data
-- [ ] Establish required+best practices for data storage
+- [x] Establish required+best practices for data storage
   - [x] CredentialInterface + codec?
-  - Relation to user
+  - [x] Relation to user
   - [x] Keep signCount up to date (7.2.21)
-  - 7.1.22 ~ credential in use
+  - [x] 7.1.22 ~ credential in use
 - [ ] Scan through repo for FIXMEs & missing verify steps
   - [x] Counter handling in (7.2.21)
   - [x] isUserVerificationRequired - configurability (7.1.15, 7.2.17)
@@ -423,6 +422,33 @@ Testing:
 - [s] !userVerified & not required
 - [ ] PK mismatched in verify??
 - [x] App-persisted data SerDe
+
+## Best Practices
+
+### Error Handling
+
+The library is built around a "fail loudly" principle.
+During both the registration and authentication process, if an exception is not thrown it means that the process succeeded.
+Be prepared to catch and handle these exceptions.
+
+### Registration & Credential Storage
+
+- Credentials SHOULD have a 1-to-many relationship with users; i.e. a user should be able to have more than one associated Credential
+- The credential id SHOULD be unique.
+  If during registration this unique constraint is violated AND it's associated with a different user, your application MUST handle this situation, either by returning an error or de-associating the credential with the other user.
+  See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 7.1 step 22 for more info.
+- The WebAuthn spec makes no guarnatees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
+  It is RECOMMENDED to permit storage of up to 255 bytes, as this tends to be the most compact variable-length encoding in many databases.
+- The credential SHOULD be stored as a string encoded by `Codecs\Credential::encode()`, and decoded with `::decode`.
+  The storage system must allow for values up to 64KiB (65,535 bytes) of ASCII; the encoding will not contain values out of the base64 range.
+- It's RECOMMENDED to allow users to provide a name associated with their credentials (e.g. "work laptop", "backup fido key").
+
+### Authentication
+
+- The `verify()` method called during authentication returns an updated credential.
+  Your application SHOULD update the persisted value each time this happens.
+  Doing so increases security, as it improves the ability to detect and act on replay attacks.
+
 
 ## Resources and Errata
 
