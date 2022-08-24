@@ -335,6 +335,12 @@ header('HTTP/1.1 200 OK');
 
 Cleanup Tasks
 
+### Mediation/PassKeys
+
+- replace step 1 with just generating challenge (still put in session)
+- step 2 removes allowCredentials, adds mediation:conditional
+- step 3 replaces user from session with a user lookup from GetResponse.userHandle
+
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey
 - [x] Move key formatting into COSE key/turn COSE into key parser?
