@@ -410,28 +410,6 @@ Testing:
 - [x] App-persisted data SerDe
 
 
-Workflow for README:
-~ see examples
-  - (create.pk.excludeCredentials)
-~ after get.verify(), save new challenge
-
-tl;dr:
-- set up RelyingParty
-
-Register:
-    - create a short-lived Challenge and stick in session
-    - send data into js api
-    - send response back and parse with ResponseParser
-    - if verification succeeds, store credential associated with user ~ use CredentialCodec
-Login:
-    - create a short-lived Challenge and stick in session
-    - optional: load user's existing Credentials & pass to publicKey.allowCredentials
-    - send data into js api
-    - send response back and parse with ResponseParser
-    - look up stored credential from response
-    - if verification succeeds, update stored credential
-
-
 General resources:
 - https://www.w3.org/TR/webauthn-2/
 - https://www.w3.org/TR/2021/REC-webauthn-2-20210408/ (spec implemented to this version)
