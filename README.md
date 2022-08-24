@@ -430,6 +430,7 @@ Testing:
 The library is built around a "fail loudly" principle.
 During both the registration and authentication process, if an exception is not thrown it means that the process succeeded.
 Be prepared to catch and handle these exceptions.
+All exceptions thrown by the library implement `Firehed\WebAuthn\Error\WebAuthnErrorInterface`, so if you want to only catch library errors (or test for them in a generic error handler), use that interface.
 
 ### Registration & Credential Storage
 

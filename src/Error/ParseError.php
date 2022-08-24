@@ -6,7 +6,7 @@ namespace Firehed\WebAuthn\Error;
 
 use UnexpectedValueException;
 
-class ParseError extends UnexpectedValueException
+class ParseError extends UnexpectedValueException implements WebAuthnErrorInterface
 {
     public function __construct(
         public readonly string $section,

@@ -6,7 +6,7 @@ namespace Firehed\WebAuthn\Error;
 
 use RuntimeException;
 
-class SecurityError extends RuntimeException
+class SecurityError extends RuntimeException implements WebAuthnErrorInterface
 {
     public function __construct(
         public readonly string $section,
