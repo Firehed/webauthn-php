@@ -37,7 +37,9 @@ class CreateResponse
 
         // 7.1.6
         $C = json_decode($this->clientDataJson->unwrap(), true);
-        // {"type":"webauthn.create","challenge":"AAECAwQFBgcICQABAgMEBQYHCAkAAQIDBAUGBwgJAAEC","origin":"http://localhost:8888"}
+        if (!is_array($C)) {
+            throw new Error\ParseError('7.1.6', 'JSON decoding returned the wrong format');
+        }
 
         // 7.1.7
         if ($C['type'] !== 'webauthn.create') {

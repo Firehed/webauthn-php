@@ -73,6 +73,9 @@ class GetResponse
 
         // 7.2.10
         $C = json_decode($JSONtext, true);
+        if (!is_array($C)) {
+            throw new Error\ParseError('7.2.10', 'JSON decoding returned the wrong format');
+        }
 
         // 7.2.11
         if ($C['type'] !== 'webauthn.get') {
