@@ -10,8 +10,10 @@ use UnexpectedValueException;
  * This is the internal representation of a PublicKeyCredential containing an
  * AuthenticatorAssertionResponse; i.e. the result of calling
  * `navigator.credentials.get()`.
+ *
+ * @internal
  */
-class GetResponse
+class GetResponse implements Responses\AssertionInterface
 {
     public function __construct(
         private BinaryString $credentialId,
@@ -32,8 +34,6 @@ class GetResponse
     /**
      * @see 7.2
      * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
-     *
-     * @api
      */
     public function verify(
         Challenge $challenge,

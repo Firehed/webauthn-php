@@ -40,7 +40,7 @@ class ResponseParser
      *   clientDataJSON: int[],
      * } $response
      */
-    public function parseCreateResponse(array $response): CreateResponse
+    public function parseCreateResponse(array $response): Responses\AttestationInterface
     {
         if ($response['type'] !== 'public-key') {
             throw new \UnexpectedValueException();
@@ -74,7 +74,7 @@ class ResponseParser
      *   signature: int[],
      * } $response
      */
-    public function parseGetResponse(array $response): GetResponse
+    public function parseGetResponse(array $response): Responses\AssertionInterface
     {
         if ($response['type'] !== 'public-key') {
             throw new \UnexpectedValueException();

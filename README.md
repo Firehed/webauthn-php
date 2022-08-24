@@ -350,14 +350,15 @@ Cleanup Tasks
     - [x] Challenge (DTO / serialization-safety in session)
     - [x] RelyingParty
     - [x] CredentialInterface
+    - [x] Responses\AttestationInterface & Responses\AssertionInterface
   - Internal:
     - [x] Attestations
     - [x] AuthenticatorData
     - [x] BinaryString
     - [x] Credential
     - [x] Certificate
+    - [x] CreateRespose & GetResponse
   - TBD:
-    - [ ] CreateResponse/GetResponse (pub interfaces/priv impl?)
     - [ ] Errors
 - [x] Rework BinaryString to avoid binary in stack traces
 - [x] Use BinaryString consistently

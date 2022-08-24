@@ -10,8 +10,10 @@ use UnexpectedValueException;
  * This is the internal representation of a PublicKeyCredential containing an
  * AuthenticatorAttestationResponse; i.e. the result of calling
  * `navigator.credentials.create()`.
+ *
+ * @internal
  */
-class CreateResponse
+class CreateResponse implements Responses\AttestationInterface
 {
     public function __construct(
         private BinaryString $id,
@@ -23,8 +25,6 @@ class CreateResponse
     /**
      * @see 7.1
      * @link https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential
-     *
-     * @api
      */
     public function verify(
         Challenge $challenge,
