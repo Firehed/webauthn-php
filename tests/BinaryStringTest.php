@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use OutOfBoundsException;
+
 /**
  * @covers Firehed\WebAuthn\BinaryString
  */
 class BinaryStringTest extends \PHPUnit\Framework\TestCase
 {
+    private BinaryString $default;
+
+    public function setUp(): void
+    {
+        $this->default = new BinaryString("\xDE\xAD\xBE\xEFplaintext");
+    }
+
     public function testBinaryIsMasked(): void
     {
         $binaryString = new BinaryString(random_bytes(20));
@@ -33,6 +42,45 @@ class BinaryStringTest extends \PHPUnit\Framework\TestCase
         self::assertSame($shouldMatch, $rhs->equals($lhs), 'rhs<->lhs');
         self::assertTrue($lhs->equals($lhs), 'lhs should always equal itself');
         self::assertTrue($rhs->equals($rhs), 'rhs should always equal itself');
+    }
+
+    public function testReadingExactIsOk(): void
+    {
+        $str = new BinaryString('abc123');
+        self::assertSame('abc123', $str->read(6));
+    }
+
+    public function testReadingTooFarThrows(): void
+    {
+        $str = new BinaryString('abc123');
+        $this->expectException(OutOfBoundsException::class);
+        $str->read(20);
+    }
+
+    public function testReadUint8(): void
+    {
+        self::assertSame(0xDE, $this->default->readUint8());
+        self::assertSame("\xAD\xBE\xEFplaintext", $this->default->getRemaining());
+        self::assertSame(0xAD, $this->default->readUint8());
+        self::assertSame("\xBE\xEFplaintext", $this->default->getRemaining());
+        self::assertSame(0xBE, $this->default->readUint8());
+        self::assertSame("\xEFplaintext", $this->default->getRemaining());
+        self::assertSame(0xEF, $this->default->readUint8());
+        self::assertSame('plaintext', $this->default->getRemaining());
+    }
+
+    public function testReadUint16(): void
+    {
+        self::assertSame(0xDEAD, $this->default->readUint16());
+        self::assertSame("\xBE\xEFplaintext", $this->default->getRemaining());
+        self::assertSame(0xBEEF, $this->default->readUint16());
+        self::assertSame('plaintext', $this->default->getRemaining());
+    }
+
+    public function testReadUint32(): void
+    {
+        self::assertSame(0xDEADBEEF, $this->default->readUint32());
+        self::assertSame('plaintext', $this->default->getRemaining());
     }
 
     /**
