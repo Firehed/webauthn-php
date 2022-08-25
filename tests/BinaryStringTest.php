@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\BinaryString
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\WebAuthn\BinaryString
  */
 class BinaryStringTest extends \PHPUnit\Framework\TestCase
 {

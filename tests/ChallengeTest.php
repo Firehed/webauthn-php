@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\Challenge
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\WebAuthn\Challenge
  */
 class ChallengeTest extends \PHPUnit\Framework\TestCase
 {

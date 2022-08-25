@@ -7,13 +7,12 @@ namespace Firehed\WebAuthn\Codecs;
 use Firehed\WebAuthn\{
     BinaryString,
     COSEKey,
+    CredentialInterface,
     Credential as CredentialObj,
 };
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\Codecs\Credential
- * @covers ::<protected>
- * @covers ::<private>
+ * @covers Firehed\WebAuthn\Codecs\Credential
  */
 class CredentialTest extends \PHPUnit\Framework\TestCase
 {
