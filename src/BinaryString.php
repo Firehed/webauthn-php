@@ -13,6 +13,11 @@ namespace Firehed\WebAuthn;
  */
 class BinaryString
 {
+    /**
+     * Internal offset pointer for read operations
+     */
+    private int $offset = 0;
+
     public function __construct(
         private string $wrapped,
     ) {
@@ -44,7 +49,9 @@ class BinaryString
     // getLength(): int
     // getRemainingLength(): int = $length - $offset;
 
-    private int $offset = 0;
+    /**
+     * Read the next $length bytes and advance the internal pointer by same.
+     */
     public function read(int $length): string
     {
         $bytes = substr($this->wrapped, $this->offset, $length);
@@ -52,22 +59,38 @@ class BinaryString
         return $bytes;
     }
 
+    /**
+     * Read one byte and intreprets it as a big-endian Uint8. Advances pointer.
+     */
     public function readUint8(): int
     {
         $byte = $this->read(1);
+        // This could also use unpack(C)
         return ord($byte);
     }
 
+    /**
+     * Read two bytes and interprets them as a big-endian Uint16. Advances pointer.
+     */
     public function readUint16(): int
     {
         $bytes = $this->read(2);
         return unpack('n', $bytes)[1];
     }
+
+    /**
+     * Read four bytes and interprets them as a big-endian Uint32. Advances pointer.
+     */
     public function readUint32(): int
     {
         $bytes = $this->read(4);
         return unpack('N', $bytes)[1];
     }
+
+    /**
+     * Returns all of the remaining data after the offset. Does NOT advance the
+     * offset.
+     */
     public function getRemaining(): string
     {
         return substr($this->wrapped, $this->offset);
