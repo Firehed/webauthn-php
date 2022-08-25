@@ -31,7 +31,8 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
      */
     public function testInFlightDecode(): void
     {
-        $serialized = 'O:26:"Firehed\WebAuthn\Challenge":1:{s:3:"b64";s:44:"ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=";}';
+        $serialized = 'O:26:"Firehed\WebAuthn\Challenge":1:{s:3:"b64";s:44:"k' .
+            'tCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=";}';
         $unserialized = unserialize($serialized);
         self::assertInstanceOf(Challenge::class, $unserialized);
 

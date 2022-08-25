@@ -23,7 +23,12 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $codec = new Codecs\Credential();
-        $this->credential = $codec->decode('AQBAdNgcVUDDGH2BZC8No6bNvCDgn+HW36AeRHtqbX4EICbjJO6XnpTQNz1GVG/D+Fm9w5Sj5VtCFdtcJ7QRMS0UXQAAAE2lAQIDJiABIVggi2VjhUOZ3BdYJd9cJBHhhC+3yrxVjIlNHuak+SUYf0giWCAmEgP3PlrtjKb0XxB4Y3j6y6/QBn6ljfpcewJaRdv4hQAAAAA=');
+        $this->credential = $codec->decode(
+            'AQBAdNgcVUDDGH2BZC8No6bNvCDgn+HW36AeRHtqbX4EICbjJO6XnpTQNz1GVG/D' .
+            '+Fm9w5Sj5VtCFdtcJ7QRMS0UXQAAAE2lAQIDJiABIVggi2VjhUOZ3BdYJd9cJBHh' .
+            'hC+3yrxVjIlNHuak+SUYf0giWCAmEgP3PlrtjKb0XxB4Y3j6y6/QBn6ljfpcewJa' .
+            'Rdv4hQAAAAA='
+        );
 
         $this->rp = new RelyingParty('http://localhost:8888');
 

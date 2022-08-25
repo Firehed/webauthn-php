@@ -383,7 +383,8 @@ Cleanup Tasks
 - [ ] BC plan for verification trust paths
 - [x] Attestation statment return type/info
 - [x] BinaryString easier comparison?
-- [ ] Lint issues, import sorting
+- [x] Lint issues
+- [ ] Import sorting
 
 Security/Risk:
 - [ ] Certificate chain (7.1.20-21)
