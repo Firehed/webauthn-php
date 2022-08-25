@@ -25,6 +25,6 @@ $_SESSION['webauthn_challenge'] = $challenge;
 // Send to user
 header('Content-type: application/json');
 echo json_encode([
-    'challenge' => $challenge->getBase64(),
+    'challengeB64' => $challenge->getBase64(),
     'credential_ids' => $credentialContainer->getBase64Ids(),
 ]);

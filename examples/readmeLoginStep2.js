@@ -14,7 +14,7 @@ const startLogin = async (e) => {
     // Format for WebAuthn API
     const getOptions = {
         publicKey: {
-            challenge: Uint8Array.from(atob(data.challenge), c => c.charCodeAt(0)),
+            challenge: Uint8Array.from(atob(data.challengeB64), c => c.charCodeAt(0)),
             allowCredentials: data.credential_ids.map(id => ({
                 id: Uint8Array.from(atob(id), c => c.charCodeAt(0)),
                 type: 'public-key',

@@ -217,7 +217,7 @@ $_SESSION['webauthn_challenge'] = $challenge;
 // Send to user
 header('Content-type: application/json');
 echo json_encode([
-    'challenge' => $challenge->getBase64(),
+    'challengeB64' => $challenge->getBase64(),
     'credential_ids' => $credentialContainer->getBase64Ids(),
 ]);
 ```
@@ -242,7 +242,7 @@ const data = await response.json()
 // Format for WebAuthn API
 const getOptions = {
     publicKey: {
-        challenge: Uint8Array.from(atob(data.challenge), c => c.charCodeAt(0)),
+        challenge: Uint8Array.from(atob(data.challengeB64), c => c.charCodeAt(0)),
         allowCredentials: data.credential_ids.map(id => ({
             id: Uint8Array.from(atob(id), c => c.charCodeAt(0)),
             type: 'public-key',
