@@ -11,11 +11,16 @@ namespace Firehed\WebAuthn;
  */
 class GetResponseTest extends \PHPUnit\Framework\TestCase
 {
+    // These hold the values which would be kept server-side.
+    private Challenge $challenge;
     private CredentialInterface $credential;
-
     private RelyingParty $rp;
 
-    private Challenge $challenge;
+    // These hold the _default_ values from a sample parsed response.
+    private BinaryString $id;
+    private BinaryString $rawAuthenticatorData;
+    private BinaryString $clientDataJson;
+    private BinaryString $signature;
 
     public function setUp(): void
     {
@@ -27,30 +32,122 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         $this->challenge = new Challenge(new BinaryString(
             base64_decode('kV49XeHREZYSMN8miCxRren46C7TyGM0jm9n6fS8Gmw=', true)
         ));
+
+        $this->id = BinaryString::fromBytes([
+            116, 216, 28, 85, 64, 195, 24, 125,
+            129, 100, 47, 13, 163, 166, 205, 188,
+            32, 224, 159, 225, 214, 223, 160, 30,
+            68, 123, 106, 109, 126, 4, 32, 38,
+            227, 36, 238, 151, 158, 148, 208, 55,
+            61, 70, 84, 111, 195, 248, 89, 189,
+            195, 148, 163, 229, 91, 66, 21, 219,
+            92, 39, 180, 17, 49, 45, 20, 93,
+        ]);
+        $this->rawAuthenticatorData = BinaryString::fromBytes([
+            73, 150, 13, 229, 136, 14, 140, 104,
+            116, 52, 23, 15, 100, 118, 96, 91,
+            143, 228, 174, 185, 162, 134, 50, 199,
+            153, 92, 243, 186, 131, 29, 151, 99,
+            1, 0, 0, 1, 23,
+        ]);
+        $this->clientDataJson = BinaryString::fromBytes([
+            123, 34, 116, 121, 112, 101, 34, 58,
+            34, 119, 101, 98, 97, 117, 116, 104,
+            110, 46, 103, 101, 116, 34, 44, 34,
+            99, 104, 97, 108, 108, 101, 110, 103,
+            101, 34, 58, 34, 107, 86, 52, 57,
+            88, 101, 72, 82, 69, 90, 89, 83,
+            77, 78, 56, 109, 105, 67, 120, 82,
+            114, 101, 110, 52, 54, 67, 55, 84,
+            121, 71, 77, 48, 106, 109, 57, 110,
+            54, 102, 83, 56, 71, 109, 119, 34,
+            44, 34, 111, 114, 105, 103, 105, 110,
+            34, 58, 34, 104, 116, 116, 112, 58,
+            47, 47, 108, 111, 99, 97, 108, 104,
+            111, 115, 116, 58, 56, 56, 56, 56,
+            34, 125,
+        ]);
+        $this->signature = BinaryString::fromBytes([
+            48, 68, 2, 32, 14, 250, 224, 129,
+            7, 201, 240, 230, 116, 107, 139, 146,
+            182, 75, 158, 61, 78, 36, 146, 65,
+            19, 190, 77, 173, 142, 236, 221, 251,
+            205, 9, 210, 36, 2, 32, 52, 79,
+            190, 78, 50, 88, 32, 78, 157, 225,
+            137, 105, 109, 19, 85, 10, 72, 150,
+            48, 31, 150, 139, 30, 239, 98, 204,
+            1, 90, 103, 114, 23, 105,
+        ]);
     }
 
     // 7.2.11
     public function testCDJTypeMismatchIsError(): void
     {
-        // override CDJ
+        $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        $cdj['type'] = 'incorrect';
+
+        $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $newCdj,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.11');
+        $response->verify($this->challenge, $this->rp, $this->credential);
     }
 
     // 7.2.12
     public function testCDJChallengeMismatchIsError(): void
     {
-        // override CDJ
+        $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        $cdj['challenge'] = 'incorrect';
+
+        $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $newCdj,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.12');
+        $response->verify($this->challenge, $this->rp, $this->credential);
     }
 
     // 7.2.13
     public function testCDJOriginMismatchIsError(): void
     {
-        // override CDJ
+        $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        $cdj['origin'] = 'incorrect';
+
+        $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $newCdj,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.13');
+        $response->verify($this->challenge, $this->rp, $this->credential);
     }
 
     // 7.2.15
     public function testRelyingPartyIdMismatchIsError(): void
     {
-        // override authData
+        $rp = new RelyingParty('https://some-other-site.example.com');
+        // override authData instead?
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.15');
+        $response->verify($this->challenge, $rp, $this->credential);
     }
 
     // 7.2.16
@@ -62,326 +159,44 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     // 7.2.17
     public function testUserVerifiedNotPresentWhenRequiredIsError(): void
     {
-        // (default data ok)
-        // call verify with UVR::Required
+        // Default data is all good, but the authData has userVerified=false
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.17');
+        $response->verify($this->challenge, $this->rp, $this->credential, UserVerificationRequirement::Required);
     }
 
     // 7.2.20
     public function testIncorrectSignatureIsError(): void
     {
-        // override sig
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: new BinaryString('incorrect'),
+        );
+
+        $this->expectVerificationError('7.2.20');
+        $response->verify($this->challenge, $this->rp, $this->credential);
     }
 
     public function testVerifyReturnsCredentialWithUpdatedCounter(): void
     {
-        $json = <<<'JSON'
-        {
-            "rawId": {
-                "0": 116,
-                "1": 216,
-                "2": 28,
-                "3": 85,
-                "4": 64,
-                "5": 195,
-                "6": 24,
-                "7": 125,
-                "8": 129,
-                "9": 100,
-                "10": 47,
-                "11": 13,
-                "12": 163,
-                "13": 166,
-                "14": 205,
-                "15": 188,
-                "16": 32,
-                "17": 224,
-                "18": 159,
-                "19": 225,
-                "20": 214,
-                "21": 223,
-                "22": 160,
-                "23": 30,
-                "24": 68,
-                "25": 123,
-                "26": 106,
-                "27": 109,
-                "28": 126,
-                "29": 4,
-                "30": 32,
-                "31": 38,
-                "32": 227,
-                "33": 36,
-                "34": 238,
-                "35": 151,
-                "36": 158,
-                "37": 148,
-                "38": 208,
-                "39": 55,
-                "40": 61,
-                "41": 70,
-                "42": 84,
-                "43": 111,
-                "44": 195,
-                "45": 248,
-                "46": 89,
-                "47": 189,
-                "48": 195,
-                "49": 148,
-                "50": 163,
-                "51": 229,
-                "52": 91,
-                "53": 66,
-                "54": 21,
-                "55": 219,
-                "56": 92,
-                "57": 39,
-                "58": 180,
-                "59": 17,
-                "60": 49,
-                "61": 45,
-                "62": 20,
-                "63": 93
-            },
-            "type": "public-key",
-            "authenticatorData": {
-                "0": 73,
-                "1": 150,
-                "2": 13,
-                "3": 229,
-                "4": 136,
-                "5": 14,
-                "6": 140,
-                "7": 104,
-                "8": 116,
-                "9": 52,
-                "10": 23,
-                "11": 15,
-                "12": 100,
-                "13": 118,
-                "14": 96,
-                "15": 91,
-                "16": 143,
-                "17": 228,
-                "18": 174,
-                "19": 185,
-                "20": 162,
-                "21": 134,
-                "22": 50,
-                "23": 199,
-                "24": 153,
-                "25": 92,
-                "26": 243,
-                "27": 186,
-                "28": 131,
-                "29": 29,
-                "30": 151,
-                "31": 99,
-                "32": 1,
-                "33": 0,
-                "34": 0,
-                "35": 1,
-                "36": 23
-            },
-            "clientDataJSON": {
-                "0": 123,
-                "1": 34,
-                "2": 116,
-                "3": 121,
-                "4": 112,
-                "5": 101,
-                "6": 34,
-                "7": 58,
-                "8": 34,
-                "9": 119,
-                "10": 101,
-                "11": 98,
-                "12": 97,
-                "13": 117,
-                "14": 116,
-                "15": 104,
-                "16": 110,
-                "17": 46,
-                "18": 103,
-                "19": 101,
-                "20": 116,
-                "21": 34,
-                "22": 44,
-                "23": 34,
-                "24": 99,
-                "25": 104,
-                "26": 97,
-                "27": 108,
-                "28": 108,
-                "29": 101,
-                "30": 110,
-                "31": 103,
-                "32": 101,
-                "33": 34,
-                "34": 58,
-                "35": 34,
-                "36": 107,
-                "37": 86,
-                "38": 52,
-                "39": 57,
-                "40": 88,
-                "41": 101,
-                "42": 72,
-                "43": 82,
-                "44": 69,
-                "45": 90,
-                "46": 89,
-                "47": 83,
-                "48": 77,
-                "49": 78,
-                "50": 56,
-                "51": 109,
-                "52": 105,
-                "53": 67,
-                "54": 120,
-                "55": 82,
-                "56": 114,
-                "57": 101,
-                "58": 110,
-                "59": 52,
-                "60": 54,
-                "61": 67,
-                "62": 55,
-                "63": 84,
-                "64": 121,
-                "65": 71,
-                "66": 77,
-                "67": 48,
-                "68": 106,
-                "69": 109,
-                "70": 57,
-                "71": 110,
-                "72": 54,
-                "73": 102,
-                "74": 83,
-                "75": 56,
-                "76": 71,
-                "77": 109,
-                "78": 119,
-                "79": 34,
-                "80": 44,
-                "81": 34,
-                "82": 111,
-                "83": 114,
-                "84": 105,
-                "85": 103,
-                "86": 105,
-                "87": 110,
-                "88": 34,
-                "89": 58,
-                "90": 34,
-                "91": 104,
-                "92": 116,
-                "93": 116,
-                "94": 112,
-                "95": 58,
-                "96": 47,
-                "97": 47,
-                "98": 108,
-                "99": 111,
-                "100": 99,
-                "101": 97,
-                "102": 108,
-                "103": 104,
-                "104": 111,
-                "105": 115,
-                "106": 116,
-                "107": 58,
-                "108": 56,
-                "109": 56,
-                "110": 56,
-                "111": 56,
-                "112": 34,
-                "113": 125
-            },
-            "signature": {
-                "0": 48,
-                "1": 68,
-                "2": 2,
-                "3": 32,
-                "4": 14,
-                "5": 250,
-                "6": 224,
-                "7": 129,
-                "8": 7,
-                "9": 201,
-                "10": 240,
-                "11": 230,
-                "12": 116,
-                "13": 107,
-                "14": 139,
-                "15": 146,
-                "16": 182,
-                "17": 75,
-                "18": 158,
-                "19": 61,
-                "20": 78,
-                "21": 36,
-                "22": 146,
-                "23": 65,
-                "24": 19,
-                "25": 190,
-                "26": 77,
-                "27": 173,
-                "28": 142,
-                "29": 236,
-                "30": 221,
-                "31": 251,
-                "32": 205,
-                "33": 9,
-                "34": 210,
-                "35": 36,
-                "36": 2,
-                "37": 32,
-                "38": 52,
-                "39": 79,
-                "40": 190,
-                "41": 78,
-                "42": 50,
-                "43": 88,
-                "44": 32,
-                "45": 78,
-                "46": 157,
-                "47": 225,
-                "48": 137,
-                "49": 105,
-                "50": 109,
-                "51": 19,
-                "52": 85,
-                "53": 10,
-                "54": 72,
-                "55": 150,
-                "56": 48,
-                "57": 31,
-                "58": 150,
-                "59": 139,
-                "60": 30,
-                "61": 239,
-                "62": 98,
-                "63": 204,
-                "64": 1,
-                "65": 90,
-                "66": 103,
-                "67": 114,
-                "68": 23,
-                "69": 105
-            },
-            "userHandle": {}
-        }
-        JSON;
-        $data = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
-
-        $parser = new ResponseParser();
-        $response = $parser->parseGetResponse($data);
-
-
         // Sanity-check: this was from the initial registration which must have
         // a sign counter of zero.
         assert($this->credential->getSignCount() === 0);
+
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
 
         $updatedCredential = $response->verify($this->challenge, $this->rp, $this->credential);
         self::assertGreaterThan(
@@ -391,6 +206,11 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    private function expectVerificationError(string $section): void
+    {
+        $this->expectException(Error\VerificationError::class);
+        // TODO: how to assert on $section
+    }
     /**
      * Reserved for future use
      * expected pass/fail behavior for verify when UV=0
