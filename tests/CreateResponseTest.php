@@ -22,9 +22,12 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     {
         $this->rp = new RelyingParty('http://localhost:8888');
 
-        $this->challenge = new Challenge(new BinaryString(
-            base64_decode('KGDFuirKM+2GsgP7FsznnS9NK3sD9TlNFEqmpvAljbw=', true)
-        ));
+        $this->challenge = new Challenge(BinaryString::fromBytes([
+            40, 96, 197, 186, 42, 202, 51, 237,
+            134, 178, 3, 251, 22, 204, 231, 157,
+            47, 77, 43, 123, 3, 245, 57, 77,
+            20, 74, 166, 166, 240, 37, 141, 188,
+        ]));
 
         $this->id = BinaryString::fromBytes([
             236, 58, 219, 22, 123, 115, 98, 124,
@@ -174,6 +177,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJTypeMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['type'] = 'incorrect';
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
@@ -191,6 +195,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJChallengeMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['challenge'] = 'incorrect';
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
@@ -208,6 +213,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJOriginMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['origin'] = 'incorrect';
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
