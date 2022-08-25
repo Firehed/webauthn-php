@@ -88,7 +88,7 @@ class Credential
         // append a checksum (crc32?) that import can validate?
         // e.g. assert(crc32(substr(data, 1, -4)) === substr(data, -4))
 
-        $binary = pack('c', $version) . $versionSpecificFormat;
+        $binary = pack('C', $version) . $versionSpecificFormat;
 
         return base64_encode($binary);
     }
