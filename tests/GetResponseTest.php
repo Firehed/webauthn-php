@@ -152,6 +152,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     public function testUserNotPresentIsError(): void
     {
         // override authData
+        self::markTestIncomplete();
     }
 
     // 7.2.17
