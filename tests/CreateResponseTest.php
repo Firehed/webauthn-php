@@ -14,10 +14,10 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     // These hold the values which would be kept server-side.
     private RelyingParty $rp;
     private Challenge $challenge;
-    //
+
     // These hold the _default_ values from a sample parsed response.
     private BinaryString $id;
-    private Attestations\AttestationObject $attestationObject;
+    private Attestations\AttestationObjectInterface $attestationObject;
     private BinaryString $clientDataJson;
 
     public function setUp(): void
@@ -265,19 +265,36 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     // 7.1.19
     public function testFormatSpecificVerificationOccurs(): void
     {
-        // CreateResponse.ao.stmt
-        // = createMock(AttestationStatementInterface::class)
-        // ->expects(self::once())
-        // ->method('verify')
-        // ->with(...)
-        // ->willReturn(...)
-        //
-        // or AO itself gets interfaced and mocked diectly?
-    }
-    // format-specific tests of verification? these should get tested
-    //
-    // separately. Need to create an AttestationObject with a mocked
+        // This one is a bit more complex - assert that the CreateResponse
+        // actually calls the AttestationObject's verify method. It's
+        // separately tested to ensure the format-specific verification process
+        // occurs.
+        $ao = self::createMock(Attestations\AttestationObjectInterface::class);
+        // Use the default value
+        $ao->method('getAuthenticatorData')
+            ->willReturn($this->attestationObject->getAuthenticatorData());
 
+        $ao->expects(self::once())
+            ->method('verify')
+            ->willReturnCallback(function (BinaryString $hash) {
+                self::assertSame(
+                    hash('sha256', $this->clientDataJson->unwrap(), true),
+                    $hash->unwrap(),
+                    'hash was not the sha256 hash of clientDataJson'
+                );
+                return new Attestations\VerificationResult(
+                    Attestations\AttestationType::None,
+                );
+            });
+        ;
+
+        $response = new CreateResponse(
+            id: $this->id,
+            ao: $ao,
+            clientDataJson: $this->clientDataJson,
+        );
+        $response->verify($this->challenge, $this->rp);
+    }
 
     public function testSuccess(): void
     {

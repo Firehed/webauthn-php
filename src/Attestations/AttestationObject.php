@@ -14,11 +14,11 @@ use Firehed\WebAuthn\BinaryString;
  * @see s6.5
  * @link https://www.w3.org/TR/webauthn-2/#sctn-attestation
  */
-class AttestationObject
+class AttestationObject implements AttestationObjectInterface
 {
     private function __construct(
-        public readonly AuthenticatorData $data,
-        public readonly AttestationStatementInterface $stmt,
+        private readonly AuthenticatorData $data,
+        private readonly AttestationStatementInterface $stmt,
     ) {
     }
 
@@ -39,6 +39,11 @@ class AttestationObject
         $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
 
         return new AttestationObject($ad, $stmt);
+    }
+
+    public function getAuthenticatorData(): AuthenticatorData
+    {
+        return $this->data;
     }
 
     /**

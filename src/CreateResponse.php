@@ -17,7 +17,7 @@ class CreateResponse implements Responses\AttestationInterface
 {
     public function __construct(
         private BinaryString $id,
-        private Attestations\AttestationObject $ao,
+        private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
     ) {
     }
@@ -65,7 +65,7 @@ class CreateResponse implements Responses\AttestationInterface
 
         // 7.1.12
         // Happened in response parser
-        $authData = $this->ao->data;
+        $authData = $this->ao->getAuthenticatorData();
 
         // 7.1.13
         $knownRpIdHash = hash('sha256', $rp->getId(), true);
