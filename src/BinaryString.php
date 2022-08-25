@@ -80,7 +80,9 @@ class BinaryString
     public function readUint16(): int
     {
         $bytes = $this->read(2);
-        return unpack('n', $bytes)[1];
+        $unpacked = unpack('nint', $bytes);
+        assert(is_array($unpacked) && array_key_exists('int', $unpacked));
+        return $unpacked['int'];
     }
 
     /**
@@ -89,7 +91,9 @@ class BinaryString
     public function readUint32(): int
     {
         $bytes = $this->read(4);
-        return unpack('N', $bytes)[1];
+        $unpacked = unpack('Nint', $bytes);
+        assert(is_array($unpacked) && array_key_exists('int', $unpacked));
+        return $unpacked['int'];
     }
 
     /**
