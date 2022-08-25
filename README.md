@@ -414,11 +414,11 @@ Nice to haves/Future scope:
 Testing:
 - [ ] Happy path w/ FidoU2F
 - [ ] Happy path with macOS/Safari WebAuthn
-- [s] Challenge mismatch (create+get)
-- [s] Origin mismatch (CDJ)
-- [s] RPID mismatch (AuthenticatorData)
+- [x] Challenge mismatch (create+get)
+- [x] Origin mismatch (CDJ)
+- [x] RPID mismatch (AuthenticatorData)
 - [s] !userPresent
-- [s] !userVerified & required
+- [x] !userVerified & required
 - [s] !userVerified & not required
 - [ ] PK mismatched in verify??
 - [x] App-persisted data SerDe
