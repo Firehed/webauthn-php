@@ -40,26 +40,17 @@ class AuthenticatorData
      * @see https://w3c.github.io/webauthn/#sec-authenticator-data
      * WebAuthn 6.1
      */
-    public static function parse(BinaryString $raw): AuthenticatorData
+    public static function parse(BinaryString $bytes): AuthenticatorData
     {
-        $bytes = $raw->unwrap();
-        assert(strlen($bytes) >= 37);
+        $rpIdHash = $bytes->read(32);
 
-        $offset = 0;
-
-        $rpIdHash = substr($bytes, 0, 32);
-        $offset += 32;
-
-        $flags = unpack('c', $bytes, $offset)[1];
-        $offset += 1; // c = 1 byte
-
+        $flags = $bytes->readUint8();
         $UP = ($flags & 0x01) === 0x01; // bit 0: User Present
         $UV = ($flags & 0x04) === 0x04; // bit 2: User Verified
         $AT = ($flags & 0x40) === 0x40; // bit 6: Attested credential data incl.
         $ED = ($flags & 0x80) === 0x80; // bit 7: Extension data incl.
 
-        $signCount = unpack('N', $bytes, $offset)[1];
-        $offset += 4; // N = 4 byyes
+        $signCount = $bytes->readUint32();
 
         $authData = new AuthenticatorData();
         $authData->isUserPresent = $UP;
@@ -67,30 +58,18 @@ class AuthenticatorData
         $authData->rpIdHash = new BinaryString($rpIdHash);
         $authData->signCount = $signCount;
 
-        // $restOfBytes = substr($bytes, $offset);
-        // $restOfBytesLength = strlen($restOfBytes);
         if ($AT) {
             // https://www.w3.org/TR/2019/REC-webauthn-1-20190304/#sec-attested-credential-data
-            // assert($restOfBytesLength >= 18);
-            // $aaguid = substr($restOfBytes, 0, 16);
-            // $credentialIdLength = unpack('n', $restOfBytes, 16)[1];
-            // assert($restOfBytesLength >= (18 + $credentialIdLength));
-
-            $aaguid = substr($bytes, $offset, 16);
-            $offset += 16;
-
-            $credentialIdLength = unpack('n', $bytes, $offset)[1];
-            $offset += 2; // n = 2 bytes
-
-            $credentialId = substr($bytes, $offset, $credentialIdLength);
-            $offset += $credentialIdLength;
+            $aaguid = $bytes->read(16);
+            $credentialIdLength = $bytes->readUint16();
+            $credentialId = $bytes->read($credentialIdLength);
 
             // This needs to peek into the remaining data to parse the start of
             // the COSE format to know the legnth of the public key. Where ED=0
             // this should go to the end of the string, but if that's set this
             // will read too far.
-            // $rawCredentialPublicKey = substr($restOfBytes, 18 + $credentialIdLength);
-            $rawCredentialPublicKey = substr($bytes, $offset);
+            // FIXME: support extension data & offset handling
+            $rawCredentialPublicKey = $bytes->getRemaining();
 
             $authData->ACD = [
                 'aaguid' => new BinaryString($aaguid),
