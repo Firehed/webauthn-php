@@ -412,8 +412,8 @@ Nice to haves/Future scope:
 - [ ] GetResponse userHandle
 
 Testing:
-- [ ] Happy path w/ FidoU2F
-- [ ] Happy path with macOS/Safari WebAuthn
+- [x] Happy path w/ FidoU2F
+- [x] Happy path with macOS/Safari WebAuthn
 - [x] Challenge mismatch (create+get)
 - [x] Origin mismatch (CDJ)
 - [x] RPID mismatch (AuthenticatorData)
