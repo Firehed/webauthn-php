@@ -351,6 +351,7 @@ Cleanup Tasks
     - [x] RelyingParty
     - [x] CredentialInterface
     - [x] Responses\AttestationInterface & Responses\AssertionInterface
+    - [x] Errors
   - Internal:
     - [x] Attestations
     - [x] AuthenticatorData
@@ -358,8 +359,6 @@ Cleanup Tasks
     - [x] Credential
     - [x] Certificate
     - [x] CreateRespose & GetResponse
-  - TBD:
-    - [ ] Errors
 - [x] Rework BinaryString to avoid binary in stack traces
 - [x] Use BinaryString consistently
   - [ ] COSEKey.decodedCbor
@@ -426,6 +425,14 @@ Testing:
 
 ## Best Practices
 
+### Data Handling
+
+Use the _exact data format_ shown in the examples above (`dataForResponseParser`) and use the `ResponseParser` class to process them.
+Those wire formats are covered by semantic versioning and guaranteed to not have breaking changes outside of a major version.
+
+Similarly, for data storage, the output of `Codecs\Credential::encode()` are also covered.
+
+
 ### Error Handling
 
 The library is built around a "fail loudly" principle.
@@ -451,6 +458,14 @@ All exceptions thrown by the library implement `Firehed\WebAuthn\Error\WebAuthnE
   Your application SHOULD update the persisted value each time this happens.
   Doing so increases security, as it improves the ability to detect and act on replay attacks.
 
+## Versioning and Backwards Compatibility
+
+This library follows Semantic Versioning.
+Note that classes or methods marked as `@internal` are NOT covered by the same guarantees.
+Anything intended explicitly for public use has been marked with `@api`.
+If there are any unclear areas, please file an issue.
+
+There are additional notes in Best Practices / Data Handling around this.
 
 ## Resources and Errata
 

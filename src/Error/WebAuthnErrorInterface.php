@@ -6,6 +6,9 @@ namespace Firehed\WebAuthn\Error;
 
 use Throwable;
 
+/**
+ * @api
+ */
 interface WebAuthnErrorInterface extends Throwable
 {
 }
