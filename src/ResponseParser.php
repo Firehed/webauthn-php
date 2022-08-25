@@ -46,9 +46,9 @@ class ResponseParser
             throw new \UnexpectedValueException();
         }
         return new CreateResponse(
-            id: self::byteArrayToBinaryString($response['rawId']),
-            ao: Attestations\AttestationObject::fromCbor(self::byteArrayToBinaryString($response['attestationObject'])),
-            clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
+            id: BinaryString::fromBytes($response['rawId']),
+            ao: Attestations\AttestationObject::fromCbor(BinaryString::fromBytes($response['attestationObject'])),
+            clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
         );
     }
 
@@ -81,23 +81,15 @@ class ResponseParser
         }
 
         // userHandle provides the user.id from registration
-        // var_dump(self::byteArrayToBinaryString($response['userHandle'])->unwrap());
+        // var_dump(BinaryString::fromBytes($response['userHandle'])->unwrap());
         // if userHandle is provided, feed to the response to be read by app
         // and have key handles looked up for verify??
 
         return new GetResponse(
-            credentialId: self::byteArrayToBinaryString($response['rawId']),
-            rawAuthenticatorData: self::byteArrayToBinaryString($response['authenticatorData']),
-            clientDataJson: self::byteArrayToBinaryString($response['clientDataJSON']),
-            signature: self::byteArrayToBinaryString($response['signature']),
+            credentialId: BinaryString::fromBytes($response['rawId']),
+            rawAuthenticatorData: BinaryString::fromBytes($response['authenticatorData']),
+            clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
+            signature: BinaryString::fromBytes($response['signature']),
         );
-    }
-
-    /**
-     * @param int[] $bytes
-     */
-    private static function byteArrayToBinaryString(array $bytes): BinaryString
-    {
-        return new BinaryString(implode('', array_map('chr', $bytes)));
     }
 }
