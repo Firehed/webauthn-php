@@ -344,7 +344,7 @@ Cleanup Tasks
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey
 - [x] Move key formatting into COSE key/turn COSE into key parser?
-- [ ] Clearly define public scoped interfaces and classes
+- [x] Clearly define public scoped interfaces and classes
   - Public:
     - [x] ResponseParser (interface?)
     - [x] Challenge (DTO / serialization-safety in session)
@@ -375,8 +375,8 @@ Cleanup Tasks
   - [ ] How to let client apps assess trust ambiguity (7.1.21)
   - [ ] Match algorithm in create() to createOptions (7.1.16)
 - [ ] BC plan for verification trust paths
-- [ ] Attestation statment return type/info
-- [ ] BinaryString easier comparison?
+- [x] Attestation statment return type/info
+- [x] BinaryString easier comparison?
 - [ ] Lint issues, import sorting
 
 Security/Risk:
@@ -395,7 +395,8 @@ Naming?
 - [ ] Codecs - static vs instance?
 - [x] Credential::getStorageId()
 - [ ] ResponseParser -> Codecs?
-- [ ] CreateResponse/GetResponse -> Add interfaces?
+- [x] CreateResponse/GetResponse -> Add interfaces?
+- [ ] Parser -> parseXResponse => parse{Attestation|Assertion}Data
 
 Nice to haves/Future scope:
 - [x] Refactor FIDO attestation to not need AD.getAttestedCredentialData
