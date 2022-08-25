@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\Responses;
 
 use Firehed\WebAuthn\{
+    BinaryString,
     Challenge,
     CredentialInterface,
     RelyingParty,
@@ -19,6 +20,14 @@ use Firehed\WebAuthn\{
  */
 interface AssertionInterface
 {
+    /**
+      *@internal
+      */
+    public function getUsedCredentialId(): BinaryString;
+
+    /**
+     * @api
+     */
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,

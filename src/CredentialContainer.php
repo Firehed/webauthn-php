@@ -16,7 +16,7 @@ class CredentialContainer
     {
     }
 
-    public function findCredentialUsedByResponse(GetResponse $response): ?CredentialInterface
+    public function findCredentialUsedByResponse(Responses\AssertionInterface $response): ?CredentialInterface
     {
         $responseCredentialId = $response->getUsedCredentialId();
 

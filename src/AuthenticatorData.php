@@ -13,7 +13,7 @@ use OutOfRangeException;
  * @link https://www.w3.org/TR/webauthn-2/#sctn-authenticator-data
  *
  * @phpstan-type AttestedCredentialData array{
- *   aaguid: string,
+ *   aaguid: BinaryString,
  *   credentialId: BinaryString,
  *   credentialPublicKey: BinaryString,
  * }
