@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use OutOfBoundsException;
+
 /**
  * All read operations (any method starting with `read`) is a stateful
  * operation and moves an internal pointer. Read operations which return
@@ -54,6 +56,9 @@ class BinaryString
      */
     public function read(int $length): string
     {
+        if (strlen($this->wrapped) < $this->offset + $length) {
+            throw new OutOfBoundsException('Trying to read too many bytes');
+        }
         $bytes = substr($this->wrapped, $this->offset, $length);
         $this->offset += $length;
         return $bytes;
