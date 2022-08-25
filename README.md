@@ -2,6 +2,12 @@
 
 A way to move beyond passwords
 
+[![Test](https://github.com/Firehed/webauthn-php/actions/workflows/test.yml/badge.svg)](https://github.com/Firehed/webauthn-php/actions/workflows/test.yml)
+[![Static analysis](https://github.com/Firehed/webauthn-php/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/Firehed/webauthn-php/actions/workflows/static-analysis.yml)
+[![Lint](https://github.com/Firehed/webauthn-php/actions/workflows/lint.yml/badge.svg)](https://github.com/Firehed/webauthn-php/actions/workflows/lint.yml)
+[![Composer validate](https://github.com/Firehed/webauthn-php/actions/workflows/validate.yml/badge.svg)](https://github.com/Firehed/webauthn-php/actions/workflows/validate.yml)
+[![codecov](https://codecov.io/gh/Firehed/webauthn-php/branch/main/graph/badge.svg?token=xr69yhtCBl)](https://codecov.io/gh/Firehed/webauthn-php)
+
 ## What is Web Authentication?
 Web Authentication, frequently referenced as `WebAuthn`, is a set of technologies and APIs to provide user authentication using modern cryptography.
 Instead of passwords and hashing, WebAuthn allows users to generate encryption keypairs, provide the public key to the server, and authenticate by signing server-generated challenges using the private key that never leaves their possession.
