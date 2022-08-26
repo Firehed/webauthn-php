@@ -4,8 +4,8 @@ includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
 parameters:
     ignoreErrors:
-        - '#^Dynamic call to static method PHPUnit\\Framework\\Assert::assert#'
     level: max
     paths:
+        - examples
         - src
         - tests
