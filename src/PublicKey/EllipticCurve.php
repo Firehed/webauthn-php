@@ -20,19 +20,13 @@ use UnexpectedValueException;
  */
 class EllipticCurve implements PublicKeyInterface
 {
-    public function __construct(private BinaryString $binary)
+    public function __construct(private BinaryString $x, private BinaryString $y)
     {
-        $key = $binary->unwrap();
-        // RFC5480 2.2 - must be uncompressed value
-        if ($key[0] !== "\x04") {
-            throw new UnexpectedValueException(
-                'EC public key: first byte not x04 (uncompressed)'
-            );
+        if ($x->getLength() !== 32) {
+            throw new UnexpectedValueException('X-coordinate not 32 bytes');
         }
-        if (strlen($key) !== 65) {
-            throw new UnexpectedValueException(
-                'EC public key: length is not 65 bytes'
-            );
+        if ($y->getLength() !== 32) {
+            throw new UnexpectedValueException('Y-coordinate not 32 bytes');
         }
     }
 
@@ -42,8 +36,7 @@ class EllipticCurve implements PublicKeyInterface
      */
     public function getXCoordinate(): string
     {
-        $uncompressed = $this->binary->unwrap();
-        return substr($uncompressed, 1, 32);
+        return $this->x->unwrap();
     }
 
     /**
@@ -52,8 +45,7 @@ class EllipticCurve implements PublicKeyInterface
      */
     public function getYCoordinate(): string
     {
-        $uncompressed = $this->binary->unwrap();
-        return substr($uncompressed, 33, 32);
+        return $this->y->unwrap();
     }
 
     // Prepends the pubkey format headers and builds a pem file from the raw
@@ -70,22 +62,15 @@ class EllipticCurve implements PublicKeyInterface
                     . '0608' // OID, length 8
                         . '2a8648ce3d030107' // 1.2.840.10045.3.1.7 = P-256 Curve
                 . '0342' // BIT STRING, length 66
-                    . '00' // prepend with NUL - pubkey will follow
+                    . '00' // prepend with NUL
+                    . '04' // uncompressed format
         );
-        $der .= $this->binary->unwrap();
+        $der .= $this->x->unwrap();
+        $der .= $this->y->unwrap();
 
         $pem  = "-----BEGIN PUBLIC KEY-----\r\n";
         $pem .= chunk_split(base64_encode($der), 64);
         $pem .= "-----END PUBLIC KEY-----";
         return $pem;
-    }
-
-    /** @return array{x: string, y: string} */
-    public function __debugInfo(): array
-    {
-        return [
-            'x' => '0x' . bin2hex($this->getXCoordinate()),
-            'y' => '0x' . bin2hex($this->getYCoordinate()),
-        ];
     }
 }
