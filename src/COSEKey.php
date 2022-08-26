@@ -41,31 +41,11 @@ class COSEKey
     private const INDEX_PRIVATE_KEY = -4; // ECC, OKP
     // index_key_value = -1 (same as index_curve, for Symmetric)
 
-    // @see section 13 - these are in INDEX_KEY_TYPE
-    private const KEY_TYPE_OKP = 1; // Octet Key Pair
-    private const KEY_TYPE_EC2 = 2; // Double coordinate curve
-    private const KEY_TYPE_SYMMETRIC = 4;
-    private const KEY_TYPE_RESERVED = 0;
-
-    // @see section 8.1 - these are in INDEX_ALGORITHM
-    private const ALGORITHM_ECDSA_SHA_256 = -7;
-    private const ALGORITHM_ECDSA_SHA_384 = -35;
-    private const ALGORITHM_ECDSA_SHA_512 = -36;
-    // 8.2: EdDSA = -8;
-
-    // @see section 13.1 - these are in INDEX_CURVE
-    private const CURVE_P256 = 1; // EC2
-    private const CURVE_P384 = 2; // EC2
-    private const CURVE_P521 = 3; // EC2 (*not* 512)
-    private const CURVE_X25519 = 4; // OKP
-    private const CURVE_X448 = 5; // OKP
-    private const CURVE_ED25519 = 6; // OKP
-    private const CURVE_ED448 = 7; // OKP
-
-    /**
-     * @var DecodedCbor
-     */
-    private array $decodedCbor;
+    private COSE\KeyType $keyType;
+    private COSE\Algorithm $algorithm;
+    private COSE\Curve $curve;
+    private BinaryString $x;
+    private BinaryString $y;
 
     public function __construct(public readonly BinaryString $cbor)
     {
@@ -73,26 +53,34 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        if ($decodedCbor[self::INDEX_KEY_TYPE] !== self::KEY_TYPE_EC2) {
+        $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
+        if ($keyType !== COSE\KeyType::EllipticCurve) {
             throw new DomainException('Only EC2 keys supported');
         }
 
-        if ($decodedCbor[self::INDEX_ALGORITHM] !== self::ALGORITHM_ECDSA_SHA_256) {
+        $algorithm = COSE\Algorithm::tryFrom($decodedCbor[self::INDEX_ALGORITHM]);
+        if ($algorithm !== COSE\Algorithm::EcdsaSha256) {
             throw new DomainException('Only ES256 supported');
         }
 
-        if ($decodedCbor[self::INDEX_CURVE] !== self::CURVE_P256) {
+        $curve = COSE\Curve::tryFrom($decodedCbor[self::INDEX_CURVE]);
+        if ($curve !== COSE\Curve::P256) {
             throw new DomainException('Only curve P-256 (secp256r1) supported');
         }
+
+        $this->keyType = $keyType;
+        $this->algorithm = $algorithm;
+        $this->curve = $curve;
 
         if (strlen($decodedCbor[self::INDEX_X_COORDINATE]) !== 32) {
             throw new DomainException('X coordinate not 32 bytes');
         }
+        $this->x = new BinaryString($decodedCbor[self::INDEX_X_COORDINATE]);
+
         if (strlen($decodedCbor[self::INDEX_Y_COORDINATE]) !== 32) {
             throw new DomainException('X coordinate not 32 bytes');
         }
-
-        $this->decodedCbor = $decodedCbor;
+        $this->y = new BinaryString($decodedCbor[self::INDEX_Y_COORDINATE]);
     }
 
     /**
@@ -100,11 +88,17 @@ class COSEKey
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
+        // These are valid; the internal formats are brittle right now.
+        assert($this->keyType === COSE\KeyType::EllipticCurve);
+        assert($this->curve === COSE\Curve::P256);
+        // This I don't think conveys anything useful. Mostly retained to
+        // silence a warning about unused variables.
+        assert($this->algorithm === COSE\Algorithm::EcdsaSha256);
         return new PublicKey\EllipticCurve(new BinaryString(sprintf(
             "%s%s%s",
             "\x04",
-            $this->decodedCbor[self::INDEX_X_COORDINATE],
-            $this->decodedCbor[self::INDEX_Y_COORDINATE],
+            $this->x->unwrap(),
+            $this->y->unwrap(),
         )));
     }
 }
