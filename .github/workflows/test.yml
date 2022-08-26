@@ -34,17 +34,21 @@ jobs:
           ini-values: zend.assertions=1, assert.exception=1, error_reporting=-1
           php-version: ${{ matrix.php }}
 
-      - name: Cache Composer packages
+      - name: Get Composer Cache Directory
         id: composer-cache
-        uses: actions/cache@v2
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v3
         with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ matrix.dependencies }}-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.dependencies }}-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            ${{ runner.os }}-php-${{ matrix.dependencies }}-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
-            ${{ runner.os }}-php-${{ matrix.dependencies }}-${{ matrix.php }}-
-            ${{ runner.os }}-php-${{ matrix.dependencies }}-
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-composer-${{ matrix.dependencies }}-${{ matrix.php }}-${{ hashFiles('**/composer.json') }}
+            ${{ runner.os }}-composer-${{ matrix.dependencies }}-${{ matrix.php }}-
+            ${{ runner.os }}-composer-${{ matrix.dependencies }}-
+            ${{ runner.os }}-composer-
 
       - name: Install highest dependencies
         if: ${{ matrix.dependencies == 'high' }}
