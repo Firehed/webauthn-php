@@ -88,7 +88,7 @@ class Credential
         // append a checksum (crc32?) that import can validate?
         // e.g. assert(crc32(substr(data, 1, -4)) === substr(data, -4))
 
-        $binary = pack('c', $version) . $versionSpecificFormat;
+        $binary = pack('C', $version) . $versionSpecificFormat;
 
         return base64_encode($binary);
     }
@@ -98,25 +98,20 @@ class Credential
         $binary = base64_decode($encoded, true);
         assert($binary !== false);
 
-        $offset = 0;
+        $bytes = new BinaryString($binary);
 
-        $version = unpack('cversion', $binary)['version'];
+        $version = $bytes->readUint8();
         assert(($version & 0x80) === 0, 'High bit in version must not be set');
         // match -> decodeV1 ?
         assert($version === 1);
-        $offset += 1; // c = 1 byte
 
-        $idLength = unpack('nlength', $binary, $offset)['length'];
-        $offset += 2; // n = 2 bytes
-        $id = substr($binary, $offset, $idLength);
-        $offset += $idLength;
+        $idLength = $bytes->readUint16();
+        $id = $bytes->read($idLength);
 
-        $cborLength = unpack('Nlength', $binary, $offset)['length'];
-        $offset += 4; // N = 4 bytes
-        $cbor = substr($binary, $offset, $cborLength);
-        $offset += $cborLength;
+        $cborLength = $bytes->readUint32();
+        $cbor = $bytes->read($cborLength);
 
-        $signCount = unpack('NsignCount', $binary, $offset)['signCount'];
+        $signCount = $bytes->readUint32();
 
         return new CredentialObj(
             new BinaryString($id),

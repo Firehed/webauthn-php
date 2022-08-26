@@ -42,6 +42,8 @@ class RelyingParty
         // tl;dr ~
         // a) this should default to the host (it does)
         // b) if publicKey.rp.id is overridden, this must match
-        return parse_url($this->origin, PHP_URL_HOST);
+        $host = parse_url($this->origin, PHP_URL_HOST);
+        assert(is_string($host));
+        return $host;
     }
 }

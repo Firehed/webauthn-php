@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use OutOfBoundsException;
+
 /**
+ * All read operations (any method starting with `read`) is a stateful
+ * operation and moves an internal pointer. Read operations which return
+ * integers will treat the underlying data as big-endian.
+ *
  * @internal
  */
 class BinaryString
 {
+    /**
+     * Internal offset pointer for read operations
+     */
+    private int $offset = 0;
+
     public function __construct(
         private string $wrapped,
     ) {
@@ -29,11 +40,69 @@ class BinaryString
         return $this->wrapped === $other->wrapped;
     }
 
-    public function __debugInfo()
+    /** @return array{wrapped: string} */
+    public function __debugInfo(): array
     {
         return [
             'wrapped' => '0x' .  bin2hex($this->wrapped),
         ];
+    }
+
+    // getLength(): int
+    // getRemainingLength(): int = $length - $offset;
+
+    /**
+     * Read the next $length bytes and advance the internal pointer by same.
+     */
+    public function read(int $length): string
+    {
+        if (strlen($this->wrapped) < $this->offset + $length) {
+            throw new OutOfBoundsException('Trying to read too many bytes');
+        }
+        $bytes = substr($this->wrapped, $this->offset, $length);
+        $this->offset += $length;
+        return $bytes;
+    }
+
+    /**
+     * Read one byte and intreprets it as a big-endian Uint8. Advances pointer.
+     */
+    public function readUint8(): int
+    {
+        $byte = $this->read(1);
+        // This could also use unpack(C)
+        return ord($byte);
+    }
+
+    /**
+     * Read two bytes and interprets them as a big-endian Uint16. Advances pointer.
+     */
+    public function readUint16(): int
+    {
+        $bytes = $this->read(2);
+        $unpacked = unpack('nint', $bytes);
+        assert(is_array($unpacked) && array_key_exists('int', $unpacked));
+        return $unpacked['int'];
+    }
+
+    /**
+     * Read four bytes and interprets them as a big-endian Uint32. Advances pointer.
+     */
+    public function readUint32(): int
+    {
+        $bytes = $this->read(4);
+        $unpacked = unpack('Nint', $bytes);
+        assert(is_array($unpacked) && array_key_exists('int', $unpacked));
+        return $unpacked['int'];
+    }
+
+    /**
+     * Returns all of the remaining data after the offset. Does NOT advance the
+     * offset.
+     */
+    public function getRemaining(): string
+    {
+        return substr($this->wrapped, $this->offset);
     }
 
     public function unwrap(): string

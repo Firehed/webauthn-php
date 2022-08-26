@@ -32,9 +32,12 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
 
         $this->rp = new RelyingParty('http://localhost:8888');
 
-        $this->challenge = new Challenge(new BinaryString(
-            base64_decode('kV49XeHREZYSMN8miCxRren46C7TyGM0jm9n6fS8Gmw=', true)
-        ));
+        $this->challenge = new Challenge(BinaryString::fromBytes([
+            145, 94, 61, 93, 225, 209, 17, 150,
+            18, 48, 223, 38, 136, 44, 81, 173,
+            233, 248, 232, 46, 211, 200, 99, 52,
+            142, 111, 103, 233, 244, 188, 26, 108,
+        ]));
 
         $this->id = BinaryString::fromBytes([
             116, 216, 28, 85, 64, 195, 24, 125,
@@ -87,6 +90,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJTypeMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['type'] = 'incorrect';
 
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
@@ -105,6 +109,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJChallengeMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['challenge'] = 'incorrect';
 
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
@@ -123,6 +128,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     public function testCDJOriginMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
         $cdj['origin'] = 'incorrect';
 
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
@@ -210,22 +216,25 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testUserVerfiedPresentWhenRequiredWorks(): void
+    {
+        // 7.2.17
+        // do the same as testUserVerifiedNotPresentWhenRequiredIsError but
+        // with different authenciator data
+        self::markTestIncomplete();
+    }
+
+    public function testUserVerfiedPresentWhenNotRequiredWorks(): void
+    {
+        // 7.2.17
+        // do the same as testUserVerifiedNotPresentWhenRequiredIsError but
+        // with different authenciator data
+        self::markTestIncomplete();
+    }
+
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Error\VerificationError::class);
         // TODO: how to assert on $section
-    }
-    /**
-     * Reserved for future use
-     * expected pass/fail behavior for verify when UV=0
-     * (override UV here?)
-     */
-    public function verify(): array
-    {
-        return [
-            'required' => [UserVerificationRequirement::Required, false],
-            'preferred' => [UserVerificationRequirement::Preferred, true],
-            'discouraged' => [UserVerificationRequirement::Discouraged, true],
-        ];
     }
 }
