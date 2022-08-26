@@ -13,20 +13,16 @@ use Firehed\CBOR\Decoder;
  * Data structure for COSE keys
  * This represents the post-CBOR-decoded structure
  *
+ * Note: this should be more of a parser than an actual data structure,
+ * favoring the actual implementations of PublicKeyInterface instead.
+ * Currently, the Credential Codec needs access to the raw CBOR since
+ * PublicKeys don't have a CBOR encoder (or a different format could be used,
+ * but re-inventing a wheel is very undesirable!).
+ *
  * @see RFC 8152
  * @link https://www.rfc-editor.org/rfc/rfc8152.html
  *
  * @see RFC 8230 (RSA key support - not yet implemented)
- *
- * FIXME: decodedCbor can contain binary data ~ x/y/d(privkey)
- * @phpstan-type DecodedCbor array{
- *   1: int,
- *   3?: int,
- *   -1?: int,
- *   -2?: string,
- *   -3?: string,
- *   -4?: string,
- * }
  */
 class COSEKey
 {
@@ -38,7 +34,7 @@ class COSEKey
     private const INDEX_CURVE = -1; // ECC, OKP
     private const INDEX_X_COORDINATE = -2; // ECC, OKP
     private const INDEX_Y_COORDINATE = -3; // ECC
-    private const INDEX_PRIVATE_KEY = -4; // ECC, OKP
+    private const INDEX_PRIVATE_KEY = -4; // ECC, OKP @phpstan-ignore-line
     // index_key_value = -1 (same as index_curve, for Symmetric)
 
     private COSE\KeyType $keyType;
@@ -46,6 +42,7 @@ class COSEKey
     private COSE\Curve $curve;
     private BinaryString $x;
     private BinaryString $y;
+    // d ~ private key
 
     public function __construct(public readonly BinaryString $cbor)
     {
@@ -81,6 +78,11 @@ class COSEKey
             throw new DomainException('X coordinate not 32 bytes');
         }
         $this->y = new BinaryString($decodedCbor[self::INDEX_Y_COORDINATE]);
+
+        // d = cbor[INDEX_PRIVATE_KEY]
+
+        // Future: rfc8152/13.2
+        // if keytype == .OctetKeyPair, set `x` and `d`
     }
 
     /**
