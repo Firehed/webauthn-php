@@ -36,11 +36,9 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
         $unserialized = unserialize($serialized);
         self::assertInstanceOf(Challenge::class, $unserialized);
 
-        self::assertTrue(
-            hash_equals(
-                base64_decode('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=', true),
-                $unserialized->getUnwrappedBinary(),
-            ),
+        self::assertSame(
+            base64_decode('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=', true),
+            $unserialized->getUnwrappedBinary(),
             'Decoding resulted in inaccurate challenge',
         );
     }
