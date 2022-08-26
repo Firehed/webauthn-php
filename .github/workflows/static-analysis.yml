@@ -42,4 +42,6 @@ jobs:
           --prefer-dist
 
       - name: PHPStan
-        run: composer phpstan
+        run: vendor/bin/phpstan
+          analyse
+          --error-format=github

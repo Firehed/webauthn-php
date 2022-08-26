@@ -20,6 +20,8 @@ jobs:
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
+        with:
+          tools: cs2pr
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -43,7 +45,9 @@ jobs:
           --prefer-dist
 
       - name: PHPCS
-        run: composer phpcs
+        run: vendor/bin/phpcs
+          --report=checkstyle
+          | cs2pr
 
   validate:
     name: Composer validate
