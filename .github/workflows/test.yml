@@ -67,6 +67,7 @@ jobs:
 
       - name: PHPUnit
         run: vendor/bin/phpunit
+          --coverage-text
           --coverage-clover coverage.xml
 
       - name: Submit code coverage
