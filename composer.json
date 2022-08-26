@@ -32,6 +32,8 @@
         "firehed/cbor": "^0.1.0"
     },
     "require-dev": {
+        "maglnet/composer-require-checker": "^4.1",
+        "mheap/phpunit-github-actions-printer": "^1.5",
         "nikic/php-parser": "^4.14",
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
