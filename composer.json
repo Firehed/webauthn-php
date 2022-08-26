@@ -28,7 +28,7 @@
         }
     },
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "firehed/cbor": "^0.1.0"
     },
     "require-dev": {
