@@ -12,6 +12,7 @@ env:
 
 jobs:
   phpcs:
+    name: PHPCS
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -39,3 +40,14 @@ jobs:
 
       - name: PHPCS
         run: composer phpcs
+
+  validate:
+    name: Composer validate
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Run validate
+        run: composer validate
