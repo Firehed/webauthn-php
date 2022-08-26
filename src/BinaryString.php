@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use OutOfBoundsException;
+use UnexpectedValueException;
 
 /**
  * All read operations (any method starting with `read`) is a stateful
@@ -25,6 +26,15 @@ class BinaryString
     ) {
     }
 
+    public static function fromBase64(string $base64): BinaryString
+    {
+        $binary = base64_decode($base64, true);
+        if ($binary === false) {
+            throw new UnexpectedValueException('Invalid base64 string');
+        }
+        return new BinaryString($binary);
+    }
+
     /**
      * Turns a list of 8-bit integers into a BinaryString
      *
@@ -33,6 +43,15 @@ class BinaryString
     public static function fromBytes(array $bytes): BinaryString
     {
         return new BinaryString(implode('', array_map('chr', $bytes)));
+    }
+
+    public static function fromHex(string $hex): BinaryString
+    {
+        $binary = hex2bin($hex);
+        if ($binary === false) {
+            throw new UnexpectedValueException('Invalid hex string');
+        }
+        return new BinaryString($binary);
     }
 
     public function equals(BinaryString $other): bool
