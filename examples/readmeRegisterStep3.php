@@ -10,7 +10,9 @@ use Firehed\WebAuthn\{
 session_start();
 
 $json = file_get_contents('php://input');
+assert($json !== false);
 $data = json_decode($json, true);
+assert(is_array($data));
 
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);

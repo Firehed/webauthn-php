@@ -29,7 +29,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         );
         $registerRequest = $this->safeReadJsonFile("$directory/register.json");
 
-        $attestation = $parser->parseCreateResponse($registerRequest); // @phpstan-ignore-line
+        $attestation = $parser->parseCreateResponse($registerRequest);
         $credential = $attestation->verify($registerChallenge, $this->rp);
 
         $loginInfo = $this->safeReadJsonFile("$directory/loginInfo.json");
@@ -38,7 +38,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         );
         $loginRequest = $this->safeReadJsonFile("$directory/login.json");
 
-        $assertion = $parser->parseGetResponse($loginRequest); // @phpstan-ignore-line
+        $assertion = $parser->parseGetResponse($loginRequest);
         $updatedCredential = $assertion->verify(
             $loginChallenge,
             $this->rp,
