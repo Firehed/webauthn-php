@@ -25,26 +25,20 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
 
         $registerInfo = $this->safeReadJsonFile("$directory/registerInfo.json");
         $registerChallenge = new Challenge(
-            new BinaryString(
-                base64_decode($registerInfo['challengeB64']),
-            ),
+            BinaryString::fromBase64($registerInfo['challengeB64']), // @phpstan-ignore-line
         );
         $registerRequest = $this->safeReadJsonFile("$directory/register.json");
 
-        $attestation = $parser->parseCreateResponse($registerRequest);
+        $attestation = $parser->parseCreateResponse($registerRequest); // @phpstan-ignore-line
         $credential = $attestation->verify($registerChallenge, $this->rp);
-        assert($credential instanceof CredentialInterface);
 
         $loginInfo = $this->safeReadJsonFile("$directory/loginInfo.json");
         $loginChallenge = new Challenge(
-            new BinaryString(
-                base64_decode($loginInfo['challengeB64']),
-            ),
+            BinaryString::fromBase64($loginInfo['challengeB64']), // @phpstan-ignore-line
         );
         $loginRequest = $this->safeReadJsonFile("$directory/login.json");
 
-        $assertion = $parser->parseGetResponse($loginRequest);
-
+        $assertion = $parser->parseGetResponse($loginRequest); // @phpstan-ignore-line
         $updatedCredential = $assertion->verify(
             $loginChallenge,
             $this->rp,
