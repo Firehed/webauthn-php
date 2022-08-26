@@ -20,8 +20,8 @@ jobs:
           - 'high'
           - 'low'
         php:
-          - '8.0'
           - '8.1'
+          - '8.2'
 
     steps:
       - name: Check out code
@@ -67,6 +67,7 @@ jobs:
 
       - name: PHPUnit
         run: vendor/bin/phpunit
+          --coverage-text
           --coverage-clover coverage.xml
 
       - name: Submit code coverage
