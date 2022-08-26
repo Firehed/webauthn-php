@@ -44,6 +44,13 @@ class BinaryStringTest extends \PHPUnit\Framework\TestCase
         self::assertTrue($rhs->equals($rhs), 'rhs should always equal itself');
     }
 
+    public function testGetLength(): void
+    {
+        self::assertSame(13, $this->default->getLength());
+        $_ = $this->default->read(2);
+        self::assertSame(13, $this->default->getLength(), 'Length must not change after read');
+    }
+
     public function testReadingExactIsOk(): void
     {
         $str = new BinaryString('abc123');

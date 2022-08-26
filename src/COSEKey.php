@@ -96,11 +96,6 @@ class COSEKey
         // This I don't think conveys anything useful. Mostly retained to
         // silence a warning about unused variables.
         assert($this->algorithm === COSE\Algorithm::EcdsaSha256);
-        return new PublicKey\EllipticCurve(new BinaryString(sprintf(
-            "%s%s%s",
-            "\x04",
-            $this->x->unwrap(),
-            $this->y->unwrap(),
-        )));
+        return new PublicKey\EllipticCurve($this->x, $this->y);
     }
 }

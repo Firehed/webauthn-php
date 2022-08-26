@@ -48,7 +48,11 @@ class BinaryString
         ];
     }
 
-    // getLength(): int
+    public function getLength(): int
+    {
+        return strlen($this->wrapped);
+    }
+
     // getRemainingLength(): int = $length - $offset;
 
     /**
@@ -56,7 +60,7 @@ class BinaryString
      */
     public function read(int $length): string
     {
-        if (strlen($this->wrapped) < $this->offset + $length) {
+        if ($this->getLength() < $this->offset + $length) {
             throw new OutOfBoundsException('Trying to read too many bytes');
         }
         $bytes = substr($this->wrapped, $this->offset, $length);
