@@ -31,10 +31,7 @@ class AuthenticatorData
     /**
      * @var ?AttestedCredentialData Attested Credential Data
      */
-    private $ACD;
-
-    /** @var null RESERVED: WebAuthn Extensions */
-    private $extensions;
+    private ?array $ACD = null;
 
     /**
      * @see https://w3c.github.io/webauthn/#sec-authenticator-data

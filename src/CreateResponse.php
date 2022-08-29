@@ -132,6 +132,11 @@ class CreateResponse implements Responses\AttestationInterface
         // done in client code
         $credential = $authData->getAttestedCredential();
 
+        // This is not part of the official procedure, but serves as a general
+        // sanity-check around data handling. It also silences an unused
+        // variable warning in PHPStan :)
+        assert($credential->getId()->equals($this->id));
+
         return $credential;
 
         // 7.1.24

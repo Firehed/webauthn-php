@@ -56,12 +56,12 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider v1Credentials
      */
-    public function testVersion1Import(string $encoded): void
+    public function testVersion1Import(string $encoded, BinaryString $id): void
     {
         $codec = new Credential();
         $credential = $codec->decode($encoded);
 
-        self::assertInstanceOf(CredentialInterface::class, $credential);
+        self::assertTrue($credential->getId()->equals($id), 'Id changed');
     }
 
     /**
@@ -73,13 +73,21 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             'touchid/none' => [
                 'AQAUCKnDgmOXTCRiKc8DQbadIyY84J8AAABNpQECAyYgASFYIL3IKTT4Q7Rw' .
                 'jTpHJh23kPBaigTuTaeyq6zVE+INdRd1IlggT0NUfhOqpdq4LPEfITTPNO6e' .
-                'IfPtrEJqgK1XvuaWVn8AAAAA'
+                'IfPtrEJqgK1XvuaWVn8AAAAA',
+                BinaryString::fromHex(
+                    '08a9c38263974c246229cf0341b69d23263ce09f'
+                ),
             ],
             'fidou2f' => [
                 'AQBAdNgcVUDDGH2BZC8No6bNvCDgn+HW36AeRHtqbX4EICbjJO6XnpTQNz1G' .
                 'VG/D+Fm9w5Sj5VtCFdtcJ7QRMS0UXQAAAE2lAQIDJiABIVggi2VjhUOZ3BdY' .
                 'Jd9cJBHhhC+3yrxVjIlNHuak+SUYf0giWCAmEgP3PlrtjKb0XxB4Y3j6y6/Q' .
-                'Bn6ljfpcewJaRdv4hQAAAAA='
+                'Bn6ljfpcewJaRdv4hQAAAAA=',
+                BinaryString::fromHex(
+                    '74d81c5540c3187d81642f0da3a6cdbc20e09fe1d6dfa01e447b6a6d' .
+                    '7e042026e324ee979e94d0373d46546fc3f859bdc394a3e55b4215db' .
+                    '5c27b411312d145d'
+                ),
             ],
         ];
     }

@@ -404,6 +404,7 @@ Naming?
 - [ ] ResponseParser -> Codecs?
 - [x] CreateResponse/GetResponse -> Add interfaces?
 - [ ] Parser -> parseXResponse => parse{Attestation|Assertion}Data
+- [ ] Error\* -> Errors\*
 
 Nice to haves/Future scope:
 - [x] Refactor FIDO attestation to not need AD.getAttestedCredentialData
@@ -430,6 +431,7 @@ Testing:
 - [s] !userVerified & not required
 - [ ] PK mismatched in verify??
 - [x] App-persisted data SerDe
+- [ ] Parser handling of bad input formats
 
 ## Best Practices
 

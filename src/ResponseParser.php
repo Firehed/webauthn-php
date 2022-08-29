@@ -24,6 +24,7 @@ class ResponseParser
 {
     /**
      * Parses the JSON wire format from navigator.credentials.create
+     *
      * ```javascript
      * const credential = await navigator.credentials.create(...)
      * const wireFormat = {
@@ -33,17 +34,34 @@ class ResponseParser
      *  clientDataJSON: new Uint8Array(credential.response.clientDataJSON),
      * }
      * ```
-     * @param array{
+     *
+     * This will arrive as the following shape:
+     *
+     * array{
      *   rawId: int[],
      *   type: string,
      *   attestationObject: int[],
      *   clientDataJSON: int[],
-     * } $response
+     * }
+     *
+     * $response is left untyped since it performs additional checking from
+     * untrusted user data.
+     *
+     * @param mixed[] $response
      */
     public function parseCreateResponse(array $response): Responses\AttestationInterface
     {
-        if ($response['type'] !== 'public-key') {
-            throw new \UnexpectedValueException();
+        if (!array_key_exists('type', $response) || $response['type'] !== 'public-key') {
+            throw new Error\ParseError('7.1.2', 'response.type');
+        }
+        if (!array_key_exists('rawId', $response) || !is_array($response['rawId'])) {
+            throw new Error\ParseError('7.1.2', 'response.rawId');
+        }
+        if (!array_key_exists('attestationObject', $response) || !is_array($response['attestationObject'])) {
+            throw new Error\ParseError('7.1.2', 'response.attestationObject');
+        }
+        if (!array_key_exists('clientDataJSON', $response) || !is_array($response['clientDataJSON'])) {
+            throw new Error\ParseError('7.1.2', 'response.clientDataJSON');
         }
         return new CreateResponse(
             id: BinaryString::fromBytes($response['rawId']),
@@ -54,6 +72,7 @@ class ResponseParser
 
     /**
      * Parses the JSON wire format from navigator.credentials.get
+     *
      * ```javascript
      * const credential = await navigator.credentials.get(...)
      * const wireFormat = {
@@ -66,18 +85,37 @@ class ResponseParser
      * }
      * ```
      *
-     * @param array{
+     * This will arrive as the following shape:
+     *
+     * array{
      *   rawId: int[],
      *   type: string,
      *   authenticatorData: int[],
      *   clientDataJSON: int[],
      *   signature: int[],
-     * } $response
+     * }
+     *
+     * $response is left untyped since it performs additional checking from
+     * untrusted user data.
+     *
+     * @param mixed[] $response
      */
     public function parseGetResponse(array $response): Responses\AssertionInterface
     {
-        if ($response['type'] !== 'public-key') {
-            throw new \UnexpectedValueException();
+        if (!array_key_exists('type', $response) || $response['type'] !== 'public-key') {
+            throw new Error\ParseError('7.2.2', 'response.type');
+        }
+        if (!array_key_exists('rawId', $response) || !is_array($response['rawId'])) {
+            throw new Error\ParseError('7.2.2', 'response.rawId');
+        }
+        if (!array_key_exists('authenticatorData', $response) || !is_array($response['authenticatorData'])) {
+            throw new Error\ParseError('7.2.2', 'response.authenticatorData');
+        }
+        if (!array_key_exists('clientDataJSON', $response) || !is_array($response['clientDataJSON'])) {
+            throw new Error\ParseError('7.2.2', 'response.clientDataJSON');
+        }
+        if (!array_key_exists('signature', $response) || !is_array($response['signature'])) {
+            throw new Error\ParseError('7.2.2', 'response.signature');
         }
 
         // userHandle provides the user.id from registration

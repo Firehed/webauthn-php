@@ -25,6 +25,7 @@ class None implements AttestationStatementInterface
 
     public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult
     {
+        assert($this->data === []); // @phpstan-ignore-line
         return new VerificationResult(AttestationType::None);
     }
 }
