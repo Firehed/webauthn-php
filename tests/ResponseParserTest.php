@@ -24,6 +24,45 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @dataProvider badCreateResponses
+     * @param mixed[] $response
+     */
+    public function testParseCreateResponseInputValidation(array $response): void
+    {
+        $parser = new ResponseParser();
+        $this->expectException(Errors\ParseError::class);
+        $parser->parseCreateResponse($response);
+    }
+
+    /**
+     * @return array<mixed>[]
+     */
+    public function badCreateResponses(): array
+    {
+        $makeVector = function (array $overrides): array {
+            $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/register.json');
+            foreach ($overrides as $key => $value) {
+                if ($value === null) {
+                    unset($response[$key]);
+                } else {
+                    $response[$key] = $value;
+                }
+            }
+
+            return [$response];
+        };
+
+        return [
+            'no type' => $makeVector(['type' => null]),
+            'invalid type' => $makeVector(['type' => 'publickey']),
+            'no rawId' => $makeVector(['rawId' => null]),
+            'invalid rawId' => $makeVector(['rawId' => 'some value']),
+            'no attestationObject' => $makeVector(['attestationObject' => null]),
+            'no clientDataJSON' => $makeVector(['clientDataJSON' => null]),
+        ];
+    }
+
+    /**
      * Test the happy case for various known-good responses.
      *
      * @dataProvider goodVectors
