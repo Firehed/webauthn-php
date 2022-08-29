@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Firehed\WebAuthn\Error;
+namespace Firehed\WebAuthn\Errors;
 
 /**
  * Errors that can occur during Verifying an Authentication Assertion
