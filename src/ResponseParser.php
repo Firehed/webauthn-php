@@ -52,16 +52,16 @@ class ResponseParser
     public function parseCreateResponse(array $response): Responses\AttestationInterface
     {
         if (!array_key_exists('type', $response) || $response['type'] !== 'public-key') {
-            throw new Error\ParseError('7.1.2', 'response.type');
+            throw new Errors\ParseError('7.1.2', 'response.type');
         }
         if (!array_key_exists('rawId', $response) || !is_array($response['rawId'])) {
-            throw new Error\ParseError('7.1.2', 'response.rawId');
+            throw new Errors\ParseError('7.1.2', 'response.rawId');
         }
         if (!array_key_exists('attestationObject', $response) || !is_array($response['attestationObject'])) {
-            throw new Error\ParseError('7.1.2', 'response.attestationObject');
+            throw new Errors\ParseError('7.1.2', 'response.attestationObject');
         }
         if (!array_key_exists('clientDataJSON', $response) || !is_array($response['clientDataJSON'])) {
-            throw new Error\ParseError('7.1.2', 'response.clientDataJSON');
+            throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
         return new CreateResponse(
             id: BinaryString::fromBytes($response['rawId']),
@@ -103,19 +103,19 @@ class ResponseParser
     public function parseGetResponse(array $response): Responses\AssertionInterface
     {
         if (!array_key_exists('type', $response) || $response['type'] !== 'public-key') {
-            throw new Error\ParseError('7.2.2', 'response.type');
+            throw new Errors\ParseError('7.2.2', 'response.type');
         }
         if (!array_key_exists('rawId', $response) || !is_array($response['rawId'])) {
-            throw new Error\ParseError('7.2.2', 'response.rawId');
+            throw new Errors\ParseError('7.2.2', 'response.rawId');
         }
         if (!array_key_exists('authenticatorData', $response) || !is_array($response['authenticatorData'])) {
-            throw new Error\ParseError('7.2.2', 'response.authenticatorData');
+            throw new Errors\ParseError('7.2.2', 'response.authenticatorData');
         }
         if (!array_key_exists('clientDataJSON', $response) || !is_array($response['clientDataJSON'])) {
-            throw new Error\ParseError('7.2.2', 'response.clientDataJSON');
+            throw new Errors\ParseError('7.2.2', 'response.clientDataJSON');
         }
         if (!array_key_exists('signature', $response) || !is_array($response['signature'])) {
-            throw new Error\ParseError('7.2.2', 'response.signature');
+            throw new Errors\ParseError('7.2.2', 'response.signature');
         }
 
         // userHandle provides the user.id from registration

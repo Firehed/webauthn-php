@@ -317,7 +317,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
 
     private function expectRegistrationError(string $section): void
     {
-        $this->expectException(Error\RegistrationError::class);
+        $this->expectException(Errors\RegistrationError::class);
         // TODO: how to assert on $section
     }
 }

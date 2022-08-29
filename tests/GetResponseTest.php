@@ -234,7 +234,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
 
     private function expectVerificationError(string $section): void
     {
-        $this->expectException(Error\VerificationError::class);
+        $this->expectException(Errors\VerificationError::class);
         // TODO: how to assert on $section
     }
 }

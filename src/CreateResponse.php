@@ -38,7 +38,7 @@ class CreateResponse implements Responses\AttestationInterface
         // 7.1.6
         $C = json_decode($this->clientDataJson->unwrap(), true);
         if (!is_array($C)) {
-            throw new Error\ParseError('7.1.6', 'JSON decoding returned the wrong format');
+            throw new Errors\ParseError('7.1.6', 'JSON decoding returned the wrong format');
         }
 
         // 7.1.7
@@ -146,6 +146,6 @@ class CreateResponse implements Responses\AttestationInterface
 
     private function fail(string $section, string $desc): never
     {
-        throw new Error\RegistrationError($section, $desc);
+        throw new Errors\RegistrationError($section, $desc);
     }
 }
