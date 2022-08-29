@@ -68,8 +68,8 @@ class EllipticCurve implements PublicKeyInterface
         $der .= $this->x->unwrap();
         $der .= $this->y->unwrap();
 
-        $pem  = "-----BEGIN PUBLIC KEY-----\r\n";
-        $pem .= chunk_split(base64_encode($der), 64);
+        $pem  = "-----BEGIN PUBLIC KEY-----\n";
+        $pem .= chunk_split(base64_encode($der), 64, "\n");
         $pem .= "-----END PUBLIC KEY-----";
         return $pem;
     }
