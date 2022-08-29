@@ -35,6 +35,17 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @dataProvider badGetResponses
+     * @param mixed[] $response
+     */
+    public function testParseGetResponseInputValidation(array $response): void
+    {
+        $parser = new ResponseParser();
+        $this->expectException(Errors\ParseError::class);
+        $parser->parseGetResponse($response);
+    }
+
+    /**
      * @return array<mixed>[]
      */
     public function badCreateResponses(): array
@@ -58,7 +69,41 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
             'no rawId' => $makeVector(['rawId' => null]),
             'invalid rawId' => $makeVector(['rawId' => 'some value']),
             'no attestationObject' => $makeVector(['attestationObject' => null]),
+            // invalid attestationObject
             'no clientDataJSON' => $makeVector(['clientDataJSON' => null]),
+            // invalid clientDataJSON
+        ];
+    }
+
+    /**
+     * @return array<mixed>[]
+     */
+    public function badGetResponses(): array
+    {
+        $makeVector = function (array $overrides): array {
+            $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/login.json');
+            foreach ($overrides as $key => $value) {
+                if ($value === null) {
+                    unset($response[$key]);
+                } else {
+                    $response[$key] = $value;
+                }
+            }
+
+            return [$response];
+        };
+
+        return [
+            'no type' => $makeVector(['type' => null]),
+            'invalid type' => $makeVector(['type' => 'publickey']),
+            'no rawId' => $makeVector(['rawId' => null]),
+            'invalid rawId' => $makeVector(['rawId' => 'some value']),
+            'no authenticatorData' => $makeVector(['authenticatorData' => null]),
+            // invalid authenticatorData
+            'no clientDataJSON' => $makeVector(['clientDataJSON' => null]),
+            // invalid clientDataJSON
+            'no signature' => $makeVector(['signature' => null]),
+            'invalid signature' => $makeVector(['signature' => 'sig']),
         ];
     }
 
