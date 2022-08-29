@@ -74,7 +74,7 @@ class GetResponse implements Responses\AssertionInterface
         // 7.2.10
         $C = json_decode($JSONtext, true);
         if (!is_array($C)) {
-            throw new Error\ParseError('7.2.10', 'JSON decoding returned the wrong format');
+            throw new Errors\ParseError('7.2.10', 'JSON decoding returned the wrong format');
         }
 
         // 7.2.11
@@ -163,6 +163,6 @@ class GetResponse implements Responses\AssertionInterface
 
     private function fail(string $section, string $desc): never
     {
-        throw new Error\VerificationError($section, $desc);
+        throw new Errors\VerificationError($section, $desc);
     }
 }
