@@ -65,8 +65,8 @@ class FidoU2F implements AttestationStatementInterface
         $publicKeyU2F = sprintf(
             '%s%s%s',
             "\x04",
-            $credentialPublicKey->getXCoordinate(),
-            $credentialPublicKey->getYCoordinate(),
+            $credentialPublicKey->getXCoordinate()->unwrap(),
+            $credentialPublicKey->getYCoordinate()->unwrap(),
         );
 
 

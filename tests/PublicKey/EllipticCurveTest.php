@@ -31,8 +31,8 @@ class EllipticCurveTest extends \PHPUnit\Framework\TestCase
         $y = BinaryString::fromHex('3f017188437532409d6bbc86b68d56214a720bf8c183f844c576f4e2003ba976');
 
         $pk = new EllipticCurve($x, $y);
-        self::assertSame($x->unwrap(), $pk->getXCoordinate(), 'X-coordinate changed');
-        self::assertSame($y->unwrap(), $pk->getYCoordinate(), 'Y-coordinate changed');
+        self::assertTrue($x->equals($pk->getXCoordinate()), 'X-coordinate changed');
+        self::assertTrue($y->equals($pk->getYCoordinate()), 'Y-coordinate changed');
 
         $opensslPubKey = <<<PEM
         -----BEGIN PUBLIC KEY-----
