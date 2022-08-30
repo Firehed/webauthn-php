@@ -34,18 +34,18 @@ class EllipticCurve implements PublicKeyInterface
      * Returns a 32-byte string representing the 256-bit X-coordinate on the
      * curve
      */
-    public function getXCoordinate(): string
+    public function getXCoordinate(): BinaryString
     {
-        return $this->x->unwrap();
+        return $this->x;
     }
 
     /**
      * Returns a 32-byte string representing the 256-bit Y-coordinate on the
      * curve
      */
-    public function getYCoordinate(): string
+    public function getYCoordinate(): BinaryString
     {
-        return $this->y->unwrap();
+        return $this->y;
     }
 
     // Prepends the pubkey format headers and builds a pem file from the raw
