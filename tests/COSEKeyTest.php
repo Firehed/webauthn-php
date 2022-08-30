@@ -29,5 +29,6 @@ class COSEKeyTest extends \PHPUnit\Framework\TestCase
                 ->equals($pk->getYCoordinate()),
             'Y-coordinate wrong',
         );
+        // TODO: assert that it's a P256 key (see notes in EC class)
     }
 }
