@@ -409,7 +409,7 @@ Nice to haves/Future scope:
 - [x] Refactor FIDO attestation to not need AD.getAttestedCredentialData
     - grab credential from AD
     - check PK type
-- [ ] ExpiringChallenge & ChallengeInterface
+- [x] ExpiringChallenge & ChallengeInterface
 - [ ] JSON generators:
   - [ ] PublicKeyCredentialCreationOptions
   - [ ] PublicKeyCredentialRequestOptions
