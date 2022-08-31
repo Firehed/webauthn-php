@@ -9,18 +9,11 @@ namespace Firehed\WebAuthn;
  */
 class ChallengeTest extends \PHPUnit\Framework\TestCase
 {
-    public function testSerializationRoundTrip(): void
+    use ChallengeInterfaceTestTrait;
+
+    protected function getChallenge(): ChallengeInterface
     {
-        $challenge = Challenge::random();
-
-        $serialized = serialize($challenge);
-        $unserialized = unserialize($serialized);
-
-        self::assertInstanceOf(Challenge::class, $unserialized);
-        self::assertTrue(
-            hash_equals($challenge->getUnwrappedBinary(), $unserialized->getUnwrappedBinary()),
-            'Wrapped challenge changed',
-        );
+        return Challenge::random();
     }
 
     /**
@@ -36,9 +29,9 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
         $unserialized = unserialize($serialized);
         self::assertInstanceOf(Challenge::class, $unserialized);
 
-        self::assertSame(
-            base64_decode('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=', true),
-            $unserialized->getUnwrappedBinary(),
+        self::assertTrue(
+            BinaryString::fromBase64('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=')
+                ->equals($unserialized->getBinary()),
             'Decoding resulted in inaccurate challenge',
         );
     }
