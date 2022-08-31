@@ -70,8 +70,12 @@ function getDatabaseConnection(): PDO
 
 function getRelyingParty(): RelyingParty
 {
+    $rp = getenv('HOST');
+    if ($rp === false) {
+        throw new RuntimeException('HOST is not defined');
+    }
     // This would be configured by a env var or something
-    return new RelyingParty('http://localhost:8888');
+    return new RelyingParty($rp);
 }
 
 /**
