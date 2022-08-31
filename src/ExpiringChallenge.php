@@ -22,6 +22,7 @@ class ExpiringChallenge implements ChallengeInterface
 
     public function __construct(DateInterval $duration)
     {
+        // TODO: If duration->invert && not in unit tests, throw?
         $this->wrapped = Challenge::random();
         $this->expiration = (new DateTimeImmutable())->add($duration);
     }
