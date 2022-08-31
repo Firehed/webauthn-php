@@ -34,6 +34,7 @@ jobs:
 
   deploy:
     name: Deploy
+    runs-on: ubuntu-latest
     env:
       KUBECONFIG: ${{ github.workspace }}/__kubeconfig_tmp__
     needs:
