@@ -36,7 +36,7 @@ class GetResponse implements Responses\AssertionInterface
      * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
      */
     public function verify(
-        Challenge $challenge,
+        ChallengeInterface $challenge,
         RelyingParty $rp,
         CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
@@ -83,7 +83,7 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.12
-        $b64u = Codecs\Base64Url::encode($challenge->getUnwrappedBinary());
+        $b64u = Codecs\Base64Url::encode($challenge->getBinary()->unwrap());
         if (!hash_equals($b64u, $C['challenge'])) {
             $this->fail('7.2.12', 'C.challenge');
         }

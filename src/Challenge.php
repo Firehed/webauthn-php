@@ -15,7 +15,7 @@ namespace Firehed\WebAuthn;
  * pertaining to object serialization are only to be called through the
  * serialization functions `serialize` and `unserialize`, not directly.
  */
-class Challenge
+class Challenge implements ChallengeInterface
 {
     /**
      * @internal
@@ -34,13 +34,11 @@ class Challenge
     }
 
     /**
-     * Caution: this returns raw binary
-     *
      * @internal
      */
-    public function getUnwrappedBinary(): string
+    public function getBinary(): BinaryString
     {
-        return $this->wrapped->unwrap();
+        return $this->wrapped;
     }
 
     /**
