@@ -1,3 +1,4 @@
 /vendor/
-composer.lock
-.phpunit.result.cache
+/composer.lock
+/examples/vendor/
+/.phpunit.result.cache

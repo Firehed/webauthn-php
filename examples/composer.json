@@ -1,0 +1,16 @@
+{
+    "require": {
+        "firehed/webauthn": "dev-main"
+    },
+    "autoload": {
+        "files": [
+            "functions.php"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../"
+        }
+    ]
+}
