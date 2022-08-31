@@ -1,11 +1,9 @@
-name: Examples Continuous Delivery
+name: Deploy Examples
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    # just for debugging will remove
 
 jobs:
   build:
@@ -43,11 +41,7 @@ jobs:
 
       - name: Auth to cluster
         run: echo ${{ secrets.LINODE_KUBECONFIG }} | base64 -d > $KUBECONFIG
-
-      # - name: Cluster info
-      #   run: kubectl cluster-info
-
-      - name: Deploy API
+      - name: Deploy
         uses: Firehed/deploy-to-kubernetes-action@v0.3.0
         with:
           namespace: webauthn-demo-ericstern-com
