@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use Firehed\WebAuthn\{
     Codecs,
@@ -60,4 +60,6 @@ header('Content-type: application/json');
 echo json_encode([
     'success' => true,
     'user_id' => $_SESSION['authenticating_user_id'],
+    'credId' => $foundCredential->getStorageId(),
+    'newCredId' => $updatedCredential->getStorageId(),
 ]);

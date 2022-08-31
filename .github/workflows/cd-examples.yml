@@ -1,0 +1,56 @@
+name: Deploy Examples
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build.outputs.server-tag }}
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Log in to docker
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build images
+        id: build
+        uses: firehed/multistage-docker-build-action@v1
+        with:
+          repository: ghcr.io/firehed/webauthn-php
+          server-stage: examples
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    env:
+      KUBECONFIG: ${{ github.workspace }}/__kubeconfig_tmp__
+    needs:
+      - build
+    steps:
+
+      - name: Auth to cluster
+        run: echo ${{ secrets.LINODE_KUBECONFIG }} | base64 -d > $KUBECONFIG
+      - name: Deploy
+        uses: Firehed/deploy-to-kubernetes-action@v0.3.0
+        with:
+          namespace: webauthn-demo-ericstern-com
+          deployment: http
+          container: http
+          image: ${{ needs.build.outputs.image }}
+          url: https://webauthn-demo.ericstern.com
+          environment: production
+          production: true # User-accessible
+          transient: false # Permanent
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.inputs.ref }}
