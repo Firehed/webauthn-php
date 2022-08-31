@@ -1,4 +1,8 @@
 Dockerfile
 .dockerignore
 .git
+
 vendor/
+
+examples/vendor/
+examples/app.sqlite3

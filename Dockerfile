@@ -1,9 +1,9 @@
 FROM php:8.1-cli-alpine
-WORKDIR /srv/app
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY composer.json .
-RUN composer install
+WORKDIR /srv/app
 COPY . .
+WORKDIR /srv/app/examples
+RUN composer install
 ENV PORT=8000
 ENV HOST=http://localhost:$PORT
-CMD php -S 0.0.0.0:$PORT -t examples
+CMD php -S 0.0.0.0:$PORT -t .
