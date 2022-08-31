@@ -1,4 +1,4 @@
-FROM php:8.1-cli-alpine
+FROM php:8.1-cli-alpine AS examples
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /srv/app
 COPY . .

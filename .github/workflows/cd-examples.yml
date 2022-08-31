@@ -1,0 +1,31 @@
+name: Build and deploy examples
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    # just for debugging will remove
+
+jobs:
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Log in to docker
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build images
+        id: build
+        uses: firehed/multistage-docker-build-action@v1
+        with:
+          repository: ghcr.io/firehed/webauthn-php
+          server-stage: examples
