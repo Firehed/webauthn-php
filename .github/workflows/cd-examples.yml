@@ -1,4 +1,4 @@
-name: Build and deploy examples
+name: Examples Continuous Delivery
 
 on:
   push:
@@ -9,8 +9,10 @@ on:
 
 jobs:
   build:
-    name: Build Docker image
+    name: Build
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build.outputs.server-tag }}
     steps:
 
       - name: Check out code
@@ -29,3 +31,31 @@ jobs:
         with:
           repository: ghcr.io/firehed/webauthn-php
           server-stage: examples
+
+  deploy:
+    name: Deploy
+    env:
+      KUBECONFIG: ${{ github.workspace }}/__kubeconfig_tmp__
+    needs:
+      - build
+    steps:
+
+      - name: Auth to cluster
+        run: echo ${{ secrets.LINODE_KUBECONFIG }} | base64 -d > $KUBECONFIG
+
+      - name: Cluster info
+        run: kubectl cluster-info
+
+      - name: Deploy API
+        uses: Firehed/deploy-to-kubernetes-action@v0.3.0
+        with:
+          namespace: webauthn-demo-ericstern-com
+          deployment: http
+          container: http
+          image: ${{ needs.build.outputs.image }}
+          url: https://webauthn-demo.ericstern.com
+          environment: production
+          production: true # User-accessible
+          transient: false # Permanent
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.inputs.ref }}
