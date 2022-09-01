@@ -62,4 +62,30 @@ class AuthenticatorDataTest extends \PHPUnit\Framework\TestCase
         self::assertTrue($ad->isUserVerified(), 'Flags bit 2 is set, UV=true');
         $_ = $ad->getAttestedCredential(); // Checking that this dones't throw.
     }
+
+    public function testParseAssertionWithNoFlags(): void
+    {
+        $bytes = BinaryString::fromBytes([
+            73, 150, 13, 229, 136, 14, 140, 104,
+            116, 52, 23, 15, 100, 118, 96, 91,
+            143, 228, 174, 185, 162, 134, 50, 199,
+            153, 92, 243, 186, 131, 29, 151, 99, // RP ID Hash
+            0, // Flags: empty!
+            0, 0, 1, 2, // Sign count
+        ]);
+        $ad = AuthenticatorData::parse($bytes);
+        self::assertSame(
+            hash('sha256', 'localhost', true),
+            $ad->getRpIdHash()->unwrap(),
+            'RP ID should match localhost',
+        );
+        self::assertFalse($ad->isUserPresent(), 'Flags bit 0 is not set, UP=false');
+        self::assertFalse($ad->isUserVerified(), 'Flags bit 2 is not set, UV=false');
+        self::assertSame(258, $ad->getSignCount(), 'Sign count wrong');
+        try {
+            $_ = $ad->getAttestedCredential();
+            self::fail('AuthData does not include an attested credential');
+        } catch (\Throwable) {
+        }
+    }
 }
