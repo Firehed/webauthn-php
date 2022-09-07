@@ -418,6 +418,7 @@ Nice to haves/Future scope:
 - [ ] Permit changing the Relying Party ID
 - [ ] Refactor COSEKey to support other key types, use enums & ADT-style composition
 - [ ] GetResponse userHandle
+- [x] Assertion.verify (CredentialI | CredentialContainer)
 
 Testing:
 - [x] Happy path w/ FidoU2F
