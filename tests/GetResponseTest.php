@@ -232,6 +232,53 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         self::markTestIncomplete();
     }
 
+    public function testCredentialContainerWorks(): void
+    {
+        $container = new CredentialContainer([$this->credential]);
+
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $credential = $response->verify($this->challenge, $this->rp, $container);
+        self::assertSame($this->credential->getStorageId(), $credential->getStorageId());
+    }
+
+    public function testEmptyCredentialContainerFails(): void
+    {
+        $container = new CredentialContainer([]);
+
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.7');
+        $response->verify($this->challenge, $this->rp, $container);
+    }
+
+    public function testCredentialContainerMissingUsedCredentialFails(): void
+    {
+        $wrongCred = self::createMock(CredentialInterface::class);
+        // this should be not found w/out additional mocking
+        $container = new CredentialContainer([$wrongCred]);
+
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $this->expectVerificationError('7.2.7');
+        $response->verify($this->challenge, $this->rp, $container);
+    }
+
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Errors\VerificationError::class);

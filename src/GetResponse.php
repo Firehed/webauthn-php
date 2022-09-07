@@ -38,7 +38,7 @@ class GetResponse implements Responses\AssertionInterface
     public function verify(
         Challenge $challenge,
         RelyingParty $rp,
-        CredentialInterface $credential,
+        CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.2.1-7.2.4 are done in client side js & the ResponseParser
@@ -62,6 +62,12 @@ class GetResponse implements Responses\AssertionInterface
         // get credential from JS credential.id
         // (index into possible credential list?)
         // $credential is this value.
+        if ($credential instanceof CredentialContainer) {
+            $credential = $credential->findCredentialUsedByResponse($this);
+            if ($credential === null) {
+                $this->fail('7.2.7', 'Credential not found in container');
+            }
+        }
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
