@@ -24,17 +24,8 @@ $challenge = $_SESSION['webauthn_challenge'];
 
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
-$foundCredential = $credentialContainer->findCredentialUsedByResponse($getResponse);
-if ($foundCredential === null) {
-    // The credentials associated with the authenticating user did not match the
-    // one used in the response. If you are using allowCredentials (as above),
-    // this should never happen.
-    header('HTTP/1.1 403 Unauthorized');
-    return;
-}
-
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $foundCredential);
+    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -60,6 +51,5 @@ header('Content-type: application/json');
 echo json_encode([
     'success' => true,
     'user_id' => $_SESSION['authenticating_user_id'],
-    'credId' => $foundCredential->getStorageId(),
     'newCredId' => $updatedCredential->getStorageId(),
 ]);
