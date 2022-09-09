@@ -308,17 +308,8 @@ $challenge = $_SESSION['webauthn_challenge'];
 
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
-$foundCredential = $credentialContainer->findCredentialUsedByResponse($getResponse);
-if ($foundCredential === null) {
-    // The credentials associated with the authenticating user did not match the
-    // one used in the response. If you are using allowCredentials (as above),
-    // this should never happen.
-    header('HTTP/1.1 403 Unauthorized');
-    return;
-}
-
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $foundCredential);
+    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -418,6 +409,7 @@ Nice to haves/Future scope:
 - [ ] Permit changing the Relying Party ID
 - [ ] Refactor COSEKey to support other key types, use enums & ADT-style composition
 - [ ] GetResponse userHandle
+- [x] Assertion.verify (CredentialI | CredentialContainer)
 
 Testing:
 - [x] Happy path w/ FidoU2F
