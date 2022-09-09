@@ -6,6 +6,9 @@ namespace Firehed\WebAuthn;
 
 interface ChallengeInterface
 {
+    /**
+     * @api
+     */
     public function getBase64(): string;
 
     /**
