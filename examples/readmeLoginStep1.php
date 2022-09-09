@@ -3,8 +3,8 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Firehed\WebAuthn\{
-    Challenge,
     Codecs,
+    ExpiringChallenge,
 };
 
 session_start();
@@ -19,7 +19,7 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = Challenge::random();
+$challenge = ExpiringChallenge::withLifetime(120);
 $_SESSION['webauthn_challenge'] = $challenge;
 
 // Send to user
