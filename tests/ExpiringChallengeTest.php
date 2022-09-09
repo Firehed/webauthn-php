@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use DateInterval;
+use LogicException;
 
 /**
  * @covers Firehed\WebAuthn\ExpiringChallenge
@@ -61,6 +62,28 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
 
         self::expectException(Errors\ExpiredChallengeError::class);
         $ec->getBinary();
+    }
+
+    /**
+     * @doesNotPerformAssertions This is checking that an exeption is NOT
+     * thrown when the expiration is in the future.
+     */
+    public function testFactoryInFuture(): void
+    {
+        $ec = ExpiringChallenge::withLifetime(86400);
+        $_ = $ec->getBase64();
+    }
+
+    public function testFactoryRightNow(): void
+    {
+        self::expectException(LogicException::class);
+        $ec = ExpiringChallenge::withLifetime(0);
+    }
+
+    public function testFactoryInPast(): void
+    {
+        self::expectException(LogicException::class);
+        $ec = ExpiringChallenge::withLifetime(-1);
     }
 
     /**
