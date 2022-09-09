@@ -14,6 +14,10 @@ namespace Firehed\WebAuthn;
  * Methods marked as @internal are not for public use. The magic methods
  * pertaining to object serialization are only to be called through the
  * serialization functions `serialize` and `unserialize`, not directly.
+ *
+ * @phpstan-type SerializationFormat array{
+ *   b64: string,
+ * }
  */
 class Challenge implements ChallengeInterface
 {
@@ -67,7 +71,7 @@ class Challenge implements ChallengeInterface
     }
 
     /**
-     * @return array{b64: string}
+     * @return SerializationFormat
      */
     public function __serialize(): array
     {
@@ -75,7 +79,7 @@ class Challenge implements ChallengeInterface
     }
 
     /**
-     * @param array{b64: string} $serialized
+     * @param SerializationFormat $serialized
      */
     public function __unserialize(array $serialized): void
     {
