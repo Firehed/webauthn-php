@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\Responses;
 
 use Firehed\WebAuthn\{
-    Challenge,
+    ChallengeInterface,
     CredentialInterface,
     RelyingParty,
     UserVerificationRequirement,
@@ -20,7 +20,7 @@ use Firehed\WebAuthn\{
 interface AttestationInterface
 {
     public function verify(
-        Challenge $challenge,
+        ChallengeInterface $challenge,
         RelyingParty $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface;
