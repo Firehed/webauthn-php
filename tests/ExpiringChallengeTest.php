@@ -77,12 +77,14 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
     public function testFactoryRightNow(): void
     {
         self::expectException(LogicException::class);
+        // @phpstan-ignore-next-line Validating runtime check
         $ec = ExpiringChallenge::withLifetime(0);
     }
 
     public function testFactoryInPast(): void
     {
         self::expectException(LogicException::class);
+        // @phpstan-ignore-next-line Validating runtime check
         $ec = ExpiringChallenge::withLifetime(-1);
     }
 

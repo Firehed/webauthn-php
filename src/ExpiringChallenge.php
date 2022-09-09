@@ -21,6 +21,9 @@ class ExpiringChallenge implements ChallengeInterface
     private ChallengeInterface $wrapped;
     private DateTimeInterface $expiration;
 
+    /**
+     * @internal
+     */
     public function __construct(DateInterval $duration)
     {
         // TODO: If duration->invert && not in unit tests, throw?
@@ -30,6 +33,8 @@ class ExpiringChallenge implements ChallengeInterface
 
     /**
      * @param positive-int $seconds
+     *
+     * @api
      */
     public static function withLifetime(int $seconds): ChallengeInterface
     {
