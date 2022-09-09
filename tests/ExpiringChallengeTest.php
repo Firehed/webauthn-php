@@ -113,4 +113,23 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
         } catch (Errors\ExpiredChallengeError) {
         }
     }
+
+    protected function getInFlightSerialized(): string
+    {
+        $nearFuture = time() + 10;
+        // This is ABSOLUTELY RIDICULOUS, but to bypass the expiration time so
+        // the wrapped challenge can be read out, this needs to dynamiaclly
+        // override the expiration in the serialized format. There's no good
+        // alternative I can think of that doesn't involve a) allowing the
+        // expiration to change or b) providing some sort of test-only hack
+        // method to accomplish the same.
+        return 'O:34:"Firehed\WebAuthn\ExpiringChallenge":2:{s:1:"c";s:44:"Vi' .
+            'FgIH5w+B1BzVRWatX+Zjvt2D9JxQCAH6PnJwW+QdQ=";s:1:"e";i:' .
+            $nearFuture . ';}';
+    }
+
+    protected function getInFlightChallenge(): BinaryString
+    {
+        return BinaryString::fromBase64('ViFgIH5w+B1BzVRWatX+Zjvt2D9JxQCAH6PnJwW+QdQ=');
+    }
 }

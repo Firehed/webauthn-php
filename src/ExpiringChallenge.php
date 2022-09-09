@@ -15,6 +15,11 @@ use InvalidArgumentException;
  * will throw an exception preventing additional progress.
  *
  * @api
+ *
+ * @phpstan-type SerializationFormat array{
+ *   c: string,
+ *   e: int,
+ * }
  */
 class ExpiringChallenge implements ChallengeInterface
 {
@@ -66,5 +71,27 @@ class ExpiringChallenge implements ChallengeInterface
         $diff = $this->expiration->diff(new DateTimeImmutable());
 
         return $diff->invert === 0;
+    }
+
+    /**
+     * @return SerializationFormat
+     */
+    public function __serialize(): array
+    {
+        return [
+            'c' => $this->wrapped->getBase64(),
+            'e' => $this->expiration->getTimestamp(),
+        ];
+    }
+
+    /**
+     * @param SerializationFormat $serialized
+     */
+    public function __unserialize(array $serialized): void
+    {
+        $bin = base64_decode($serialized['c'], true);
+        assert($bin !== false);
+        $this->wrapped = new Challenge(new BinaryString($bin));
+        $this->expiration = new DateTimeImmutable('@' . $serialized['e']);
     }
 }

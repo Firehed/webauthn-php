@@ -16,23 +16,13 @@ class ChallengeTest extends \PHPUnit\Framework\TestCase
         return Challenge::random();
     }
 
-    /**
-     * This covers the specific scenario of a challenge being unserialized
-     * (e.g. from a Session) that was generated from an older version of this
-     * library. This helps ensure compatibility across versions and reduces the
-     * risk of a point release breaking any active session data.
-     */
-    public function testInFlightDecode(): void
+    protected function getInFlightSerialized(): string
     {
-        $serialized = 'O:26:"Firehed\WebAuthn\Challenge":1:{s:3:"b64";s:44:"k' .
-            'tCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=";}';
-        $unserialized = unserialize($serialized);
-        self::assertInstanceOf(Challenge::class, $unserialized);
+        return 'O:26:"Firehed\WebAuthn\Challenge":1:{s:3:"b64";s:44:"ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=";}';
+    }
 
-        self::assertTrue(
-            BinaryString::fromBase64('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=')
-                ->equals($unserialized->getBinary()),
-            'Decoding resulted in inaccurate challenge',
-        );
+    protected function getInFlightChallenge(): BinaryString
+    {
+        return BinaryString::fromBase64('ktCbjFzaUuHixxmUFk9G35Yd0EZdWp5+RcHlKdsIK58=');
     }
 }

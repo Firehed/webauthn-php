@@ -45,4 +45,25 @@ trait ChallengeInterfaceTestTrait
             'Base64 encoding the unwrapped binary did not match getBase64 result',
         );
     }
+
+    /**
+     * This covers the specific scenario of a challenge being unserialized
+     * (e.g. from a Session) that was generated from an older version of this
+     * library. This helps ensure compatibility across versions and reduces the
+     * risk of a point release breaking any active session data.
+     */
+    public function testInFlightDecode(): void
+    {
+        $serialized = $this->getInFlightSerialized();
+        $unserialized = unserialize($serialized);
+        self::assertInstanceOf(ChallengeInterface::class, $unserialized);
+
+        self::assertTrue(
+            $this->getInFlightChallenge()->equals($unserialized->getBinary()),
+            'Decoding resulted in inaccurate challenge',
+        );
+    }
+
+    abstract protected function getInFlightSerialized(): string;
+    abstract protected function getInFlightChallenge(): BinaryString;
 }
