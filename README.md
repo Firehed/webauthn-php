@@ -48,10 +48,10 @@ Send it to the user as base64.
 ```php
 <?php
 
-use Firehed\WebAuthn\Challenge;
+use Firehed\WebAuthn\ExpiringChallenge;
 
 // Generate challenge
-$challenge = Challenge::random();
+$challenge = ExpiringChallenge::withLifetime(120);
 
 // Store server-side; adjust to your app's needs
 session_start();
@@ -199,8 +199,8 @@ This assumes the same schema from the previous Registration example.
 <?php
 
 use Firehed\WebAuthn\{
-    Challenge,
     Codecs,
+    ExpiringChallenge,
 };
 
 session_start();
@@ -216,7 +216,7 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 // See examples/functions.php for how this works
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = Challenge::random();
+$challenge = ExpiringChallenge::withLifetime(120);
 $_SESSION['webauthn_challenge'] = $challenge;
 
 // Send to user
