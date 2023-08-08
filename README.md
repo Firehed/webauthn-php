@@ -475,11 +475,45 @@ All exceptions thrown by the library implement `Firehed\WebAuthn\Errors\WebAuthn
 - The credential id SHOULD be unique.
   If during registration this unique constraint is violated AND it's associated with a different user, your application MUST handle this situation, either by returning an error or de-associating the credential with the other user.
   See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 7.1 step 22 for more info.
-- The WebAuthn spec makes no guarnatees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
+- The WebAuthn spec makes no guarantees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
   It is RECOMMENDED to permit storage of up to 255 bytes, as this tends to be the most compact variable-length encoding in many databases.
 - The credential SHOULD be stored as a string encoded by `Codecs\Credential::encode()`, and decoded with `::decode`.
   The storage system must allow for values up to 64KiB (65,535 bytes) of ASCII; the encoding will not contain values out of the base64 range.
 - It's RECOMMENDED to allow users to provide a name associated with their credentials (e.g. "work laptop", "backup fido key").
+- You MAY use the storage identifier (`getStorageId()`) as a primary key if storing in a relational database.
+  It MAY also be used as a surrogate key.
+
+#### MySQL example
+
+Simplest version - uses own ID as primary key:
+```sql
+CREATE TABLE `credentials` (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `credential` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
+More common setup:
+- Separates primary key from credential ID. This tends to increase flexibility with ORMs, etc.
+- Adds a `nickname` field, where users can provide a label for their own use.
+- Stores the credential data in ASCII format (the outputs are guaranteed to be ASCII safe). This can reduce storage size slightly.
+    - Note: Store and retrieve both library-provided values without any modification.
+      Avoid storage mechanisms that trim data, change case, etc.
+
+```sql
+CREATE TABLE `credentials` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `credential_id` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'credential->getStorageId()',
+  `user_id` bigint unsigned NOT NULL,
+  `credential` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'encode() result',
+  `nickname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `credential_id` (`credential_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
 
 ### Authentication
 
