@@ -51,6 +51,9 @@ This step takes place either when a user is first registering, or later on to su
 This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
+> [!NOTE]
+> Challenges can be serialized, and thus can be stored directly in a session, as well as most caches.
+
 ```php
 <?php
 
