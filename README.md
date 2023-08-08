@@ -1,4 +1,4 @@
-# Web Authentication for PHP
+# Web Authentication (Passkeys) for PHP
 
 A way to move beyond passwords
 
@@ -25,6 +25,12 @@ Application logic is kept to a bare minimum in order to highlight the most impor
 
 ### Setup
 
+First, install the library:
+
+```
+composer require firehed/webauthn
+```
+
 Create a `RelyingParty` instance.
 This **MUST** match the complete origin that users will interact with; e.g. `https://login.example.com:1337`.
 The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
@@ -44,6 +50,10 @@ This step takes place either when a user is first registering, or later on to su
 1) Create an endpoint that will return a new, random Challenge.
 This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
+
+> [!NOTE]
+> Challenges can be serialized, and thus can be stored directly in a session, as well as most caches.
+> If you are not using sessions in your application (e.g. an API), make sure it's stored in a way that's associated with the authenticating user.
 
 ```php
 <?php
@@ -183,6 +193,11 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 ```
 
+> [!IMPORTANT]
+> The `getStorageId()` value from the credential will be used during authentication.
+> Be sure to store it alongside the encoded version.
+> It should be **globally** unique, and treated as such in your durable storage.
+
 4) There is no step 4. The verified credential is now stored and associated with the user!
 
 ### Authenticating a user with an existing WebAuthn credential
@@ -226,6 +241,11 @@ echo json_encode([
     'credential_ids' => $credentialContainer->getBase64Ids(),
 ]);
 ```
+
+> [!WARNING]
+> Returning `credential_ids` for use in `allowCredentials` (below) can leak information about who has registered and what sort of authentication devices they possess.
+> See [§14.6.3 in the spec](https://www.w3.org/TR/webauthn-2/#sctn-credential-id-privacy-leak) for more information.
+> You MAY elide that value from the response and leave `allowCredentials` unconfigured in the JS code.
 
 2) In client Javascript code, read the data from above and provide it to the WebAuthn APIs.
 
@@ -328,6 +348,10 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
+
+> [!WARNING]
+> Failing to update the stored credential can expose your application to replay attacks.
+> Always update the stored credential with the returned value after authentication.
 
 Cleanup Tasks
 
@@ -451,11 +475,45 @@ All exceptions thrown by the library implement `Firehed\WebAuthn\Errors\WebAuthn
 - The credential id SHOULD be unique.
   If during registration this unique constraint is violated AND it's associated with a different user, your application MUST handle this situation, either by returning an error or de-associating the credential with the other user.
   See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 7.1 step 22 for more info.
-- The WebAuthn spec makes no guarnatees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
+- The WebAuthn spec makes no guarantees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
   It is RECOMMENDED to permit storage of up to 255 bytes, as this tends to be the most compact variable-length encoding in many databases.
 - The credential SHOULD be stored as a string encoded by `Codecs\Credential::encode()`, and decoded with `::decode`.
   The storage system must allow for values up to 64KiB (65,535 bytes) of ASCII; the encoding will not contain values out of the base64 range.
 - It's RECOMMENDED to allow users to provide a name associated with their credentials (e.g. "work laptop", "backup fido key").
+- You MAY use the storage identifier (`getStorageId()`) as a primary key if storing in a relational database.
+  It MAY also be used as a surrogate key.
+
+#### MySQL example
+
+Simplest version - uses own ID as primary key:
+```sql
+CREATE TABLE `credentials` (
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `credential` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
+More common setup:
+- Separates primary key from credential ID. This tends to increase flexibility with ORMs, etc.
+- Adds a `nickname` field, where users can provide a label for their own use.
+- Stores the credential data in ASCII format (the outputs are guaranteed to be ASCII safe). This can reduce storage size slightly.
+    - Note: Store and retrieve both library-provided values without any modification.
+      Avoid storage mechanisms that trim data, change case, etc.
+
+```sql
+CREATE TABLE `credentials` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `credential_id` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'credential->getStorageId()',
+  `user_id` bigint unsigned NOT NULL,
+  `credential` varchar(255) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'encode() result',
+  `nickname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `credential_id` (`credential_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
 
 ### Authentication
 
