@@ -1,4 +1,4 @@
-# Web Authentication for PHP
+# Web Authentication (Passkeys) for PHP
 
 A way to move beyond passwords
 
@@ -24,6 +24,12 @@ There's a complete set of working examples in the [`examples`](examples) directo
 Application logic is kept to a bare minimum in order to highlight the most important workflow steps.
 
 ### Setup
+
+First, install the library:
+
+```
+composer require firehed/webauthn
+```
 
 Create a `RelyingParty` instance.
 This **MUST** match the complete origin that users will interact with; e.g. `https://login.example.com:1337`.
