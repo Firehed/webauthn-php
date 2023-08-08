@@ -53,6 +53,7 @@ Send it to the user as base64.
 
 > [!NOTE]
 > Challenges can be serialized, and thus can be stored directly in a session, as well as most caches.
+> If you are not using sessions in your application (e.g. an API), make sure it's stored in a way that's associated with the authenticating user.
 
 ```php
 <?php
@@ -192,6 +193,11 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 ```
 
+> [!IMPORTANT]
+> The `getStorageId()` value from the credential will be used during authentication.
+> Be sure to store it alongside the encoded version.
+> It should be **globally** unique, and treated as such in your durable storage.
+
 4) There is no step 4. The verified credential is now stored and associated with the user!
 
 ### Authenticating a user with an existing WebAuthn credential
@@ -235,6 +241,11 @@ echo json_encode([
     'credential_ids' => $credentialContainer->getBase64Ids(),
 ]);
 ```
+
+> [!WARNING]
+> Returning `credential_ids` for use in `allowCredentials` (below) can leak information about who has registered and what sort of authentication devices they possess.
+> See [§14.6.3 in the spec](https://www.w3.org/TR/webauthn-2/#sctn-credential-id-privacy-leak) for more information.
+> You MAY elide that value from the response and leave `allowCredentials` unconfigured in the JS code.
 
 2) In client Javascript code, read the data from above and provide it to the WebAuthn APIs.
 
@@ -337,6 +348,10 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
+
+> [!WARNING]
+> Failing to update the stored credential can expose your application to replay attacks.
+> Always update the stored credential with the returned value after authentication.
 
 Cleanup Tasks
 
