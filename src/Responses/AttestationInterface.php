@@ -24,4 +24,6 @@ interface AttestationInterface
         RelyingParty $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface;
+
+    public function getChallenge(): ChallengeInterface;
 }

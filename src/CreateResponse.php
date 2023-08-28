@@ -144,6 +144,16 @@ class CreateResponse implements Responses\AttestationInterface
         // trustworthy"
     }
 
+    public function getChallenge(): ChallengeInterface
+    {
+        $cdj = json_decode($this->clientDataJson->unwrap(), true);
+        assert(is_array($cdj));
+        assert(array_key_exists('challenge', $cdj));
+        // FIXME: real one
+
+        return Challenge::fromClientDataJSONValue($cdj['challenge']);
+    }
+
     private function fail(string $section, string $desc): never
     {
         throw new Errors\RegistrationError($section, $desc);
