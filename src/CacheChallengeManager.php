@@ -31,7 +31,7 @@ class CacheChallengeManager implements ChallengeManagerInterface
         $key = sprintf(
             '%s%s',
             $this->cacheKeyPrefix,
-            $base64url,
+            $base64Url,
         );
         // WARNING: race condition. Without at least a CAS guarantee, this
         // can't be avoided with SimpleCache.
