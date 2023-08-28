@@ -81,7 +81,7 @@ class ResponseParser
      *  authenticatorData: new Uint8Array(credential.response.authenticatorData),
      *  clientDataJSON: new Uint8Array(credential.response.clientDataJSON),
      *  signature: new Uint8Array(credential.response.signature),
-     *  userHandle: new Uint8Array(credential.response.userHandle),
+     *  userHandle: new Uint8Array(credential.response.userHandle), // or null
      * }
      * ```
      *
@@ -93,6 +93,7 @@ class ResponseParser
      *   authenticatorData: int[],
      *   clientDataJSON: int[],
      *   signature: int[],
+     *   userHandle: int[] | null,
      * }
      *
      * $response is left untyped since it performs additional checking from
@@ -117,6 +118,14 @@ class ResponseParser
         if (!array_key_exists('signature', $response) || !is_array($response['signature'])) {
             throw new Errors\ParseError('7.2.2', 'response.signature');
         }
+        if (!array_key_exists('userHandle', $response)) {
+            if ($response['userHandle'] === null) {
+                // ok
+            } elseif (is_array($response['userHandle'])) {
+            } else {
+                throw new Errors\ParseError('7.2.2', 'response.userHandle');
+            }
+        }
 
         // userHandle provides the user.id from registration
         // var_dump(BinaryString::fromBytes($response['userHandle'])->unwrap());
@@ -128,6 +137,7 @@ class ResponseParser
             rawAuthenticatorData: BinaryString::fromBytes($response['authenticatorData']),
             clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
             signature: BinaryString::fromBytes($response['signature']),
+            userHandle: $response['userHandle'] === null ? null : BinaryString::fromBytes($response['userHandle']),
         );
     }
 }
