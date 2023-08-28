@@ -311,9 +311,8 @@ $challenge = $_SESSION['webauthn_challenge'];
 // on frontend code.
 // See Passkeys section, and https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion sec. 7.2 step 6.
 $userHandle = $getResponse->getUserHandle();
-if ($userHandle !== null) {
-    // This assertion isn't necessary, and is used to demonstrate how user ids may match.
-    assert($userHandle === $_SESSION['authenticating_user_id']);
+if ($userHandle !== null && $userHandle !== $_SESSION['authenticating_user_id']) {
+    throw new \RuntimeException('User handle does not match identified authenticating user');
 }
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
@@ -338,13 +337,25 @@ header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
 
-Cleanup Tasks
+## Cleanup Tasks
 
-### Mediation/PassKeys
+### Autofill-assisted Passkeys
 
-- replace step 1 with just generating challenge (still put in session)
-- step 2 removes allowCredentials, adds mediation:conditional
-- step 3 replaces user from session with a user lookup from GetResponse.userHandle
+- Registration Step 1:
+  - Clearly define what value is going in `user.id` as it will be used below
+- AuthN Step 1:
+  - only generate a challenge, don't look up a user or attempt to give a list of credential_ids
+- AuthN Step 2:
+  - Remove `allowCredentials` from options (it will not be in the challenge response)
+  - Add `mediation: conditional` to options
+- AuthN Step 3:
+  - Instead of looking up the userId from the session (it won't be set), instead call `$getResponse->getUserHandle()` which returns the user.id from registration
+    - Note: the value MAY be null when not coming from a conditional mediation response. If you're designing a single API to handle both cases, be aware of this.
+  - Obtain the credentials associated with that user.
+    - Be sure to provide the value to `verify()` as a CredentialContainer, which will confirm the user handle is associated with the response's credential id
+    - DO NOT
+
+### Other
 
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey

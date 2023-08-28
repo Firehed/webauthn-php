@@ -22,6 +22,10 @@ use Firehed\WebAuthn\{
 interface AssertionInterface
 {
     /**
+     * This is used to find the used credential in the credential container. It
+     * is not used to determine what user is authenticating, and MUST NOT be
+     * used in an attempt to do so.
+     *
       *@internal
       */
     public function getUsedCredentialId(): BinaryString;
