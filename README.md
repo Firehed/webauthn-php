@@ -92,6 +92,7 @@ const createOptions = {
         user: {
             name: userInfo.name,
             displayName: 'User Name',
+            // NOTE: id will be available later as `userHandle`
             id: Uint8Array.from(userInfo.id, c => c.charCodeAt(0)),
         },
         challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
@@ -306,6 +307,14 @@ $getResponse = $parser->parseGetResponse($data);
 $rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
 $challenge = $_SESSION['webauthn_challenge'];
 
+// Note: this user lookup is very flexible, and how to approach it varies based
+// on frontend code.
+// See Passkeys section, and https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion sec. 7.2 step 6.
+$userHandle = $getResponse->getUserHandle();
+if ($userHandle !== null) {
+    // This assertion isn't necessary, and is used to demonstrate how user ids may match.
+    assert($userHandle === $_SESSION['authenticating_user_id']);
+}
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 try {
