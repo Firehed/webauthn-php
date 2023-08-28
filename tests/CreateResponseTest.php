@@ -11,7 +11,6 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
 {
     // These hold the values which would be kept server-side.
     private RelyingParty $rp;
-    private Challenge $challenge;
 
     // These hold the _default_ values from a sample parsed response.
     private BinaryString $id;
@@ -21,13 +20,6 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         $this->rp = new RelyingParty('http://localhost:8888');
-
-        $this->challenge = new Challenge(BinaryString::fromBytes([
-            40, 96, 197, 186, 42, 202, 51, 237,
-            134, 178, 3, 251, 22, 204, 231, 157,
-            47, 77, 43, 123, 3, 245, 57, 77,
-            20, 74, 166, 166, 240, 37, 141, 188,
-        ]));
 
         $this->id = BinaryString::fromBytes([
             236, 58, 219, 22, 123, 115, 98, 124,
@@ -188,7 +180,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.7');
-        $response->verify($this->challenge, $this->rp);
+        $response->verify($this->getChallenge(), $this->rp);
     }
 
     // 7.1.8
@@ -206,7 +198,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.8');
-        $response->verify($this->challenge, $this->rp);
+        $response->verify($this->getChallenge(), $this->rp);
     }
 
     // 7.1.9
@@ -224,7 +216,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.0');
-        $response->verify($this->challenge, $this->rp);
+        $response->verify($this->getChallenge(), $this->rp);
     }
 
     // 7.1.13
@@ -238,7 +230,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.13');
-        $response->verify($this->challenge, $rp);
+        $response->verify($this->getChallenge(), $rp);
     }
 
     // 7.1.14
@@ -258,7 +250,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.15');
-        $response->verify($this->challenge, $this->rp, UserVerificationRequirement::Required);
+        $response->verify($this->getChallenge(), $this->rp, UserVerificationRequirement::Required);
     }
 
     // 7.1.16
@@ -298,7 +290,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
             ao: $ao,
             clientDataJson: $this->clientDataJson,
         );
-        $response->verify($this->challenge, $this->rp);
+        $response->verify($this->getChallenge(), $this->rp);
     }
 
     public function testSuccess(): void
@@ -309,10 +301,20 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
             clientDataJson: $this->clientDataJson,
         );
 
-        $cred = $response->verify($this->challenge, $this->rp);
+        $cred = $response->verify($this->getChallenge(), $this->rp);
 
         self::assertSame(0, $cred->getSignCount());
         // Look for a specific id and public key?
+    }
+
+    protected function getChallenge(): Challenge|ChallengeManagerInterface
+    {
+        return new Challenge(BinaryString::fromBytes([
+            40, 96, 197, 186, 42, 202, 51, 237,
+            134, 178, 3, 251, 22, 204, 231, 157,
+            47, 77, 43, 123, 3, 245, 57, 77,
+            20, 74, 166, 166, 240, 37, 141, 188,
+        ]));
     }
 
     private function expectRegistrationError(string $section): void
