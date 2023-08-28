@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use Psr\SimpleCache\CacheInterface;
+use UnexpectedValueException;
 
 class CacheChallengeManager implements ChallengeManagerInterface
 {
@@ -40,6 +41,9 @@ class CacheChallengeManager implements ChallengeManagerInterface
             return $active;
         }
         $this->cache->delete($key);
-        return $active;
+        if ($active instanceof ChallengeInterface) {
+            return $active;
+        }
+        throw new UnexpectedValueException('Non-challenge found in cache');
     }
 }
