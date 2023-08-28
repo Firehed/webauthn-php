@@ -81,7 +81,7 @@ class ResponseParser
      *  authenticatorData: new Uint8Array(credential.response.authenticatorData),
      *  clientDataJSON: new Uint8Array(credential.response.clientDataJSON),
      *  signature: new Uint8Array(credential.response.signature),
-     *  userHandle: new Uint8Array(credential.response.userHandle), // or null
+     *  userHandle: new Uint8Array(credential.response.userHandle),
      * }
      * ```
      *
