@@ -10,7 +10,6 @@ namespace Firehed\WebAuthn;
 class GetResponseTest extends \PHPUnit\Framework\TestCase
 {
     // These hold the values which would be kept server-side.
-    private Challenge $challenge;
     private CredentialInterface $credential;
     private RelyingParty $rp;
 
@@ -31,13 +30,6 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->rp = new RelyingParty('http://localhost:8888');
-
-        $this->challenge = new Challenge(BinaryString::fromBytes([
-            145, 94, 61, 93, 225, 209, 17, 150,
-            18, 48, 223, 38, 136, 44, 81, 173,
-            233, 248, 232, 46, 211, 200, 99, 52,
-            142, 111, 103, 233, 244, 188, 26, 108,
-        ]));
 
         $this->id = BinaryString::fromBytes([
             116, 216, 28, 85, 64, 195, 24, 125,
@@ -102,7 +94,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.11');
-        $response->verify($this->challenge, $this->rp, $this->credential);
+        $response->verify($this->getChallenge(), $this->rp, $this->credential);
     }
 
     // 7.2.12
@@ -121,7 +113,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.12');
-        $response->verify($this->challenge, $this->rp, $this->credential);
+        $response->verify($this->getChallenge(), $this->rp, $this->credential);
     }
 
     // 7.2.13
@@ -140,7 +132,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.13');
-        $response->verify($this->challenge, $this->rp, $this->credential);
+        $response->verify($this->getChallenge(), $this->rp, $this->credential);
     }
 
     // 7.2.15
@@ -156,7 +148,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.15');
-        $response->verify($this->challenge, $rp, $this->credential);
+        $response->verify($this->getChallenge(), $rp, $this->credential);
     }
 
     // 7.2.16
@@ -178,7 +170,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.17');
-        $response->verify($this->challenge, $this->rp, $this->credential, UserVerificationRequirement::Required);
+        $response->verify($this->getChallenge(), $this->rp, $this->credential, UserVerificationRequirement::Required);
     }
 
     // 7.2.20
@@ -192,7 +184,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.20');
-        $response->verify($this->challenge, $this->rp, $this->credential);
+        $response->verify($this->getChallenge(), $this->rp, $this->credential);
     }
 
     public function testVerifyReturnsCredentialWithUpdatedCounter(): void
@@ -208,7 +200,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $updatedCredential = $response->verify($this->challenge, $this->rp, $this->credential);
+        $updatedCredential = $response->verify($this->getChallenge(), $this->rp, $this->credential);
         self::assertGreaterThan(
             0,
             $updatedCredential->getSignCount(),
@@ -243,7 +235,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $credential = $response->verify($this->challenge, $this->rp, $container);
+        $credential = $response->verify($this->getChallenge(), $this->rp, $container);
         self::assertSame($this->credential->getStorageId(), $credential->getStorageId());
     }
 
@@ -259,7 +251,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->challenge, $this->rp, $container);
+        $response->verify($this->getChallenge(), $this->rp, $container);
     }
 
     public function testCredentialContainerMissingUsedCredentialFails(): void
@@ -276,12 +268,22 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->challenge, $this->rp, $container);
+        $response->verify($this->getChallenge(), $this->rp, $container);
     }
 
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Errors\VerificationError::class);
         // TODO: how to assert on $section
+    }
+
+    protected function getChallenge(): Challenge|ChallengeManagerInterface
+    {
+        return new Challenge(BinaryString::fromBytes([
+            145, 94, 61, 93, 225, 209, 17, 150,
+            18, 48, 223, 38, 136, 44, 81, 173,
+            233, 248, 232, 46, 211, 200, 99, 52,
+            142, 111, 103, 233, 244, 188, 26, 108,
+        ]));
     }
 }
