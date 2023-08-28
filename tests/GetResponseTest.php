@@ -99,6 +99,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.11');
@@ -118,6 +119,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.12');
@@ -137,6 +139,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.13');
@@ -153,6 +156,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.15');
@@ -175,6 +179,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.17');
@@ -189,6 +194,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: new BinaryString('incorrect'),
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.20');
@@ -206,6 +212,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $updatedCredential = $response->verify($this->challenge, $this->rp, $this->credential);
@@ -241,6 +248,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $credential = $response->verify($this->challenge, $this->rp, $container);
@@ -256,6 +264,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.7');
@@ -273,6 +282,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.7');
