@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use function array_key_exists;
+use function session_status;
+
+use const PHP_SESSION_ACTIVE;
+
 class SessionChallengeManager implements ChallengeManagerInterface
 {
     private const SESSION_KEY = 'passkey_challenge';

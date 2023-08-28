@@ -7,6 +7,8 @@ namespace Firehed\WebAuthn;
 use Psr\SimpleCache\CacheInterface;
 use UnexpectedValueException;
 
+use function sprintf;
+
 class CacheChallengeManager implements ChallengeManagerInterface
 {
     public function __construct(
