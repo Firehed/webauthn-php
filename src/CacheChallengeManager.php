@@ -18,6 +18,8 @@ class CacheChallengeManager implements ChallengeManagerInterface
     public function createChallenge(): ChallengeInterface
     {
         $c = ExpiringChallenge::withLifetime(120);
+        // The cache key is designed to mirror the comparison value used in
+        // the `verify()` methods and `useFromClientDataJSON()` below.
         $cacheKey = sprintf(
             '%s%s',
             $this->cacheKeyPrefix,
