@@ -38,24 +38,6 @@ class Challenge implements ChallengeInterface
     }
 
     /**
-     * This is used to help access the challenges provided by the client, which
-     * assists the case of having a global stateless challenge pool.
-     *
-     * @internal
-     */
-    public static function fromClientDataJSONValue(string $cdjChallenge): ChallengeInterface
-    {
-        // cdj contains a base64UrlWeb value
-        // move to base64url::decode?
-        $base64 = strtr($cdjChallenge, '-_', '+/');
-        $bin = base64_decode($base64, strict: true);
-        if ($bin === false) {
-            throw new \Exception();
-        }
-        return new Challenge(new BinaryString($bin));
-    }
-
-    /**
      * @internal
      */
     public function getBinary(): BinaryString

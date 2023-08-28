@@ -35,6 +35,4 @@ interface AssertionInterface
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface;
-
-    public function getChallenge(): ChallengeInterface;
 }

@@ -167,15 +167,6 @@ class GetResponse implements Responses\AssertionInterface
         return $credential;
     }
 
-    public function getChallenge(): ChallengeInterface
-    {
-        $cdj = json_decode($this->clientDataJson->unwrap(), true);
-        assert(is_array($cdj));
-        assert(array_key_exists('challenge', $cdj));
-        return Challenge::fromClientDataJSONValue($cdj['challenge']);
-    }
-
-
     private function fail(string $section, string $desc): never
     {
         throw new Errors\VerificationError($section, $desc);
