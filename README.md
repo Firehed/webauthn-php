@@ -33,29 +33,31 @@ The protocol is always required; the port must only be present if using a non-st
 $rp = new RelyingParty('https://www.example.com');
 ```
 
-Important: WebAuthn will only work in a "secure context".
+Also create a `ChallengeManagerInterface`.
+There are multiple options available which can suit different applications.
+
+```php
+session_start();
+$challengeManager = new SessionChallengeManager();
+```
+
+[!IMPORTANT]
+WebAuthn will only work in a "secure context".
 This means that the domain MUST run over `https`, with a sole exception for `localhost`.
-See https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts for more info.
+See [https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts]() for more info.
 
 ### Registering a WebAuthn credential to a user
 
 This step takes place either when a user is first registering, or later on to supplement or replace their password.
 
 1) Create an endpoint that will return a new, random Challenge.
-This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
 ```php
 <?php
 
-use Firehed\WebAuthn\ExpiringChallenge;
-
 // Generate challenge
-$challenge = ExpiringChallenge::withLifetime(120);
-
-// Store server-side; adjust to your app's needs
-session_start();
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -147,11 +149,9 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
 try {
-    $credential = $createResponse->verify($challenge, $rp);
+    // $challengeManager and $rp are the values from the setup step
+    $credential = $createResponse->verify($challengeManager, $rp);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -190,7 +190,7 @@ header('HTTP/1.1 200 OK');
 Note: this workflow may be a little different if supporting [passkeys](https://developer.apple.com/passkeys/).
 Updated samples will follow.
 
-Before starting, you will need to collect the username or id of the user trying to authenticate, and retreive the user info from storage.
+Before starting, you will need to collect the username or id of the user trying to authenticate, and retrieve the user info from storage.
 This assumes the same schema from the previous Registration example.
 
 1) Create an endpoint that will return a Challenge and any credentials associated with the authenticating user:
@@ -216,8 +216,7 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 // See examples/functions.php for how this works
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = ExpiringChallenge::withLifetime(120);
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -303,13 +302,11 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
+    // $challengeManager and $rp are the values from the setup step
+    $updatedCredential = $getResponse->verify($challengeManager, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
