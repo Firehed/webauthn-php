@@ -26,13 +26,15 @@ class CacheChallengeManager implements ChallengeManagerInterface
         return $c;
     }
 
-    public function useFromClientDataJSON(string $base64url): ?ChallengeInterface
+    public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
     {
         $key = sprintf(
             '%s%s',
             $this->cacheKeyPrefix,
             $base64url,
         );
+        // WARNING: race condition. Without at least a CAS guarantee, this
+        // can't be avoided with SimpleCache.
         $active = $this->cache->get($key);
         if ($active === null) {
             return $active;
