@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use BadMethodCallException;
+
 use function array_key_exists;
 use function session_status;
 
@@ -15,9 +17,9 @@ class SessionChallengeManager implements ChallengeManagerInterface
 
     public function __construct()
     {
-        // do later?
+        // Do this later?
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            throw new \BadMethodCallException('Call session_start()');
+            throw new BadMethodCallException('No active session. Call session_start() before using this.');
         }
     }
 
@@ -30,12 +32,12 @@ class SessionChallengeManager implements ChallengeManagerInterface
 
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
     {
-        // TODO: match url?
         if (!array_key_exists(self::SESSION_KEY, $_SESSION)) {
             return null;
         }
         $challenge = $_SESSION[self::SESSION_KEY];
         unset($_SESSION[self::SESSION_KEY]);
+        // Validate that the stored challenge matches the CDJ value?
         return $challenge;
     }
 }
