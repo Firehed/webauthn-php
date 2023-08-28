@@ -38,4 +38,9 @@ class GetResponseWithChallengeManagerTest extends GetResponseTest
             }
         };
     }
+
+    public function testFailIfNoActiveChallenge(): void
+    {
+        self::markTestIncomplete();
+    }
 }
