@@ -21,6 +21,8 @@ class CacheChallengeManagerTest extends TestCase
 
     protected function getChallengeManager(): ChallengeManagerInterface
     {
+        // Ordinarily, I'd pull in a library for this. Doing so seemed to
+        // cause an explosion of dependencies so I opted against in this case.
         $cache = new class implements CacheInterface
         {
             /**
