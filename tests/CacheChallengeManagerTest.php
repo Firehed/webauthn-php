@@ -72,6 +72,9 @@ class CacheChallengeManagerTest extends TestCase
                 throw new BadMethodCallException();
             }
 
+            /**
+             * @param iterable<mixed> $values
+             */
             public function setMultiple(iterable $values, null|int|\DateInterval $ttl = null): bool
             {
                 throw new BadMethodCallException();
