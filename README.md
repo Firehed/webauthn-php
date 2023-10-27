@@ -55,8 +55,14 @@ Send it to the user as base64.
 ```php
 <?php
 
+use Firehed\WebAuthn\ExpiringChallenge;
+
 // Generate challenge
-$challenge = $challengeManager->createChallenge();
+$challenge = ExpiringChallenge::withLifetime(120);
+
+// Store server-side; adjust to your app's needs
+session_start();
+$_SESSION['webauthn_challenge'] = $challenge;
 
 // Send to user
 header('Content-type: application/json');
@@ -148,9 +154,11 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
+$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
+$challenge = $_SESSION['webauthn_challenge'];
+
 try {
-    // $challengeManager and $rp are the values from the setup step
-    $credential = $createResponse->verify($challengeManager, $rp);
+    $credential = $createResponse->verify($challenge, $rp);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
