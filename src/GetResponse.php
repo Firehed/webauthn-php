@@ -103,8 +103,7 @@ class GetResponse implements Responses\AssertionInterface
         // TODO: tokenBinding (may not exist on localhost??)
 
         // 7.2.15
-        $knownRpIdHash = hash('sha256', $rp->getId(), true);
-        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash()->unwrap())) {
+        if (!$rp->permitsRpIdHash($authData)) {
             $this->fail('7.2.15', 'authData.rpIdHash');
         }
 

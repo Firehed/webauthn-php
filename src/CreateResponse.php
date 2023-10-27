@@ -68,8 +68,7 @@ class CreateResponse implements Responses\AttestationInterface
         $authData = $this->ao->getAuthenticatorData();
 
         // 7.1.13
-        $knownRpIdHash = hash('sha256', $rp->getId(), true);
-        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash()->unwrap())) {
+        if (!$rp->permitsRpIdHash($authData)) {
             $this->fail('7.1.13', 'authData.rpIdHash');
         }
 
