@@ -39,15 +39,6 @@ The protocol is always required; the port must only be present if using a non-st
 $rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
 ```
 
-Also create a `ChallengeManagerInterface`.
-There are multiple options available which can suit different applications.
-See the [Challenge Management](#challenge-management) section below for more information.
-
-```php
-session_start();
-$challengeManager = new \Firehed\WebAuthn\SessionChallengeManager();
-```
-
 > [!IMPORTANT]
 > WebAuthn will only work in a "secure context".
 > This means that the domain MUST run over `https`, with a sole exception for `localhost`.
@@ -58,6 +49,7 @@ $challengeManager = new \Firehed\WebAuthn\SessionChallengeManager();
 This step takes place either when a user is first registering, or later on to supplement or replace their password.
 
 1) Create an endpoint that will return a new, random Challenge.
+This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
 ```php
