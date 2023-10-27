@@ -95,7 +95,7 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.13
-        if (!hash_equals($rp->getOrigin(), $C['origin'])) {
+        if (!$rp->matchesOrigin($C['origin'])) {
             $this->fail('7.2.13', 'C.origin');
         }
 

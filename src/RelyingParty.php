@@ -48,6 +48,16 @@ class RelyingParty
     }
 
     /**
+     * Used by steps 7.18 and 7.2.13
+     *
+     * @internal
+     */
+    public function matchesOrigin(string $clientDataOrigin): bool
+    {
+        return hash_equals($this->origin, $clientDataOrigin);
+    }
+
+    /**
      * Used by steps 7.1.13 and 7.2.15
      *
      * @internal

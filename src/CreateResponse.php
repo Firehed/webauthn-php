@@ -53,7 +53,7 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.9
-        if (!hash_equals($rp->getOrigin(), $C['origin'])) {
+        if (!$rp->matchesOrigin($C['origin'])) {
             $this->fail('7.1.9', 'C.origin');
         }
 
