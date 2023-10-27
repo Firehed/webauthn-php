@@ -17,7 +17,13 @@ This also means that users do not have to manage passwords for individual websit
 ## Using this library: A Crash Course
 
 This will cover the basic workflows for integrating this library to your web application.
-Classes referenced in the examples may omit the `Firehed\WebAuthn` namespace prefix for brevity.
+
+> [!NOTE]
+> The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+> NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+> "MAY", and "OPTIONAL" in this document are to be interpreted as
+> described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
+> appear in all capitals, as shown here.
 
 ### Sample Code
 There's a complete set of working examples in the [`examples`](examples) directory.
@@ -30,32 +36,35 @@ This **MUST** match the complete origin that users will interact with; e.g. `htt
 The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
 
 ```php
-$rp = new RelyingParty('https://www.example.com');
+$rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
 ```
 
-Important: WebAuthn will only work in a "secure context".
-This means that the domain MUST run over `https`, with a sole exception for `localhost`.
-See https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts for more info.
+Also create a `ChallengeManagerInterface`.
+There are multiple options available which can suit different applications.
+See the [Challenge Management](#challenge-management) section below for more information.
+
+```php
+session_start();
+$challengeManager = new \Firehed\WebAuthn\SessionChallengeManager();
+```
+
+> [!IMPORTANT]
+> WebAuthn will only work in a "secure context".
+> This means that the domain MUST run over `https`, with a sole exception for `localhost`.
+> See [https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts]() for more info.
 
 ### Registering a WebAuthn credential to a user
 
 This step takes place either when a user is first registering, or later on to supplement or replace their password.
 
 1) Create an endpoint that will return a new, random Challenge.
-This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
 ```php
 <?php
 
-use Firehed\WebAuthn\ExpiringChallenge;
-
 // Generate challenge
-$challenge = ExpiringChallenge::withLifetime(120);
-
-// Store server-side; adjust to your app's needs
-session_start();
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -147,11 +156,9 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
 try {
-    $credential = $createResponse->verify($challenge, $rp);
+    // $challengeManager and $rp are the values from the setup step
+    $credential = $createResponse->verify($challengeManager, $rp);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -190,7 +197,7 @@ header('HTTP/1.1 200 OK');
 Note: this workflow may be a little different if supporting [passkeys](https://developer.apple.com/passkeys/).
 Updated samples will follow.
 
-Before starting, you will need to collect the username or id of the user trying to authenticate, and retreive the user info from storage.
+Before starting, you will need to collect the username or id of the user trying to authenticate, and retrieve the user info from storage.
 This assumes the same schema from the previous Registration example.
 
 1) Create an endpoint that will return a Challenge and any credentials associated with the authenticating user:
@@ -198,10 +205,7 @@ This assumes the same schema from the previous Registration example.
 ```php
 <?php
 
-use Firehed\WebAuthn\{
-    Codecs,
-    ExpiringChallenge,
-};
+use Firehed\WebAuthn\Codecs;
 
 session_start();
 
@@ -216,8 +220,7 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 // See examples/functions.php for how this works
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = ExpiringChallenge::withLifetime(120);
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -303,13 +306,11 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
+    // $challengeManager and $rp are the values from the setup step
+    $updatedCredential = $getResponse->verify($challengeManager, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -433,10 +434,33 @@ Those wire formats are covered by semantic versioning and guaranteed to not have
 
 Similarly, for data storage, the output of `Codecs\Credential::encode()` are also covered.
 
+### Challenge management
+
+Challenges are a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce) that ensure a login attempt works only once.
+Their single-use nature is critical to the security of the WebAuthn protocol.
+
+Your application SHOULD use one of the library-provided `ChallengeManagerInterface` implementations to ensure the correct behavior.
+
+| Implementation | Usage |
+| --- | --- |
+| `CacheChallengeManager` | Manages challenges in a site-wide pool stored in a [PSR-16](https://www.php-fig.org/psr/psr-16/) SimpleCache implementation. |
+| `SessionChallengeManager` | Manages challenges through native PHP [Sessions](https://www.php.net/manual/en/intro.session.php). |
+
+If one of the provided options is not suitable, you MAY implement the interface yourself or manage challenges manually.
+In the event you find this necessary, you SHOULD open an Issue and/or Pull Request for the library that indicates the shortcoming.
+
+> [!WARNING]
+> You MUST validate that the challenge was generated by your server recently and has not already been used.
+> **Failing to do so will compromise the security of the protocol!**
+> Implementations MUST NOT trust a client-provided value.
+> The built-in `ChallengeManagerInterface` implementations will handle this for you.
+
 Challenges generated by your server SHOULD expire after a short amount of time.
 You MAY use the `ExpiringChallenge` class for convenience (e.g. `$challenge = ExpiringChallenge::withLifetime(60);`), which will throw an exception if the specified expiration window has been exceeded.
 It is RECOMMENDED that your javascript code uses the `timeout` setting (denoted in milliseconds) and matches the server-side challenge expiration, give or take a few seconds.
-Note: the W3C specification recommends a timeout in the range of 15-120 seconds.
+
+> [!NOTE]
+> The W3C specification recommends a timeout in the range of 15-120 seconds.
 
 ### Error Handling
 
