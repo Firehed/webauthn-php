@@ -20,11 +20,6 @@ class RelyingParty
     ) {
     }
 
-    public function getOrigin(): string
-    {
-        return $this->origin;
-    }
-
     /**
      * TODO: getIds(): string[] <- you can walk up to the regsirable domain
      *
