@@ -46,4 +46,13 @@ class RelyingParty
         assert(is_string($host));
         return $host;
     }
+
+    /**
+     * @internal
+     */
+    public function permitsRpIdHash(AuthenticatorData $authData): bool
+    {
+        $expectedHash = hash('sha256', $this->getId(), true);
+        return hash_equals($expectedHash, $authData->getRpIdHash()->unwrap());
+    }
 }
