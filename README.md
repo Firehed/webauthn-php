@@ -205,7 +205,10 @@ This assumes the same schema from the previous Registration example.
 ```php
 <?php
 
-use Firehed\WebAuthn\Codecs;
+use Firehed\WebAuthn\{
+    Codecs,
+    ExpiringChallenge,
+};
 
 session_start();
 
@@ -220,7 +223,8 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 // See examples/functions.php for how this works
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = $challengeManager->createChallenge();
+$challenge = ExpiringChallenge::withLifetime(120);
+$_SESSION['webauthn_challenge'] = $challenge;
 
 // Send to user
 header('Content-type: application/json');
@@ -306,11 +310,13 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
+$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
+$challenge = $_SESSION['webauthn_challenge'];
+
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
 
 try {
-    // $challengeManager and $rp are the values from the setup step
-    $updatedCredential = $getResponse->verify($challengeManager, $rp, $credentialContainer);
+    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
