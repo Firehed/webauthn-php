@@ -5,6 +5,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Firehed\WebAuthn\{
     Codecs,
     ResponseParser,
+    SessionChallengeManager,
 };
 
 session_start();
@@ -18,10 +19,10 @@ $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
 $rp = getRelyingParty();
-$challenge = $_SESSION['webauthn_challenge'];
+$challengeManager = new SessionChallengeManager();
 
 try {
-    $credential = $createResponse->verify($challenge, $rp);
+    $credential = $createResponse->verify($challengeManager, $rp);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
