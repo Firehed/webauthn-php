@@ -15,6 +15,14 @@ use function is_string;
 use function random_bytes;
 use function sprintf;
 
+/**
+ * Uses a PSR-16 cache implementation to manage challenges.
+ *
+ * IMPORTANT: The provided cache MUST be a shared pool across the service,
+ * rather than a server- or process-local version (such as APCu). Providing
+ * a local cache is highly likely to result in undesired runtime behavior and
+ * can pose a security risk.
+ */
 class CacheChallengeManager implements ChallengeManagerInterface
 {
     public function __construct(
