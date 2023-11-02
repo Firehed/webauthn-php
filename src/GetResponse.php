@@ -34,6 +34,11 @@ class GetResponse implements Responses\AssertionInterface
         return $this->credentialId;
     }
 
+    public function isUserVerified(): bool
+    {
+        return $this->authData->isUserVerified();
+    }
+
     /**
      * @see 7.2
      * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
