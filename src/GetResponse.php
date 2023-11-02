@@ -15,12 +15,15 @@ use UnexpectedValueException;
  */
 class GetResponse implements Responses\AssertionInterface
 {
+    private AuthenticatorData $authData;
+
     public function __construct(
         private BinaryString $credentialId,
         private BinaryString $rawAuthenticatorData,
         private BinaryString $clientDataJson,
         private BinaryString $signature,
     ) {
+        $this->authData = AuthenticatorData::parse($this->rawAuthenticatorData);
     }
 
     /**
@@ -71,7 +74,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
-        $authData = AuthenticatorData::parse($this->rawAuthenticatorData);
+        $authData = $this->authData;
         $sig = $this->signature->unwrap();
 
         // 7.2.9
