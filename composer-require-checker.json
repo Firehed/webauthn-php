@@ -1,7 +1,6 @@
 {
     "symbol-whitelist": [
         "PHP_SESSION_ACTIVE",
-        "Psr\\SimpleCache\\CacheInterface",
         "session_status"
     ]
 }
