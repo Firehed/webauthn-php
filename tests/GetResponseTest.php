@@ -170,7 +170,12 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.17');
-        $response->verify($this->getChallengeManager(), $this->rp, $this->credential, UserVerificationRequirement::Required);
+        $response->verify(
+            $this->getChallengeManager(),
+            $this->rp,
+            $this->credential,
+            UserVerificationRequirement::Required,
+        );
     }
 
     // 7.2.20
