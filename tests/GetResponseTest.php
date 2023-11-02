@@ -94,7 +94,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.11');
-        $response->verify($this->getChallenge(), $this->rp, $this->credential);
+        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
     }
 
     // 7.2.12
@@ -113,7 +113,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.12');
-        $response->verify($this->getChallenge(), $this->rp, $this->credential);
+        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
     }
 
     // 7.2.13
@@ -132,7 +132,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.13');
-        $response->verify($this->getChallenge(), $this->rp, $this->credential);
+        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
     }
 
     // 7.2.15
@@ -148,7 +148,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.15');
-        $response->verify($this->getChallenge(), $rp, $this->credential);
+        $response->verify($this->getChallengeManager(), $rp, $this->credential);
     }
 
     // 7.2.16
@@ -170,7 +170,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.17');
-        $response->verify($this->getChallenge(), $this->rp, $this->credential, UserVerificationRequirement::Required);
+        $response->verify($this->getChallengeManager(), $this->rp, $this->credential, UserVerificationRequirement::Required);
     }
 
     // 7.2.20
@@ -184,7 +184,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.20');
-        $response->verify($this->getChallenge(), $this->rp, $this->credential);
+        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
     }
 
     public function testVerifyReturnsCredentialWithUpdatedCounter(): void
@@ -200,7 +200,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $updatedCredential = $response->verify($this->getChallenge(), $this->rp, $this->credential);
+        $updatedCredential = $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
         self::assertGreaterThan(
             0,
             $updatedCredential->getSignCount(),
@@ -235,7 +235,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $credential = $response->verify($this->getChallenge(), $this->rp, $container);
+        $credential = $response->verify($this->getChallengeManager(), $this->rp, $container);
         self::assertSame($this->credential->getStorageId(), $credential->getStorageId());
     }
 
@@ -251,7 +251,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->getChallenge(), $this->rp, $container);
+        $response->verify($this->getChallengeManager(), $this->rp, $container);
     }
 
     public function testCredentialContainerMissingUsedCredentialFails(): void
@@ -268,7 +268,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->getChallenge(), $this->rp, $container);
+        $response->verify($this->getChallengeManager(), $this->rp, $container);
     }
 
     private function expectVerificationError(string $section): void
@@ -277,7 +277,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         // TODO: how to assert on $section
     }
 
-    protected function getChallenge(): ChallengeManagerInterface
+    protected function getChallengeManager(): ChallengeManagerInterface
     {
         $mock = self::createMock(ChallengeManagerInterface::class);
         $mock->method('useFromClientDataJSON')

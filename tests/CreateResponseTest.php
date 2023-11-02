@@ -180,7 +180,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.7');
-        $response->verify($this->getChallenge(), $this->rp);
+        $response->verify($this->getChallengeManager(), $this->rp);
     }
 
     // 7.1.8
@@ -198,7 +198,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.8');
-        $response->verify($this->getChallenge(), $this->rp);
+        $response->verify($this->getChallengeManager(), $this->rp);
     }
 
     // 7.1.9
@@ -216,7 +216,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.0');
-        $response->verify($this->getChallenge(), $this->rp);
+        $response->verify($this->getChallengeManager(), $this->rp);
     }
 
     // 7.1.13
@@ -230,7 +230,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.13');
-        $response->verify($this->getChallenge(), $rp);
+        $response->verify($this->getChallengeManager(), $rp);
     }
 
     // 7.1.14
@@ -250,7 +250,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.15');
-        $response->verify($this->getChallenge(), $this->rp, UserVerificationRequirement::Required);
+        $response->verify($this->getChallengeManager(), $this->rp, UserVerificationRequirement::Required);
     }
 
     // 7.1.16
@@ -290,7 +290,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
             ao: $ao,
             clientDataJson: $this->clientDataJson,
         );
-        $response->verify($this->getChallenge(), $this->rp);
+        $response->verify($this->getChallengeManager(), $this->rp);
     }
 
     public function testSuccess(): void
@@ -301,13 +301,13 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
             clientDataJson: $this->clientDataJson,
         );
 
-        $cred = $response->verify($this->getChallenge(), $this->rp);
+        $cred = $response->verify($this->getChallengeManager(), $this->rp);
 
         self::assertSame(0, $cred->getSignCount());
         // Look for a specific id and public key?
     }
 
-    protected function getChallenge(): ChallengeManagerInterface
+    protected function getChallengeManager(): ChallengeManagerInterface
     {
         $mock = self::createMock(ChallengeManagerInterface::class);
         $mock->method('useFromClientDataJSON')
