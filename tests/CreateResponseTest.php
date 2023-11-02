@@ -307,14 +307,17 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         // Look for a specific id and public key?
     }
 
-    protected function getChallenge(): Challenge|ChallengeManagerInterface
+    protected function getChallenge(): ChallengeManagerInterface
     {
-        return new Challenge(BinaryString::fromBytes([
-            40, 96, 197, 186, 42, 202, 51, 237,
-            134, 178, 3, 251, 22, 204, 231, 157,
-            47, 77, 43, 123, 3, 245, 57, 77,
-            20, 74, 166, 166, 240, 37, 141, 188,
-        ]));
+        $mock = self::createMock(ChallengeManagerInterface::class);
+        $mock->method('useFromClientDataJSON')
+            ->willReturn(new Challenge(BinaryString::fromBytes([
+                40, 96, 197, 186, 42, 202, 51, 237,
+                134, 178, 3, 251, 22, 204, 231, 157,
+                47, 77, 43, 123, 3, 245, 57, 77,
+                20, 74, 166, 166, 240, 37, 141, 188,
+            ])));
+        return $mock;
     }
 
     private function expectRegistrationError(string $section): void

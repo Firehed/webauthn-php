@@ -277,13 +277,16 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         // TODO: how to assert on $section
     }
 
-    protected function getChallenge(): Challenge|ChallengeManagerInterface
+    protected function getChallenge(): ChallengeManagerInterface
     {
-        return new Challenge(BinaryString::fromBytes([
-            145, 94, 61, 93, 225, 209, 17, 150,
-            18, 48, 223, 38, 136, 44, 81, 173,
-            233, 248, 232, 46, 211, 200, 99, 52,
-            142, 111, 103, 233, 244, 188, 26, 108,
-        ]));
+        $mock = self::createMock(ChallengeManagerInterface::class);
+        $mock->method('useFromClientDataJSON')
+            ->willReturn(new Challenge(BinaryString::fromBytes([
+                145, 94, 61, 93, 225, 209, 17, 150,
+                18, 48, 223, 38, 136, 44, 81, 173,
+                233, 248, 232, 46, 211, 200, 99, 52,
+                142, 111, 103, 233, 244, 188, 26, 108,
+            ])));
+        return $mock;
     }
 }
