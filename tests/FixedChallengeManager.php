@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use BadMethodCallException;
+
 class FixedChallengeManager implements ChallengeManagerInterface
 {
-    private ?ChallengeInterface $challenge;
-    public function __construct(ChallengeInterface $challenge)
+    /** @var array<string, boolean> */
+    private array $seen = [];
+
+    public function __construct(private ChallengeInterface $challenge)
     {
-        $this->challenge = $challenge;
     }
+
     public function createChallenge(): ChallengeInterface
     {
-        assert($this->challenge !== null);
-        return $this->challenge;
+        throw new BadMethodCallException('Should not be used during testing');
     }
+
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
     {
-        $challenge = $this->challenge;
-        // "consume" it after the first use
-        $this->challenge = null;
-        return $challenge;
+        if (array_key_exists($base64Url, $this->seen)) {
+            return null;
+        }
+        $this->seen[$base64Url] = true;
+        return $this->challenge;
     }
 }
