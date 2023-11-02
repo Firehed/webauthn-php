@@ -31,7 +31,7 @@ interface AssertionInterface
      * @api
      */
     public function verify(
-        ChallengeInterface | ChallengeManagerInterface $challenge,
+        ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,

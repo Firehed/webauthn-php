@@ -23,6 +23,10 @@ interface ChallengeManagerInterface
      * returned a value or null. Failure to do so will compromise the security
      * of the webauthn protocol.
      *
+     * Implementations MUST NOT use the ClientDataJSON value to construct
+     * a challenge. They MUST return a previously-stored value if one is found,
+     * and MAY use $base64Url to search the storage mechanism.
+     *
      * @internal
      */
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface;

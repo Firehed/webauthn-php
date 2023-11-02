@@ -15,12 +15,15 @@ use UnexpectedValueException;
  */
 class GetResponse implements Responses\AssertionInterface
 {
+    private AuthenticatorData $authData;
+
     public function __construct(
         private BinaryString $credentialId,
         private BinaryString $rawAuthenticatorData,
         private BinaryString $clientDataJson,
         private BinaryString $signature,
     ) {
+        $this->authData = AuthenticatorData::parse($this->rawAuthenticatorData);
     }
 
     /**
@@ -36,7 +39,7 @@ class GetResponse implements Responses\AssertionInterface
      * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
      */
     public function verify(
-        ChallengeInterface|ChallengeManagerInterface $challenge,
+        ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
@@ -71,7 +74,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
-        $authData = AuthenticatorData::parse($this->rawAuthenticatorData);
+        $authData = $this->authData;
         $sig = $this->signature->unwrap();
 
         // 7.2.9
@@ -90,11 +93,9 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.12
         $cdjChallenge = $C['challenge'];
-        if ($challenge instanceof ChallengeManagerInterface) {
-            $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
-            if ($challenge === null) {
-                $this->fail('7.2.12', 'C.challenge');
-            }
+        $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
+        if ($challenge === null) {
+            $this->fail('7.2.12', 'C.challenge');
         }
 
         $b64u = Codecs\Base64Url::encode($challenge->getBinary()->unwrap());

@@ -27,7 +27,7 @@ class CreateResponse implements Responses\AttestationInterface
      * @link https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential
      */
     public function verify(
-        ChallengeInterface | ChallengeManagerInterface $challenge,
+        ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface {
@@ -48,11 +48,9 @@ class CreateResponse implements Responses\AttestationInterface
 
         // 7.1.8
         $cdjChallenge = $C['challenge'];
-        if ($challenge instanceof ChallengeManagerInterface) {
-            $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
-            if ($challenge === null) {
-                $this->fail('7.1.8', 'C.challenge');
-            }
+        $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
+        if ($challenge === null) {
+            $this->fail('7.1.8', 'C.challenge');
         }
 
         $b64u = Codecs\Base64Url::encode($challenge->getBinary()->unwrap());
