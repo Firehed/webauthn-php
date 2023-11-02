@@ -191,6 +191,21 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         $response->verify($this->cm, $this->rp);
     }
 
+    public function testUsedChallengeIsError(): void
+    {
+        $response = new CreateResponse(
+            id: $this->id,
+            ao: $this->attestationObject,
+            clientDataJson: $this->clientDataJson,
+        );
+
+        $cred = $response->verify($this->cm, $this->rp);
+
+        // Simulate replay. ChallengeManager no longer recognizes this one.
+        $this->expectRegistrationError('7.1.8');
+        $response->verify($this->cm, $this->rp);
+    }
+
     // 7.1.8
     public function testCDJChallengeMismatchIsError(): void
     {

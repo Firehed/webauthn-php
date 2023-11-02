@@ -138,6 +138,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
+        // Simulate replay. ChallengeManager no longer recognizes this one.
         $this->expectVerificationError('7.2.12');
         $response->verify($this->cm, $this->rp, $this->credential);
     }
