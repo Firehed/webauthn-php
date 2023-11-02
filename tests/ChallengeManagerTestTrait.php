@@ -52,4 +52,19 @@ trait ChallengeManagerTestTrait
 
         self::assertNull($found);
     }
+
+    public function testRetrievalDoesNotCreateChallengeFromUserData(): void
+    {
+        $cm = $this->getChallengeManager();
+        $c = $cm->createChallenge();
+
+        $userChallenge = Challenge::random();
+        $cdjValue = Codecs\Base64Url::encode($userChallenge->getBinary()->unwrap());
+
+        $retrieved = $cm->useFromClientDataJSON($cdjValue);
+        // The implmentation may return the previously-stored value or null,
+        // but MUST NOT attempt to reconstruct the challenge from the user-
+        // provided value.
+        self::assertNotSame($userChallenge->getBase64(), $retrieved?->getBase64());
+    }
 }
