@@ -13,10 +13,8 @@ $user = createUser(getDatabaseConnection(), $_POST['username']);
 $_SESSION['user_id'] = $user['id'];
 
 // Generate challenge
-$challenge = ExpiringChallenge::withLifetime(120);
-
-// Store server-side; adjust to your app's needs
-$_SESSION['webauthn_challenge'] = $challenge;
+$challengeManager = getChallengeManager();
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');

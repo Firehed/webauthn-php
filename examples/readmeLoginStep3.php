@@ -20,12 +20,12 @@ $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
 $rp = getRelyingParty();
-$challenge = $_SESSION['webauthn_challenge'];
 
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
+$challengeManager = getChallengeManager();
 
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
+    $updatedCredential = $getResponse->verify($challengeManager, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
