@@ -21,6 +21,8 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
      */
     public function testRegisterAndLogin(string $directory): void
     {
+        $isUserVerified = $this->safeReadJsonFileRaw("$directory/verified.json");
+
         $parser = new ResponseParser();
 
         $registerInfo = $this->safeReadJsonFile("$directory/registerInfo.json");
@@ -30,6 +32,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         $registerRequest = $this->safeReadJsonFile("$directory/register.json");
 
         $attestation = $parser->parseCreateResponse($registerRequest);
+        self::assertSame($isUserVerified, $attestation->isUserVerified());
         $credential = $attestation->verify($this->wrapChallenge($registerChallenge), $this->rp);
 
         $loginInfo = $this->safeReadJsonFile("$directory/loginInfo.json");
@@ -39,6 +42,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         $loginRequest = $this->safeReadJsonFile("$directory/login.json");
 
         $assertion = $parser->parseGetResponse($loginRequest);
+        self::assertSame($isUserVerified, $assertion->isUserVerified());
         $updatedCredential = $assertion->verify(
             $this->wrapChallenge($loginChallenge),
             $this->rp,
@@ -77,6 +81,13 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
      */
     private function safeReadJsonFile(string $path): array
     {
+        $data = $this->safeReadJsonFileRaw($path);
+        assert(is_array($data));
+        return $data;
+    }
+
+    private function safeReadJsonFileRaw(string $path): mixed
+    {
         if (!file_exists($path)) {
             throw new \LogicException("$path is missing");
         }
@@ -84,9 +95,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         if ($contents === false) {
             throw new \LogicException("$path could not be read");
         }
-        $data = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
-        assert(is_array($data));
-        return $data;
+        return json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
     }
 
     private function wrapChallenge(ChallengeInterface $challenge): ChallengeManagerInterface
