@@ -19,7 +19,7 @@ $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
 $rp = getRelyingParty();
-$challengeManager = new SessionChallengeManager();
+$challengeManager = getChallengeManager();
 
 try {
     $credential = $createResponse->verify($challengeManager, $rp);

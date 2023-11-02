@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use Firehed\WebAuthn\{
+    ChallengeManagerInterface,
     Codecs,
     CredentialContainer,
     RelyingParty,
+    SessionChallengeManager,
 };
 
 /**
@@ -26,6 +28,11 @@ function createUser(PDO $pdo, string $username): array
         ];
     }
     return $response;
+}
+
+function getChallengeManager(): ChallengeManagerInterface
+{
+    return new SessionChallengeManager();
 }
 
 function getCredentialsForUserId(PDO $pdo, string $userId): CredentialContainer

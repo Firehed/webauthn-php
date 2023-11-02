@@ -14,7 +14,7 @@ $user = createUser(getDatabaseConnection(), $_POST['username']);
 $_SESSION['user_id'] = $user['id'];
 
 // Generate challenge
-$challengeManager = new SessionChallengeManager();
+$challengeManager = getChallengeManager();
 $challenge = $challengeManager->createChallenge();
 
 // Send to user
