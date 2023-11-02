@@ -43,7 +43,7 @@ class RelyingParty
     }
 
     /**
-     * Used by steps 7.18 and 7.2.13
+     * Used by steps 7.1.9 and 7.2.13
      *
      * @internal
      */
