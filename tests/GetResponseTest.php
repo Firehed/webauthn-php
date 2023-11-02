@@ -12,6 +12,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     // These hold the values which would be kept server-side.
     private CredentialInterface $credential;
     private RelyingParty $rp;
+    private ChallengeManagerInterface $cm;
 
     // These hold the _default_ values from a sample parsed response.
     private BinaryString $id;
@@ -76,6 +77,13 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             48, 31, 150, 139, 30, 239, 98, 204,
             1, 90, 103, 114, 23, 105,
         ]);
+
+        $this->cm = new FixedChallengeManager(new Challenge(BinaryString::fromBytes([
+            145, 94, 61, 93, 225, 209, 17, 150,
+            18, 48, 223, 38, 136, 44, 81, 173,
+            233, 248, 232, 46, 211, 200, 99, 52,
+            142, 111, 103, 233, 244, 188, 26, 108,
+        ])));
     }
 
     // 7.2.11
@@ -94,7 +102,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.11');
-        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
+        $response->verify($this->cm, $this->rp, $this->credential);
     }
 
     // 7.2.12
@@ -113,7 +121,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.12');
-        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
+        $response->verify($this->cm, $this->rp, $this->credential);
     }
 
     // 7.2.13
@@ -132,7 +140,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.13');
-        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
+        $response->verify($this->cm, $this->rp, $this->credential);
     }
 
     // 7.2.15
@@ -148,7 +156,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.15');
-        $response->verify($this->getChallengeManager(), $rp, $this->credential);
+        $response->verify($this->cm, $rp, $this->credential);
     }
 
     // 7.2.16
@@ -171,7 +179,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
 
         $this->expectVerificationError('7.2.17');
         $response->verify(
-            $this->getChallengeManager(),
+            $this->cm,
             $this->rp,
             $this->credential,
             UserVerificationRequirement::Required,
@@ -189,7 +197,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.20');
-        $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
+        $response->verify($this->cm, $this->rp, $this->credential);
     }
 
     public function testVerifyReturnsCredentialWithUpdatedCounter(): void
@@ -205,7 +213,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $updatedCredential = $response->verify($this->getChallengeManager(), $this->rp, $this->credential);
+        $updatedCredential = $response->verify($this->cm, $this->rp, $this->credential);
         self::assertGreaterThan(
             0,
             $updatedCredential->getSignCount(),
@@ -240,7 +248,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             signature: $this->signature,
         );
 
-        $credential = $response->verify($this->getChallengeManager(), $this->rp, $container);
+        $credential = $response->verify($this->cm, $this->rp, $container);
         self::assertSame($this->credential->getStorageId(), $credential->getStorageId());
     }
 
@@ -256,7 +264,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->getChallengeManager(), $this->rp, $container);
+        $response->verify($this->cm, $this->rp, $container);
     }
 
     public function testCredentialContainerMissingUsedCredentialFails(): void
@@ -273,25 +281,12 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectVerificationError('7.2.7');
-        $response->verify($this->getChallengeManager(), $this->rp, $container);
+        $response->verify($this->cm, $this->rp, $container);
     }
 
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Errors\VerificationError::class);
         // TODO: how to assert on $section
-    }
-
-    protected function getChallengeManager(): ChallengeManagerInterface
-    {
-        $mock = self::createMock(ChallengeManagerInterface::class);
-        $mock->method('useFromClientDataJSON')
-            ->willReturn(new Challenge(BinaryString::fromBytes([
-                145, 94, 61, 93, 225, 209, 17, 150,
-                18, 48, 223, 38, 136, 44, 81, 173,
-                233, 248, 232, 46, 211, 200, 99, 52,
-                142, 111, 103, 233, 244, 188, 26, 108,
-            ])));
-        return $mock;
     }
 }
