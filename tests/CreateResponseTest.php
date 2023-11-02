@@ -173,6 +173,16 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         ])));
     }
 
+    public function testIsUserVerified(): void
+    {
+        $response = new CreateResponse(
+            id: $this->id,
+            ao: $this->attestationObject,
+            clientDataJson: $this->clientDataJson,
+        );
+        self::assertFalse($response->isUserVerified(), 'Fixture is not verified');
+    }
+
     // 7.1.7
     public function testCDJTypeMismatchIsError(): void
     {
