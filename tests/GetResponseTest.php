@@ -106,6 +106,24 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     }
 
     // 7.2.12
+    public function testUsedChallengeIsError(): void
+    {
+        $container = new CredentialContainer([$this->credential]);
+
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+        );
+
+        $credential = $response->verify($this->cm, $this->rp, $container);
+
+        $this->expectVerificationError('7.2.12');
+        $response->verify($this->cm, $this->rp, $container);
+    }
+
+    // 7.2.12
     public function testCDJChallengeMismatchIsError(): void
     {
         $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
