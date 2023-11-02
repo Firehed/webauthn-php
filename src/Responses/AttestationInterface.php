@@ -21,7 +21,7 @@ use Firehed\WebAuthn\{
 interface AttestationInterface
 {
     public function verify(
-        ChallengeInterface | ChallengeManagerInterface $challenge,
+        ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface;
