@@ -40,6 +40,7 @@ $rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
 ```
 
 Also create a `ChallengeManagerInterface`.
+This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
 See the [Challenge Management](#challenge-management) section below for more information.
 
 ```php
