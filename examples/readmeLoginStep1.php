@@ -5,7 +5,6 @@ require __DIR__ . '/vendor/autoload.php';
 use Firehed\WebAuthn\{
     Codecs,
     ExpiringChallenge,
-    SessionChallengeManager,
 };
 
 session_start();

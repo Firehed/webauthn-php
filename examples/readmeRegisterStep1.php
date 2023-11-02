@@ -3,7 +3,6 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Firehed\WebAuthn\ExpiringChallenge;
-use Firehed\WebAuthn\SessionChallengeManager;
 
 session_start();
 
