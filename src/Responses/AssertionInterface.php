@@ -23,9 +23,14 @@ use Firehed\WebAuthn\{
 interface AssertionInterface
 {
     /**
-      *@internal
-      */
+     * @internal
+     */
     public function getUsedCredentialId(): BinaryString;
+
+    /**
+     * @api
+     */
+    public function isUserVerified(): bool;
 
     /**
      * @api
