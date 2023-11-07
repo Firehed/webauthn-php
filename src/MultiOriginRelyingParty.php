@@ -6,6 +6,10 @@ namespace Firehed\WebAuthn;
 
 use InvalidArgumentException;
 
+/**
+ * This uses an explicit allowlist of valid origins for a given Relying Party
+ * ID to perform matching.
+ */
 class MultiOriginRelyingParty implements RelyingParty
 {
     /**
