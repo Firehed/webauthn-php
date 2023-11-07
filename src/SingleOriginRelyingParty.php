@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-class SingleOriginRelyingParty
+class SingleOriginRelyingParty implements RelyingParty
 {
     private string $id;
 
