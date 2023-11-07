@@ -9,7 +9,7 @@ namespace Firehed\WebAuthn;
  * @covers ::<protected>
  * @covers ::<private>
  */
-class RelyingPartyTest extends \PHPUnit\Framework\TestCase
+class SingleOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider vectors
