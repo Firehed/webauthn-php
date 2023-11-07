@@ -36,8 +36,12 @@ This **MUST** match the complete origin that users will interact with; e.g. `htt
 The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
 
 ```php
-$rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
+$rp = new \Firehed\WebAuthn\SingleOriginRelyingParty('https://www.example.com');
 ```
+
+> [!NOTE]
+> If users must authenticate from more than one host (e.g. https://www.example.com and https://app.example.com),
+> use `MultiOriginRelyingParty` which provides more flexible matching.
 
 Also create a `ChallengeManagerInterface`.
 This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
