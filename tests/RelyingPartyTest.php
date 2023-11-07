@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\RelyingParty
+ * @coversDefaultClass Firehed\WebAuthn\SingleOriginRelyingParty
  * @covers ::<protected>
  * @covers ::<private>
  */
@@ -14,11 +14,10 @@ class RelyingPartyTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider vectors
      */
-    public function testIdAndOrigin(string $origin, string $id): void
+    public function testOriginMatching(string $original, string $check, bool $shouldMatch): void
     {
-        $rp = new RelyingParty($origin);
-        self::assertSame($origin, $rp->getOrigin(), 'Origin changed');
-        self::assertSame($id, $rp->getId(), 'Id is incorrect');
+        $rp = new SingleOriginRelyingParty($original);
+        self::assertSame($shouldMatch, $rp->matchesOrigin($check));
     }
 
     /**
@@ -26,10 +25,11 @@ class RelyingPartyTest extends \PHPUnit\Framework\TestCase
      */
     public function testRpIdHashMatching(string $origin, BinaryString $hash, bool $shouldMatch): void
     {
-        $rp = new RelyingParty($origin);
+        $rp = new SingleOriginRelyingParty($origin);
         $ad = self::createMock(AuthenticatorData::class);
         $ad->method('getRpIdHash')->willReturn($hash);
         self::assertSame($shouldMatch, $rp->permitsRpIdHash($ad));
+        self::assertTrue($rp->matchesOrigin($origin));
     }
 
     /**
@@ -56,10 +56,17 @@ class RelyingPartyTest extends \PHPUnit\Framework\TestCase
     public function vectors(): array
     {
         return [
-            ['http://localhost:8888', 'localhost'],
-            ['https://webauthn.localhost:8888', 'webauthn.localhost'],
-            ['https://www.example.com', 'www.example.com'],
-            ['https://www.example.com:8443', 'www.example.com'],
+            ['http://localhost:8888', 'http://localhost:8888', true],
+            ['http://localhost:8888', 'http://localhost:8889', false],
+            ['http://localhost:8888', 'http://localhost', false],
+            ['https://www.example.com', 'https://www.example.com', true],
+            ['https://www.example.com', 'https://sub.www.example.com', false],
+            ['https://www.example.com', 'https://app.example.com', false],
+            ['https://www.example.com', 'https://example.com', false],
+            ['https://www.example.com', 'https://www.not-example.com', false],
+            ['https://www.example.com:8443', 'https://www.example.com:8443', true],
+            ['https://www.example.com:8443', 'https://www.example.com', false],
+            ['https://www.example.com:8443', 'https://example.com:8443', false],
         ];
     }
 }
