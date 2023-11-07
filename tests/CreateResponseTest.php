@@ -20,7 +20,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->rp = new RelyingParty('http://localhost:8888');
+        $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
 
         $this->id = BinaryString::fromBytes([
             236, 58, 219, 22, 123, 115, 98, 124,
@@ -245,7 +245,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     // 7.1.13
     public function testRelyingPartyIdMismatchIsError(): void
     {
-        $rp = new RelyingParty('https://some-other-site.example.com');
+        $rp = new SingleOriginRelyingParty('https://some-other-site.example.com');
         $response = new CreateResponse(
             id: $this->id,
             ao: $this->attestationObject,

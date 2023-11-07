@@ -13,7 +13,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->rp = new RelyingParty('http://localhost:8888');
+        $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
     }
 
     /**
