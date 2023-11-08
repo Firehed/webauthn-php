@@ -30,7 +30,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             'Rdv4hQAAAAA='
         );
 
-        $this->rp = new RelyingParty('http://localhost:8888');
+        $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
 
         $this->id = BinaryString::fromBytes([
             116, 216, 28, 85, 64, 195, 24, 125,
@@ -165,7 +165,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     // 7.2.15
     public function testRelyingPartyIdMismatchIsError(): void
     {
-        $rp = new RelyingParty('https://some-other-site.example.com');
+        $rp = new SingleOriginRelyingParty('https://some-other-site.example.com');
         // override authData instead?
         $response = new GetResponse(
             credentialId: $this->id,
