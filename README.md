@@ -438,6 +438,25 @@ Those wire formats are covered by semantic versioning and guaranteed to not have
 
 Similarly, for data storage, the output of `Codecs\Credential::encode()` are also covered.
 
+### Relying Party management
+
+In layperson's terms, a Relying Party is the server performing authentication.
+WebAuthn credentials are based on a specific Relying Party Identifier (`rpId`) which adds to the security of the protocol.
+To support this, the library supports multiple options for configuring the `rpId` for different use-cases:
+
+| Implementation | Usage |
+| --- | --- |
+| `SingleOriginRelyingParty` | Users only authenticate from a single host (e.g. `www.yoursite.com`) |
+| `MultiOriginRelyingParty` | Users may authenticate from multiple specific subdomains (e.g. `www.yoursite.com` and `app.yoursite.com`) |
+| `WildcardRelyingParty` | Users may authenticate from any arbitrary subdomain of a given domain |
+
+> [!NOTE]
+> Once a credential is created, it's permanently associated with the `rpId` used during creation.
+> This defaults to the page origin unless explicitly specified (in the Javascript code).
+>
+> In all cases, the WebAuthn protocol does not allow credential sharing across multiple domains.
+> E.g. a credential cannot be shared between `example.co.jp` and `example.us`.
+
 ### Challenge management
 
 Challenges are a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce) that ensure a login attempt works only once.
