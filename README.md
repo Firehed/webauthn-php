@@ -353,7 +353,7 @@ Applications MAY use a less-specific host as the `rpId`, so long as it's a valid
 > Once a credential is created, it's permanently associated with the `rpId` used during creation.
 > Further use of that credential is restricted at a protocol level to the same `rpId`.
 
-Example: For a WebAuthn flow on https://www.example.com:8443, the `rpId` will default to `www.example.com`.
+Example: For a WebAuthn flow on `https://www.example.com:8443`, the `rpId` will default to `www.example.com`.
 It MAY be overridden to `example.com`.
 It MAY NOT be set to `com` (not registrable),
 `other.example.com` (mismatch of current host),
@@ -365,10 +365,27 @@ E.g. a credential cannot be shared between `example.co.jp` and `example.us`.
 
 See the [specification](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) for more details.
 
+Tip: using `MultiOriginRelyingParty` with a single origin can help with future-proofing.
+```php
+$rp = new \Firehed\WebAuthn\MultiOriginRelyingParty(['https://www.example.com'], 'example.com');
+```
+
+```js
+// registration or authentication flow on www.example.com
+const createOptions = {
+    publicKey: {
+        rp: {
+            id: 'example.com',
+        },
+        // ...
+```
+
+
 #### Terminology
 
 * `origin` The combination of scheme, host, and (if applicable) non-standard port.
   Examples: `https://www.example.com`, `https://example.com`, `https://different.example.com:8443`, `http://localhost:8080`.
+  Do NOT include the port if using the protocol-standard port (i.e. 443 for https)
 * `rpId` The Relying Party Identifier.
   This is the host component of a URL; e.g. a domain or subdomain.
   It does not include a port or scheme.
