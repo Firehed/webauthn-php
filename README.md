@@ -32,12 +32,12 @@ Application logic is kept to a bare minimum in order to highlight the most impor
 ### Setup
 
 Create a `RelyingParty` instance.
-This **MUST** match the complete origin that users will interact with; e.g. `https://login.example.com:1337`.
-The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
+See [Relying Party](#relying-parties) for more information about selecting an implementation.
 
 ```php
-$rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
+$rp = new \Firehed\WebAuthn\SingleOriginRelyingParty('https://www.example.com');
 ```
+
 
 Also create a `ChallengeManagerInterface`.
 This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
@@ -330,6 +330,71 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
+
+## Additional details
+
+### Relying Parties
+
+In layperson's terms, a Relying Party is the server performing authentication.
+WebAuthn credentials are based on a specific Relying Party Identifier (`rpId`), and this is used to restrict the origins future authentication can be performed from.
+
+To support this, the library supports multiple options for configuring the `rpId` for different use-cases:
+
+| Implementation | Usage |
+| --- | --- |
+| `SingleOriginRelyingParty` | Users only authenticate from a single host (e.g. `www.yoursite.com`) |
+| `MultiOriginRelyingParty` | Users may authenticate from multiple specific subdomains (e.g. `www.yoursite.com` and `app.yoursite.com`) |
+| `WildcardRelyingParty` | Users may authenticate from any arbitrary subdomain of a given domain |
+
+Both the registration and authentication processes allow for specifying the `rpId` in the Javascript client code.
+The value defaults to the page origin unless explicitly specified.
+Applications MAY use a less-specific host as the `rpId`, so long as it's a valid registrable domain.
+
+> [!IMPORTANT]
+> Once a credential is created, it's permanently associated with the `rpId` used during creation.
+> Further use of that credential is restricted at a protocol level to the same `rpId`.
+
+Example: For a WebAuthn flow on `https://www.example.com:8443`, the `rpId` will default to `www.example.com`.
+It MAY be overridden to `example.com`.
+It MAY NOT be set to `com` (not registrable),
+`other.example.com` (mismatch of current host),
+`test.www.example.com` (more specific than current host),
+or `www.example.co` (different registrable domain).
+
+In all cases, the WebAuthn protocol does not allow credential sharing across multiple domains.
+E.g. a credential cannot be shared between `example.co.jp` and `example.us`.
+
+See the [specification](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) for more details.
+
+Tip: using `MultiOriginRelyingParty` with a single origin can help with future-proofing.
+```php
+$rp = new \Firehed\WebAuthn\MultiOriginRelyingParty(['https://www.example.com'], 'example.com');
+```
+
+```js
+// registration or authentication flow on www.example.com
+const createOptions = {
+    publicKey: {
+        rp: {
+            id: 'example.com',
+        },
+        // ...
+```
+
+
+#### Terminology
+
+* `origin` The combination of scheme, host, and (if applicable) non-standard port.
+  Examples: `https://www.example.com`, `https://example.com`, `https://different.example.com:8443`, `http://localhost:8080`.
+  Do NOT include the port if using the protocol-standard port (i.e. 443 for https)
+* `rpId` The Relying Party Identifier.
+  This is the host component of a URL; e.g. a domain or subdomain.
+  It does not include a port or scheme.
+  Examples: `example.com`, `www.example.com`, `localhost`.
+
+
+
+
 
 Cleanup Tasks
 
