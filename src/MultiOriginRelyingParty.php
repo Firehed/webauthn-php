@@ -58,29 +58,4 @@ class MultiOriginRelyingParty implements RelyingParty
         $expected = hash('sha256', $this->rpId, true);
         return hash_equals($expected, $authData->getRpIdHash()->unwrap());
     }
-
-
-    /** @param string[] $origins */
-    private static function findGreatestCommonStart(array $origins): string
-    {
-        $hosts = array_map(fn ($origin) => parse_url($origin, PHP_URL_HOST), $origins);
-
-        return array_reduce($hosts, function (string $carry, string $item): string {
-            $carryParts = explode('.', $carry);
-            $itemParts = explode('.', $item);
-
-            $commonDomain = '';
-
-            // Walk through the domain pieces in reverse order
-            for ($i = count($carryParts) - 1, $j = count($itemParts) - 1; $i >= 0 && $j >= 0; $i--, $j--) {
-                if ($carryParts[$i] !== $itemParts[$j]) {
-                    break;
-                }
-                // Prepend the next subdomain
-                $commonDomain = $carryParts[$i] . ($commonDomain ? '.' : '') . $commonDomain;
-            }
-
-            return $commonDomain;
-        }, $hosts[0]);
-    }
 }
