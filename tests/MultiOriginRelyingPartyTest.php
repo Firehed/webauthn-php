@@ -13,15 +13,62 @@ use InvalidArgumentException;
  */
 class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
 {
-    public function testValidConstruct(): void
+    private RelyingParty $rp;
+
+    public function setUp(): void
     {
-        $rp = new MultiOriginRelyingParty(origins: [
+        $this->rp = new MultiOriginRelyingParty(origins: [
             'https://www.example.com',
             'https://app.example.com',
             'https://admin.example.com',
             'https://example.com',
         ], rpId: 'example.com');
-        self::assertInstanceOf(RelyingParty::class, $rp);
+    }
+
+    /**
+     * @dataProvider originVectors
+     */
+    public function testOriginMatching(string $origin, bool $shouldMatch): void
+    {
+        self::assertSame($shouldMatch, $this->rp->matchesOrigin($origin));
+    }
+
+    /**
+     * @dataProvider rpIdVectors
+     */
+    public function testRpIdHashMatching(BinaryString $hash, bool $shouldMatch): void
+    {
+        $ad = self::createMock(AuthenticatorData::class);
+        $ad->method('getRpIdHash')->willReturn($hash);
+        self::assertSame($shouldMatch, $this->rp->permitsRpIdHash($ad));
+    }
+
+    /**
+     * @return array{string, bool}[]
+     */
+    public static function originVectors(): array
+    {
+        return [
+            'in list' => ['https://www.example.com', true],
+            'other in list' => ['https://app.example.com', true],
+            'sub not in list' => ['https://test.example.com', false],
+            'wrong proto' => ['http://www.example.com', false],
+            'port change' => ['http://www.example.com:8443', false],
+            'other domain' => ['https://not-example.com', false],
+        ];
+    }
+
+    /**
+     * @return array{BinaryString, bool}[]
+     */
+    public static function rpIdVectors(): array
+    {
+        $mbs = fn ($domainString) => new BinaryString(hash('sha256', $domainString, true));
+        return [
+            'domain match' => [$mbs('example.com'), true],
+            'subdomain match' => [$mbs('www.example.com'), false],
+            'domain mismatch' => [$mbs('not-example.com'), false],
+        ];
     }
 
     public function testInvalidConstruct(): void
@@ -33,55 +80,5 @@ class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
             'https://admin.example.com',
             'https://www.not-example.com',
         ], rpId: 'example.com');
-    }
-
-    /**
-     * @dataProvider rpIdHashVectors
-     */
-    public function testRpIdHashMatching(string $origin, BinaryString $hash, bool $shouldMatch): void
-    {
-        $rp = new MultiOriginRelyingParty($origin);
-        $ad = self::createMock(AuthenticatorData::class);
-        $ad->method('getRpIdHash')->willReturn($hash);
-        self::assertSame($shouldMatch, $rp->permitsRpIdHash($ad));
-        self::assertTrue($rp->matchesOrigin($origin));
-    }
-
-    /**
-     * @return array{string, BinaryString, bool}[]
-     */
-    public static function rpIdHashVectors(): array
-    {
-        $mbs = fn ($domainString) => new BinaryString(hash('sha256', $domainString, true));
-        return [
-            'localhost match' => ['http://localhost:3000', $mbs('localhost'), true],
-            'domain match' => ['https://example.com', $mbs('example.com'), true],
-            'subdomain match' => ['https://www.example.com', $mbs('www.example.com'), true],
-            'domain mismatch' => ['https://example.com', $mbs('not-example.com'), false],
-            'domain+sub mismatch' => ['https://www.example.com', $mbs('not-example.com'), false],
-            // More to come as subdomain handling is expanded
-            // This MAY change
-            'subdomain traversal' => ['https://www.example.com', $mbs('example.com'), false],
-        ];
-    }
-
-    /**
-     * @return array{string, string}[]
-     */
-    public function vectors(): array
-    {
-        return [
-            ['http://localhost:8888', 'http://localhost:8888', true],
-            ['http://localhost:8888', 'http://localhost:8889', false],
-            ['http://localhost:8888', 'http://localhost', false],
-            ['https://www.example.com', 'https://www.example.com', true],
-            ['https://www.example.com', 'https://sub.www.example.com', false],
-            ['https://www.example.com', 'https://app.example.com', false],
-            ['https://www.example.com', 'https://example.com', false],
-            ['https://www.example.com', 'https://www.not-example.com', false],
-            ['https://www.example.com:8443', 'https://www.example.com:8443', true],
-            ['https://www.example.com:8443', 'https://www.example.com', false],
-            ['https://www.example.com:8443', 'https://example.com:8443', false],
-        ];
     }
 }
