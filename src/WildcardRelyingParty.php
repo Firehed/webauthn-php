@@ -8,11 +8,24 @@ use UnexpectedValueException;
 
 class WildcardRelyingParty implements RelyingParty
 {
+    private bool $isLocal;
+
     public function __construct(private string $rpId)
     {
         // This should bail if rpId isn't an acceptable registratable domain.
         // To do so, it needs to be compared against an up-to-date public
         // suffix list
+
+        // Allow non-https origins locally
+        // https://w3c.github.io/webappsec-secure-contexts/
+        $this->isLocal = match (true) {
+            $rpId === 'localhost' => true,
+            $rpId === '127.0.0.1' => true,
+            // TODO: ipv6 loopback(s)
+            // $rpId === '::1' => true,
+            str_ends_with('.localhost', $rpId) => true,
+            default => false,
+        };
     }
 
     public function permitsRpIdHash(AuthenticatorData $authData): bool
@@ -33,11 +46,7 @@ class WildcardRelyingParty implements RelyingParty
         if (!array_key_exists('host', $parts)) {
             throw new UnexpectedValueException();
         }
-        // TODO: where is secure context enforced? This needs to allow
-        // localhost/loopback addresses
-        //
-        // https://w3c.github.io/webappsec-secure-contexts/
-        if ($parts['scheme'] !== 'https') {
+        if ($parts['scheme'] !== 'https' && !$this->isLocal) {
             return false;
         }
 
