@@ -51,6 +51,7 @@ class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
         return [
             'in list' => ['https://www.example.com', true],
             'other in list' => ['https://app.example.com', true],
+            'traversal in list' => ['https://example.com', true],
             'sub not in list' => ['https://test.example.com', false],
             'wrong proto' => ['http://www.example.com', false],
             'port change' => ['http://www.example.com:8443', false],
