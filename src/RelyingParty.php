@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @api
+ * @api: All implementations of RelyingParty are considered part of the public
+ * API for creating `new` instances; their methods are NOT part of the public
+ * API.
+ *
+ * That's to say that the objects should be passed to the verify() methods, but
+ * don't try to interact with them beyond that.
  */
 interface RelyingParty
 {
