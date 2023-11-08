@@ -6,6 +6,12 @@ namespace Firehed\WebAuthn;
 
 use InvalidArgumentException;
 
+use function hash;
+use function hash_equals;
+use function is_string;
+use function parse_url;
+use function sprintf;
+
 /**
  * This uses an explicit allowlist of valid origins for a given Relying Party
  * ID to perform matching.
@@ -21,6 +27,11 @@ class MultiOriginRelyingParty implements RelyingParty
     ) {
         foreach ($origins as $origin) {
             $host = parse_url($origin, PHP_URL_HOST);
+            if (!is_string($host)) {
+                throw new InvalidArgumentException(
+                    sprintf('Origin %s cannot be parsed', $origin),
+                );
+            }
             // exact match
             if ($host === $rpId) {
                 continue;
