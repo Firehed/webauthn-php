@@ -21,7 +21,12 @@ class MultiOriginRelyingParty implements RelyingParty
     ) {
         foreach ($origins as $origin) {
             $host = parse_url($origin, PHP_URL_HOST);
-            if (!str_ends_with($host, $rpId)) {
+            // exact match
+            if ($host === $rpId) {
+                continue;
+            }
+            // subdomain
+            if (!str_ends_with($host, '.' . $rpId)) {
                 throw new InvalidArgumentException(sprintf(
                     'Origin %s cannot work with rpId %s',
                     $origin,
