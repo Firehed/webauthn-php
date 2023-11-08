@@ -13,19 +13,13 @@ use InvalidArgumentException;
  */
 class WildcardRelyingPartyTest extends \PHPUnit\Framework\TestCase
 {
-    private RelyingParty $rp;
-
-    public function setUp(): void
-    {
-        $this->rp = new WildcardRelyingParty(rpId: 'example.com');
-    }
-
     /**
      * @dataProvider originVectors
      */
-    public function testOriginMatching(string $origin, bool $shouldMatch): void
+    public function testOriginMatching(string $rpId, string $origin, bool $shouldMatch): void
     {
-        self::assertSame($shouldMatch, $this->rp->matchesOrigin($origin));
+        $rp = new WildcardRelyingParty($rpId);
+        self::assertSame($shouldMatch, $rp->matchesOrigin($origin));
     }
 
     /**
@@ -33,34 +27,35 @@ class WildcardRelyingPartyTest extends \PHPUnit\Framework\TestCase
      */
     public function testRpIdHashMatching(BinaryString $hash, bool $shouldMatch): void
     {
+        $rp = new WildcardRelyingParty('example.com');
         $ad = self::createMock(AuthenticatorData::class);
         $ad->method('getRpIdHash')->willReturn($hash);
-        self::assertSame($shouldMatch, $this->rp->permitsRpIdHash($ad));
+        self::assertSame($shouldMatch, $rp->permitsRpIdHash($ad));
     }
 
     /**
-     * @return array{string, bool}[]
+     * @return array{string, string, bool}[]
      */
     public static function originVectors(): array
     {
         return [
-            'exact' => ['https://www.example.com', true],
-            'subdomain 1' => ['https://app.example.com', true],
-            'subdomain 2' => ['https://example.com', true],
-            'nested sub' => ['https://super.admin.example.com', true],
-            'wrong proto' => ['http://www.example.com', false],
+            'exact' => ['example.com', 'https://www.example.com', true],
+            'subdomain 1' => ['example.com', 'https://app.example.com', true],
+            'subdomain 2' => ['example.com', 'https://example.com', true],
+            'nested sub' => ['example.com', 'https://super.admin.example.com', true],
+            'wrong proto' => ['example.com', 'http://www.example.com', false],
+            'other domain' => ['example.com', 'https://not-example.com', false],
+
+            'localhost' => ['localhost', 'http://localhost', true],
+            'localhost secure' => ['localhost', 'https://localhost', true],
+            'localhost sub' => ['localhost', 'http://foo.localhost', true],
+            'localhost two sub' => ['localhost', 'http://foo.bar.localhost', true],
+            'localhost port' => ['localhost', 'http://localhost:3000', true],
+            'ipv4 loopback' => ['127.0.0.1', 'http://127.0.0.1', true],
+            'ipv6 loopback' => ['::1', 'http://[::1]', true],
             // Need to define behavior here
             // 'port change' => ['http://www.example.com:8443', false],
-            'other domain' => ['https://not-example.com', false],
         ];
-    }
-
-    public static function localhostSpecialCases()
-    {
-        // localhost
-        // dev.localhost
-        // foo.bar.localhost
-        // 127.0.0.1
     }
 
     /**
@@ -74,16 +69,5 @@ class WildcardRelyingPartyTest extends \PHPUnit\Framework\TestCase
             'subdomain match' => [$mbs('www.example.com'), false],
             'domain mismatch' => [$mbs('not-example.com'), false],
         ];
-    }
-
-    public function testInvalidConstruct(): void
-    {
-        self::expectException(InvalidArgumentException::class);
-        new MultiOriginRelyingParty(origins: [
-            'https://www.example.com',
-            'https://app.example.com',
-            'https://admin.example.com',
-            'https://www.not-example.com',
-        ], rpId: 'example.com');
     }
 }
