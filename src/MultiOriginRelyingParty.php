@@ -19,7 +19,8 @@ use function sprintf;
 class MultiOriginRelyingParty implements RelyingParty
 {
     /**
-     * @param string[] $origins
+     * @param string[] $origins A list of origins that the RP supports
+     * @param string $rpId The common rpId for all allowed origins
      */
     public function __construct(
         private array $origins,
@@ -47,11 +48,6 @@ class MultiOriginRelyingParty implements RelyingParty
         }
     }
 
-    /**
-     * Used by steps 7.1.9 and 7.2.13
-     *
-     * @internal
-     */
     public function matchesOrigin(string $clientDataOrigin): bool
     {
         $allowed = false;
@@ -64,11 +60,6 @@ class MultiOriginRelyingParty implements RelyingParty
         return $allowed;
     }
 
-    /**
-     * Used by steps 7.1.13 and 7.2.15
-     *
-     * @internal
-     */
     public function permitsRpIdHash(AuthenticatorData $authData): bool
     {
         $expected = hash('sha256', $this->rpId, true);

@@ -10,6 +10,11 @@ class WildcardRelyingParty implements RelyingParty
 {
     private bool $isLocal;
 
+    /**
+     * @param string $rpId The rpId for all origins used by the Relying Party.
+     * Any origin in a secure context aligned with the specified rpId will be
+     * permitted.
+     */
     public function __construct(private string $rpId)
     {
         // This should bail if rpId isn't an acceptable registratable domain.
@@ -26,12 +31,6 @@ class WildcardRelyingParty implements RelyingParty
             str_ends_with('.localhost', $rpId) => true,
             default => false,
         };
-    }
-
-    public function permitsRpIdHash(AuthenticatorData $authData): bool
-    {
-        $expected = hash('sha256', $this->rpId, true);
-        return hash_equals($expected, $authData->getRpIdHash()->unwrap());
     }
 
     public function matchesOrigin(string $clientDataOrigin): bool
@@ -55,5 +54,11 @@ class WildcardRelyingParty implements RelyingParty
             return true;
         }
         return str_ends_with(haystack: $host, needle: '.' . $this->rpId);
+    }
+
+    public function permitsRpIdHash(AuthenticatorData $authData): bool
+    {
+        $expected = hash('sha256', $this->rpId, true);
+        return hash_equals($expected, $authData->getRpIdHash()->unwrap());
     }
 }
