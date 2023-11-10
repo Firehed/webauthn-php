@@ -116,6 +116,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $credential = $response->verify($this->cm, $this->rp, $container);
