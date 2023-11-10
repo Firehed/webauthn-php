@@ -45,6 +45,24 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
         $parser->parseGetResponse($response);
     }
 
+    public function testParseGetResponseHandlesEmptyUserHandle(): void
+    {
+        $parser = new ResponseParser();
+        $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/login.json');
+        $assertion = $parser->parseGetResponse($response);
+
+        self::assertNull($assertion->getUserHandle());
+    }
+
+    public function testParseGetResponseHandlesProvidedUserHandle(): void
+    {
+        $parser = new ResponseParser();
+        $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/touchid/login.json');
+        $assertion = $parser->parseGetResponse($response);
+
+        self::assertSame('443945aa-8acc-4b84-f05f-ec8ef86e7c5d', $assertion->getUserHandle());
+    }
+
     /**
      * @return array<mixed>[]
      */
@@ -104,6 +122,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
             // invalid clientDataJSON
             'no signature' => $makeVector(['signature' => null]),
             'invalid signature' => $makeVector(['signature' => 'sig']),
+            'no userHandle' => $makeVector(['userHandle' => null]),
         ];
     }
 

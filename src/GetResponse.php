@@ -22,8 +22,14 @@ class GetResponse implements Responses\AssertionInterface
         private BinaryString $rawAuthenticatorData,
         private BinaryString $clientDataJson,
         private BinaryString $signature,
+        private ?BinaryString $userHandle,
     ) {
         $this->authData = AuthenticatorData::parse($this->rawAuthenticatorData);
+    }
+
+    public function getUserHandle(): ?string
+    {
+        return $this->userHandle?->unwrap();
     }
 
     /**
@@ -109,7 +115,7 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.13
-        if (!hash_equals($rp->getOrigin(), $C['origin'])) {
+        if (!$rp->matchesOrigin($C['origin'])) {
             $this->fail('7.2.13', 'C.origin');
         }
 

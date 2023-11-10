@@ -32,12 +32,12 @@ Application logic is kept to a bare minimum in order to highlight the most impor
 ### Setup
 
 Create a `RelyingParty` instance.
-This **MUST** match the complete origin that users will interact with; e.g. `https://login.example.com:1337`.
-The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
+See [Relying Party](#relying-parties) for more information about selecting an implementation.
 
 ```php
-$rp = new \Firehed\WebAuthn\RelyingParty('https://www.example.com');
+$rp = new \Firehed\WebAuthn\SingleOriginRelyingParty('https://www.example.com');
 ```
+
 
 Also create a `ChallengeManagerInterface`.
 This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
@@ -141,6 +141,9 @@ const result = await fetch(request)
 ```
 
 3) Parse and verify the response and, if successful, associate with the user.
+
+> [!NOTE]
+> The `publicKey.user.id` field can be looked up and used later on during authentication.
 
 ```php
 <?php
@@ -305,8 +308,12 @@ $data = json_decode($json, true);
 
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
+$userHandle = $getResponse->getUserHandle();
 
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
+if ($userHandle !== null && $userHandle !== $_SESSION['authenticating_user_id']) {
+    throw new Exception('User handle does not match authentcating user');
+}
 
 try {
     // $challengeManager and $rp are the values from the setup step
@@ -330,13 +337,134 @@ header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
 
+> [!NOTE]
+> The `$userHandle` value provides flexibility for different authentication flows.
+> If null, the authenticator does not support user handles, and you MUST use a user-provided value to look up who is authenticating.
+> If a value is present, it will match a previously-registered `publicKey.user.id` value.
+> The userHandle SHOULD be used to cross-reference a user-provided id if set, and MAY be used to look up the authenticating user.
+> In either case, the previously-registered credentials in `$credentialContainer` MUST be fetched based on the user name or id.
+>
+> See [Autofill-assited requests](#autofill-assisted-requests) and [WebAuthn §7.2 Step 6](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion) for more details.
+
+## Additional details
+
+### Relying Parties
+
+In layperson's terms, a Relying Party is the server performing authentication.
+WebAuthn credentials are based on a specific Relying Party Identifier (`rpId`), and this is used to restrict the origins future authentication can be performed from.
+
+To support this, the library supports multiple options for configuring the `rpId` for different use-cases:
+
+| Implementation | Usage |
+| --- | --- |
+| `SingleOriginRelyingParty` | Users only authenticate from a single host (e.g. `www.yoursite.com`) |
+| `MultiOriginRelyingParty` | Users may authenticate from multiple specific subdomains (e.g. `www.yoursite.com` and `app.yoursite.com`) |
+| `WildcardRelyingParty` | Users may authenticate from any arbitrary subdomain of a given domain |
+
+Both the registration and authentication processes allow for specifying the `rpId` in the Javascript client code.
+The value defaults to the page origin unless explicitly specified.
+Applications MAY use a less-specific host as the `rpId`, so long as it's a valid registrable domain.
+
+> [!IMPORTANT]
+> Once a credential is created, it's permanently associated with the `rpId` used during creation.
+> Further use of that credential is restricted at a protocol level to the same `rpId`.
+
+Example: For a WebAuthn flow on `https://www.example.com:8443`, the `rpId` will default to `www.example.com`.
+It MAY be overridden to `example.com`.
+It MAY NOT be set to `com` (not registrable),
+`other.example.com` (mismatch of current host),
+`test.www.example.com` (more specific than current host),
+or `www.example.co` (different registrable domain).
+
+In all cases, the WebAuthn protocol does not allow credential sharing across multiple domains.
+E.g. a credential cannot be shared between `example.co.jp` and `example.us`.
+
+See the [specification](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) for more details.
+
+Tip: using `MultiOriginRelyingParty` with a single origin can help with future-proofing.
+```php
+$rp = new \Firehed\WebAuthn\MultiOriginRelyingParty(['https://www.example.com'], 'example.com');
+```
+
+```js
+// registration or authentication flow on www.example.com
+const createOptions = {
+    publicKey: {
+        rp: {
+            id: 'example.com',
+        },
+        // ...
+```
+
+
+#### Terminology
+
+* `origin` The combination of scheme, host, and (if applicable) non-standard port.
+  Examples: `https://www.example.com`, `https://example.com`, `https://different.example.com:8443`, `http://localhost:8080`.
+  Do NOT include the port if using the protocol-standard port (i.e. 443 for https)
+* `rpId` The Relying Party Identifier.
+  This is the host component of a URL; e.g. a domain or subdomain.
+  It does not include a port or scheme.
+  Examples: `example.com`, `www.example.com`, `localhost`.
+
+
+### Autofill-assisted requests
+
+The simplest implementation of WebAuthn still starts with a traditional username field.
+To make a more streamlined authentication experience, you may use Conditional Medation and Autofill-assisted requests.
+
+#### During registration
+
+Ensure that the `user.id` field is set appropriately.
+This SHOULD be an immutable value, such as (but not limited to) a primary key in a database.
+
+#### During authentication
+
+* Split apart the process of generating a challenge from looking up and providing previously-registered credential IDs.
+  This is genreally useful for all flows, but required to support Conditional Mediation since you don't know the user ahead of time.
+
+* Add a check for Conditional Mediation support. If supported, use it.
+
+  ```js
+  const isCMA = await PublicKeyCredential.isConditionalMediationAvailable()
+  if (!isCMA) {
+    // Autofill-assisted requests are not supported. Fall back to username flow.
+    return
+  }
+  const challenge = await getChallenge() // existing API call
+  const getOptions = {
+    publicKey: {
+      challenge,
+      // Set other options as appropriate
+    },
+    mediation: 'conditional', // Add this
+  }
+  const credential = await navigator.credentials.get(getOptions)
+  // proceed as usual
+  ```
+
+* Adjust verification API to use the userHandle from the credential.
+  This can be done either/or to have a single authentication endpoint.
+
+  ```php
+  // ...
+  $getResponse = $parser->parseGetResponse($data);
+  $userHandle = $getResponse->getUserHandle();
+  $userId = $_POST['username'] ?? null; // match your existing form/API formats
+  if ($userHandle === null) {
+    assert($userId !== null);
+    $user = findUserById($userId); // ORM lookup, etc
+  } else {
+    $user = findUserById($userHandle);
+    assert($userId === $user->id || $userId === null);
+  }
+  $credentialContainer = getCredentialsForUser($user);
+  // ...
+  ```
+
+
+
 Cleanup Tasks
-
-### Mediation/PassKeys
-
-- replace step 1 with just generating challenge (still put in session)
-- step 2 removes allowCredentials, adds mediation:conditional
-- step 3 replaces user from session with a user lookup from GetResponse.userHandle
 
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey

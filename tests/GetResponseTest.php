@@ -30,7 +30,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             'Rdv4hQAAAAA='
         );
 
-        $this->rp = new RelyingParty('http://localhost:8888');
+        $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
 
         $this->id = BinaryString::fromBytes([
             116, 216, 28, 85, 64, 195, 24, 125,
@@ -93,6 +93,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             credentialId: $this->id,
             signature: $this->signature,
             rawAuthenticatorData: $this->rawAuthenticatorData,
+            userHandle: null,
         );
         self::assertFalse($response->isUserVerified(), 'Fixture is not verified');
     }
@@ -110,6 +111,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.11');
@@ -126,6 +128,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $credential = $response->verify($this->cm, $this->rp, $container);
@@ -147,6 +150,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         // Simulate replay. ChallengeManager no longer recognizes this one.
@@ -167,6 +171,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $newCdj,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.13');
@@ -176,13 +181,14 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
     // 7.2.15
     public function testRelyingPartyIdMismatchIsError(): void
     {
-        $rp = new RelyingParty('https://some-other-site.example.com');
+        $rp = new SingleOriginRelyingParty('https://some-other-site.example.com');
         // override authData instead?
         $response = new GetResponse(
             credentialId: $this->id,
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.15');
@@ -205,6 +211,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.17');
@@ -224,6 +231,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: new BinaryString('incorrect'),
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.20');
@@ -241,6 +249,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $updatedCredential = $response->verify($this->cm, $this->rp, $this->credential);
@@ -276,6 +285,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $credential = $response->verify($this->cm, $this->rp, $container);
@@ -291,6 +301,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.7');
@@ -308,10 +319,38 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             rawAuthenticatorData: $this->rawAuthenticatorData,
             clientDataJson: $this->clientDataJson,
             signature: $this->signature,
+            userHandle: null,
         );
 
         $this->expectVerificationError('7.2.7');
         $response->verify($this->cm, $this->rp, $container);
+    }
+
+    public function testNullUserHandle(): void
+    {
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+            userHandle: null,
+        );
+
+        self::assertNull($response->getUserHandle());
+    }
+
+    public function testUserHandleWithValue(): void
+    {
+        $handle = bin2hex(random_bytes(10));
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+            userHandle: new BinaryString($handle),
+        );
+
+        self::assertSame($handle, $response->getUserHandle());
     }
 
     private function expectVerificationError(string $section): void
