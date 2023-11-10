@@ -17,7 +17,13 @@ This also means that users do not have to manage passwords for individual websit
 ## Using this library: A Crash Course
 
 This will cover the basic workflows for integrating this library to your web application.
-Classes referenced in the examples may omit the `Firehed\WebAuthn` namespace prefix for brevity.
+
+> [!NOTE]
+> The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+> NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+> "MAY", and "OPTIONAL" in this document are to be interpreted as
+> described in BCP 14 [RFC2119] [RFC8174] when, and only when, they
+> appear in all capitals, as shown here.
 
 ### Sample Code
 There's a complete set of working examples in the [`examples`](examples) directory.
@@ -26,36 +32,39 @@ Application logic is kept to a bare minimum in order to highlight the most impor
 ### Setup
 
 Create a `RelyingParty` instance.
-This **MUST** match the complete origin that users will interact with; e.g. `https://login.example.com:1337`.
-The protocol is always required; the port must only be present if using a non-standard port and must be excluded for standard ports.
+See [Relying Party](#relying-parties) for more information about selecting an implementation.
 
 ```php
-$rp = new RelyingParty('https://www.example.com');
+$rp = new \Firehed\WebAuthn\SingleOriginRelyingParty('https://www.example.com');
 ```
 
-Important: WebAuthn will only work in a "secure context".
-This means that the domain MUST run over `https`, with a sole exception for `localhost`.
-See https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts for more info.
+
+Also create a `ChallengeManagerInterface`.
+This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
+See the [Challenge Management](#challenge-management) section below for more information.
+
+```php
+session_start();
+$challengeManager = new \Firehed\WebAuthn\SessionChallengeManager();
+```
+
+> [!IMPORTANT]
+> WebAuthn will only work in a "secure context".
+> This means that the domain MUST run over `https`, with a sole exception for `localhost`.
+> See [https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts]() for more info.
 
 ### Registering a WebAuthn credential to a user
 
 This step takes place either when a user is first registering, or later on to supplement or replace their password.
 
 1) Create an endpoint that will return a new, random Challenge.
-This may be stored in a user's session or equivalent; it needs to be kept statefully server-side.
 Send it to the user as base64.
 
 ```php
 <?php
 
-use Firehed\WebAuthn\ExpiringChallenge;
-
 // Generate challenge
-$challenge = ExpiringChallenge::withLifetime(120);
-
-// Store server-side; adjust to your app's needs
-session_start();
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -92,7 +101,6 @@ const createOptions = {
         user: {
             name: userInfo.name,
             displayName: 'User Name',
-            // NOTE: id will be available later as `userHandle`
             id: Uint8Array.from(userInfo.id, c => c.charCodeAt(0)),
         },
         challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
@@ -134,6 +142,9 @@ const result = await fetch(request)
 
 3) Parse and verify the response and, if successful, associate with the user.
 
+> [!NOTE]
+> The `publicKey.user.id` field can be looked up and used later on during authentication.
+
 ```php
 <?php
 
@@ -148,11 +159,9 @@ $data = json_decode($json, true);
 $parser = new ResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
 try {
-    $credential = $createResponse->verify($challenge, $rp);
+    // $challengeManager and $rp are the values from the setup step
+    $credential = $createResponse->verify($challengeManager, $rp);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -191,7 +200,7 @@ header('HTTP/1.1 200 OK');
 Note: this workflow may be a little different if supporting [passkeys](https://developer.apple.com/passkeys/).
 Updated samples will follow.
 
-Before starting, you will need to collect the username or id of the user trying to authenticate, and retreive the user info from storage.
+Before starting, you will need to collect the username or id of the user trying to authenticate, and retrieve the user info from storage.
 This assumes the same schema from the previous Registration example.
 
 1) Create an endpoint that will return a Challenge and any credentials associated with the authenticating user:
@@ -199,10 +208,7 @@ This assumes the same schema from the previous Registration example.
 ```php
 <?php
 
-use Firehed\WebAuthn\{
-    Codecs,
-    ExpiringChallenge,
-};
+use Firehed\WebAuthn\Codecs;
 
 session_start();
 
@@ -217,8 +223,7 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 // See examples/functions.php for how this works
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challenge = ExpiringChallenge::withLifetime(120);
-$_SESSION['webauthn_challenge'] = $challenge;
+$challenge = $challengeManager->createChallenge();
 
 // Send to user
 header('Content-type: application/json');
@@ -303,21 +308,16 @@ $data = json_decode($json, true);
 
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
-
-$rp = $valueFromSetup; // e.g. $psr11Container->get(RelyingParty::class);
-$challenge = $_SESSION['webauthn_challenge'];
-
-// Note: this user lookup is very flexible, and how to approach it varies based
-// on frontend code.
-// See Passkeys section, and https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion sec. 7.2 step 6.
 $userHandle = $getResponse->getUserHandle();
-if ($userHandle !== null && $userHandle !== $_SESSION['authenticating_user_id']) {
-    throw new \RuntimeException('User handle does not match identified authenticating user');
-}
+
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
+if ($userHandle !== null && $userHandle !== $_SESSION['authenticating_user_id']) {
+    throw new Exception('User handle does not match authentcating user');
+}
 
 try {
-    $updatedCredential = $getResponse->verify($challenge, $rp, $credentialContainer);
+    // $challengeManager and $rp are the values from the setup step
+    $updatedCredential = $getResponse->verify($challengeManager, $rp, $credentialContainer);
 } catch (Throwable) {
     // Verification failed. Send an error to the user?
     header('HTTP/1.1 403 Unauthorized');
@@ -337,25 +337,140 @@ header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
 
-## Cleanup Tasks
+> [!NOTE]
+> The `$userHandle` value provides flexibility for different authentication flows.
+> If null, the authenticator does not support user handles, and you MUST use a user-provided value to look up who is authenticating.
+> If a value is present, it will match a previously-registered `publicKey.user.id` value.
+> The userHandle SHOULD be used to cross-reference a user-provided id if set, and MAY be used to look up the authenticating user.
+> In either case, the previously-registered credentials in `$credentialContainer` MUST be fetched based on the user name or id.
+>
+> See [WebAuthn §7.2 Step 6](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion) for more details.
 
-### Autofill-assisted Passkeys
+## Additional details
 
-- Registration Step 1:
-  - Clearly define what value is going in `user.id` as it will be used below
-- AuthN Step 1:
-  - only generate a challenge, don't look up a user or attempt to give a list of credential_ids
-- AuthN Step 2:
-  - Remove `allowCredentials` from options (it will not be in the challenge response)
-  - Add `mediation: conditional` to options
-- AuthN Step 3:
-  - Instead of looking up the userId from the session (it won't be set), instead call `$getResponse->getUserHandle()` which returns the user.id from registration
-    - Note: the value MAY be null when not coming from a conditional mediation response. If you're designing a single API to handle both cases, be aware of this.
-  - Obtain the credentials associated with that user.
-    - Be sure to provide the value to `verify()` as a CredentialContainer, which will confirm the user handle is associated with the response's credential id
-    - DO NOT
+### Relying Parties
 
-### Other
+In layperson's terms, a Relying Party is the server performing authentication.
+WebAuthn credentials are based on a specific Relying Party Identifier (`rpId`), and this is used to restrict the origins future authentication can be performed from.
+
+To support this, the library supports multiple options for configuring the `rpId` for different use-cases:
+
+| Implementation | Usage |
+| --- | --- |
+| `SingleOriginRelyingParty` | Users only authenticate from a single host (e.g. `www.yoursite.com`) |
+| `MultiOriginRelyingParty` | Users may authenticate from multiple specific subdomains (e.g. `www.yoursite.com` and `app.yoursite.com`) |
+| `WildcardRelyingParty` | Users may authenticate from any arbitrary subdomain of a given domain |
+
+Both the registration and authentication processes allow for specifying the `rpId` in the Javascript client code.
+The value defaults to the page origin unless explicitly specified.
+Applications MAY use a less-specific host as the `rpId`, so long as it's a valid registrable domain.
+
+> [!IMPORTANT]
+> Once a credential is created, it's permanently associated with the `rpId` used during creation.
+> Further use of that credential is restricted at a protocol level to the same `rpId`.
+
+Example: For a WebAuthn flow on `https://www.example.com:8443`, the `rpId` will default to `www.example.com`.
+It MAY be overridden to `example.com`.
+It MAY NOT be set to `com` (not registrable),
+`other.example.com` (mismatch of current host),
+`test.www.example.com` (more specific than current host),
+or `www.example.co` (different registrable domain).
+
+In all cases, the WebAuthn protocol does not allow credential sharing across multiple domains.
+E.g. a credential cannot be shared between `example.co.jp` and `example.us`.
+
+See the [specification](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) for more details.
+
+Tip: using `MultiOriginRelyingParty` with a single origin can help with future-proofing.
+```php
+$rp = new \Firehed\WebAuthn\MultiOriginRelyingParty(['https://www.example.com'], 'example.com');
+```
+
+```js
+// registration or authentication flow on www.example.com
+const createOptions = {
+    publicKey: {
+        rp: {
+            id: 'example.com',
+        },
+        // ...
+```
+
+
+#### Terminology
+
+* `origin` The combination of scheme, host, and (if applicable) non-standard port.
+  Examples: `https://www.example.com`, `https://example.com`, `https://different.example.com:8443`, `http://localhost:8080`.
+  Do NOT include the port if using the protocol-standard port (i.e. 443 for https)
+* `rpId` The Relying Party Identifier.
+  This is the host component of a URL; e.g. a domain or subdomain.
+  It does not include a port or scheme.
+  Examples: `example.com`, `www.example.com`, `localhost`.
+
+
+### Autofill-assisted requests
+
+The simplest implementation of WebAuthn still starts with a traditional username field.
+To make a more streamlined authentication experience, you may use Conditional Medation and Autofill-assisted requests.
+
+#### During registration
+
+Ensure that the `user.id` field is set appropriately.
+This SHOULD be an immutable value, such as (but not limited to) a primary key in a database.
+
+#### During authentication
+
+* Split apart the process of generating a challenge from looking up and providing previously-registered credential IDs.
+  This is genreally useful for all flows, but required to support Conditional Mediation since you don't know the user ahead of time.
+
+* Add a check for Conditional Mediation support. If supported, use it.
+
+  ```js
+  const isCMA = await PublicKeyCredential.isConditionalMediationAvailable()
+  if (!isCMA) {
+    // Autofill-assisted requests are not supported. Fall back to username flow.
+    return
+  }
+  const challenge = await getChallenge() // existing API call
+  const getOptions = {
+    publicKey: {
+      challenge,
+      // Set other options as appropriate
+    },
+    mediation: 'conditional', // Add this
+  }
+  const credential = await navigator.credentials.get(getOptions)
+  // proceed as usual
+  ```
+
+* Adjust verification API to use the userHandle from the credential.
+  This can be done either/or to have a single authentication endpoint.
+
+  ```php
+  // ...
+  $getResponse = $parser->parseGetResponse($data);
+  $userHandle = $getResponse->getUserHandle();
+  $userId = $_POST['username'] ?? null; // match your existing form/API formats
+  if ($userHandle === null) {
+    assert($userId !== null);
+    $user = findUserById($userId); // ORM lookup, etc
+  } else {
+    $user = findUserById($userHandle);
+    assert($userId === $user->id || $userId === null);
+  }
+  $credentialContainer = getCredentialsForUser($user);
+  // ...
+  ```
+
+
+
+Cleanup Tasks
+
+### Mediation/PassKeys
+
+- replace step 1 with just generating challenge (still put in session)
+- step 2 removes allowCredentials, adds mediation:conditional
+- step 3 replaces user from session with a user lookup from GetResponse.userHandle
 
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey
@@ -453,10 +568,32 @@ Those wire formats are covered by semantic versioning and guaranteed to not have
 
 Similarly, for data storage, the output of `Codecs\Credential::encode()` are also covered.
 
+### Challenge management
+
+Challenges are a [cryptographic nonce](https://en.wikipedia.org/wiki/Cryptographic_nonce) that ensure a login attempt works only once.
+Their single-use nature is critical to the security of the WebAuthn protocol.
+
+Your application SHOULD use one of the library-provided `ChallengeManagerInterface` implementations to ensure the correct behavior.
+
+| Implementation | Usage |
+| --- | --- |
+| `SessionChallengeManager` | Manages challenges through native PHP [Sessions](https://www.php.net/manual/en/intro.session.php). |
+
+If one of the provided options is not suitable, you MAY implement the interface yourself or manage challenges manually.
+In the event you find this necessary, you SHOULD open an Issue and/or Pull Request for the library that indicates the shortcoming.
+
+> [!WARNING]
+> You MUST validate that the challenge was generated by your server recently and has not already been used.
+> **Failing to do so will compromise the security of the protocol!**
+> Implementations MUST NOT trust a client-provided value.
+> The built-in `ChallengeManagerInterface` implementations will handle this for you.
+
 Challenges generated by your server SHOULD expire after a short amount of time.
 You MAY use the `ExpiringChallenge` class for convenience (e.g. `$challenge = ExpiringChallenge::withLifetime(60);`), which will throw an exception if the specified expiration window has been exceeded.
 It is RECOMMENDED that your javascript code uses the `timeout` setting (denoted in milliseconds) and matches the server-side challenge expiration, give or take a few seconds.
-Note: the W3C specification recommends a timeout in the range of 15-120 seconds.
+
+> [!NOTE]
+> The W3C specification recommends a timeout in the range of 15-120 seconds.
 
 ### Error Handling
 

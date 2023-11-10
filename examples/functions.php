@@ -3,9 +3,12 @@
 declare(strict_types=1);
 
 use Firehed\WebAuthn\{
+    ChallengeManagerInterface,
     Codecs,
     CredentialContainer,
     RelyingParty,
+    SessionChallengeManager,
+    SingleOriginRelyingParty,
 };
 
 /**
@@ -26,6 +29,11 @@ function createUser(PDO $pdo, string $username): array
         ];
     }
     return $response;
+}
+
+function getChallengeManager(): ChallengeManagerInterface
+{
+    return new SessionChallengeManager();
 }
 
 function getCredentialsForUserId(PDO $pdo, string $userId): CredentialContainer
@@ -70,12 +78,15 @@ function getDatabaseConnection(): PDO
 
 function getRelyingParty(): RelyingParty
 {
+    // Note: in Dockerized environments, HOST will sometimes be set or
+    // overridden. If running one and you want to configure your RP from an
+    // envvar, selecting a different name is recommended.
     $rp = getenv('HOST');
     if ($rp === false) {
         throw new RuntimeException('HOST is not defined');
     }
     // This would be configured by a env var or something
-    return new RelyingParty($rp);
+    return new SingleOriginRelyingParty($rp);
 }
 
 /**

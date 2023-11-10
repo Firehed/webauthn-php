@@ -13,7 +13,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->rp = new RelyingParty('http://localhost:8888');
+        $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
     }
 
     /**
@@ -30,7 +30,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         $registerRequest = $this->safeReadJsonFile("$directory/register.json");
 
         $attestation = $parser->parseCreateResponse($registerRequest);
-        $credential = $attestation->verify($registerChallenge, $this->rp);
+        $credential = $attestation->verify($this->wrapChallenge($registerChallenge), $this->rp);
 
         $loginInfo = $this->safeReadJsonFile("$directory/loginInfo.json");
         $loginChallenge = new Challenge(
@@ -40,7 +40,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
 
         $assertion = $parser->parseGetResponse($loginRequest);
         $updatedCredential = $assertion->verify(
-            $loginChallenge,
+            $this->wrapChallenge($loginChallenge),
             $this->rp,
             $credential,
         );
@@ -87,5 +87,13 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         $data = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
         assert(is_array($data));
         return $data;
+    }
+
+    private function wrapChallenge(ChallengeInterface $challenge): ChallengeManagerInterface
+    {
+        $mock = $this->createMock(ChallengeManagerInterface::class);
+        $mock->method('useFromClientDataJSON')
+            ->willReturn($challenge);
+        return $mock;
     }
 }

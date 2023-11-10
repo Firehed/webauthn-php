@@ -5,45 +5,26 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @api
+ * @api: All implementations of RelyingParty are considered part of the public
+ * API for creating `new` instances; their methods are NOT part of the public
+ * API.
+ *
+ * That's to say that the objects should be passed to the verify() methods, but
+ * don't try to interact with them beyond that.
  */
-class RelyingParty
+interface RelyingParty
 {
     /**
-     * @param string $origin The origin of the server. This needs to match
-     * what's in the browser's address bar; i.e. it must included the protocol
-     * (http(s)), the complete host, and the port if a value other than the
-     * default.
+     * Used by steps 7.1.9 and 7.2.13
+     *
+     * @internal
      */
-    public function __construct(
-        private string $origin,
-    ) {
-    }
-
-    public function getOrigin(): string
-    {
-        return $this->origin;
-    }
+    public function matchesOrigin(string $clientDataOrigin): bool;
 
     /**
-     * TODO: getIds(): string[] <- you can walk up to the regsirable domain
+     * Used by steps 7.1.13 and 7.2.15
      *
-     * @link https://www.w3.org/TR/webauthn-2/#rp-id
+     * @internal
      */
-    public function getId(): string
-    {
-        // """
-        // By default, the RP ID for a WebAuthn operation is set to the
-        // caller’s origin's effective domain. This default MAY be overridden by
-        // the caller, as long as the caller-specified RP ID value is a
-        // registrable domain suffix of or is equal to the caller’s origin's
-        // effective domain.
-        // """
-        // tl;dr ~
-        // a) this should default to the host (it does)
-        // b) if publicKey.rp.id is overridden, this must match
-        $host = parse_url($this->origin, PHP_URL_HOST);
-        assert(is_string($host));
-        return $host;
-    }
+    public function permitsRpIdHash(AuthenticatorData $authData): bool;
 }

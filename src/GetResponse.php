@@ -15,6 +15,8 @@ use UnexpectedValueException;
  */
 class GetResponse implements Responses\AssertionInterface
 {
+    private AuthenticatorData $authData;
+
     public function __construct(
         private BinaryString $credentialId,
         private BinaryString $rawAuthenticatorData,
@@ -22,6 +24,7 @@ class GetResponse implements Responses\AssertionInterface
         private BinaryString $signature,
         private ?BinaryString $userHandle,
     ) {
+        $this->authData = AuthenticatorData::parse($this->rawAuthenticatorData);
     }
 
     public function getUserHandle(): ?string
@@ -42,7 +45,7 @@ class GetResponse implements Responses\AssertionInterface
      * @link https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
      */
     public function verify(
-        ChallengeInterface $challenge,
+        ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
@@ -77,7 +80,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.8
         $cData = $this->clientDataJson->unwrap();
-        $authData = AuthenticatorData::parse($this->rawAuthenticatorData);
+        $authData = $this->authData;
         $sig = $this->signature->unwrap();
 
         // 7.2.9
@@ -95,13 +98,19 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.12
+        $cdjChallenge = $C['challenge'];
+        $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
+        if ($challenge === null) {
+            $this->fail('7.2.12', 'C.challenge');
+        }
+
         $b64u = Codecs\Base64Url::encode($challenge->getBinary()->unwrap());
-        if (!hash_equals($b64u, $C['challenge'])) {
+        if (!hash_equals($b64u, $cdjChallenge)) {
             $this->fail('7.2.12', 'C.challenge');
         }
 
         // 7.2.13
-        if (!hash_equals($rp->getOrigin(), $C['origin'])) {
+        if (!$rp->matchesOrigin($C['origin'])) {
             $this->fail('7.2.13', 'C.origin');
         }
 
@@ -109,8 +118,7 @@ class GetResponse implements Responses\AssertionInterface
         // TODO: tokenBinding (may not exist on localhost??)
 
         // 7.2.15
-        $knownRpIdHash = hash('sha256', $rp->getId(), true);
-        if (!hash_equals($knownRpIdHash, $authData->getRpIdHash()->unwrap())) {
+        if (!$rp->permitsRpIdHash($authData)) {
             $this->fail('7.2.15', 'authData.rpIdHash');
         }
 
