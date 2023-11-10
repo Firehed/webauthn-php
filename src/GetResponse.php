@@ -22,8 +22,14 @@ class GetResponse implements Responses\AssertionInterface
         private BinaryString $rawAuthenticatorData,
         private BinaryString $clientDataJson,
         private BinaryString $signature,
+        private ?BinaryString $userHandle,
     ) {
         $this->authData = AuthenticatorData::parse($this->rawAuthenticatorData);
+    }
+
+    public function getUserHandle(): ?string
+    {
+        return $this->userHandle?->unwrap();
     }
 
     /**
