@@ -122,6 +122,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
             // invalid clientDataJSON
             'no signature' => $makeVector(['signature' => null]),
             'invalid signature' => $makeVector(['signature' => 'sig']),
+            'no userHandle' => $makeVector(['userHandle' => null]),
         ];
     }
 
