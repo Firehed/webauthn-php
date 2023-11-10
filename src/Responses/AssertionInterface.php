@@ -27,8 +27,8 @@ interface AssertionInterface
      * is not used to determine what user is authenticating, and MUST NOT be
      * used in an attempt to do so.
      *
-      *@internal
-      */
+     * @internal
+     */
     public function getUsedCredentialId(): BinaryString;
 
     /**
