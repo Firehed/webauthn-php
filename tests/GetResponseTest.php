@@ -314,6 +314,33 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         $response->verify($this->cm, $this->rp, $container);
     }
 
+    public function testNullUserHandle(): void
+    {
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+            userHandle: null,
+        );
+
+        self::assertNull($response->getUserHandle());
+    }
+
+    public function testUserHandleWithValue(): void
+    {
+        $handle = bin2hex(random_bytes(10));
+        $response = new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: $this->clientDataJson,
+            signature: $this->signature,
+            userHandle: new BinaryString($handle),
+        );
+
+        self::assertSame($handle, $response->getUserHandle());
+    }
+
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Errors\VerificationError::class);
