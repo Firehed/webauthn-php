@@ -344,7 +344,7 @@ header('HTTP/1.1 200 OK');
 > The userHandle SHOULD be used to cross-reference a user-provided id if set, and MAY be used to look up the authenticating user.
 > In either case, the previously-registered credentials in `$credentialContainer` MUST be fetched based on the user name or id.
 >
-> See [WebAuthn §7.2 Step 6](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion) for more details.
+> See [Autofill-assited requests](#autofill-assisted-requests) and [WebAuthn §7.2 Step 6](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion) for more details.
 
 ## Additional details
 
