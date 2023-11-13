@@ -1,6 +1,9 @@
 const startLogin = async (e) => {
     e.preventDefault()
 
+    const challengeReq = await fetch('/getChallenge.php')
+    const challenge = await challengeReq.json()
+
     const username = document.getElementById('username').value
     const response = await fetch('/readmeLoginStep1.php', {
         method: 'POST',
@@ -14,7 +17,7 @@ const startLogin = async (e) => {
     // Format for WebAuthn API
     const getOptions = {
         publicKey: {
-            challenge: Uint8Array.from(atob(data.challengeB64), c => c.charCodeAt(0)),
+            challenge: Uint8Array.from(atob(challenge.b64), c => c.charCodeAt(0)),
             allowCredentials: data.credential_ids.map(id => ({
                 id: Uint8Array.from(atob(id), c => c.charCodeAt(0)),
                 type: 'public-key',

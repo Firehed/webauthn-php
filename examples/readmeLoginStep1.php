@@ -2,11 +2,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Firehed\WebAuthn\{
-    Codecs,
-    ExpiringChallenge,
-};
-
 session_start();
 
 $pdo = getDatabaseConnection();
@@ -19,12 +14,8 @@ $_SESSION['authenticating_user_id'] = $user['id'];
 
 $credentialContainer = getCredentialsForUserId($pdo, $user['id']);
 
-$challengeManager = getChallengeManager();
-$challenge = $challengeManager->createChallenge();
-
 // Send to user
 header('Content-type: application/json');
 echo json_encode([
-    'challengeB64' => $challenge->getBase64(),
     'credential_ids' => $credentialContainer->getBase64Ids(),
 ]);

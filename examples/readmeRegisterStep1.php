@@ -2,8 +2,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Firehed\WebAuthn\ExpiringChallenge;
-
 session_start();
 
 // Normally this would come from something like a) a user already logged-in
@@ -12,13 +10,8 @@ session_start();
 $user = createUser(getDatabaseConnection(), $_POST['username']);
 $_SESSION['user_id'] = $user['id'];
 
-// Generate challenge
-$challengeManager = getChallengeManager();
-$challenge = $challengeManager->createChallenge();
-
 // Send to user
 header('Content-type: application/json');
 echo json_encode([
-    'challengeB64' => $challenge->getBase64(),
     'user' => $user,
 ]);
