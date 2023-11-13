@@ -20,6 +20,8 @@ use Firehed\WebAuthn\{
  */
 interface AttestationInterface
 {
+    public function isUserVerified(): bool;
+
     public function verify(
         ChallengeManagerInterface $challenge,
         RelyingParty $rp,

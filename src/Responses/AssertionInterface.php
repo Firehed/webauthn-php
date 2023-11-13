@@ -51,6 +51,11 @@ interface AssertionInterface
     /**
      * @api
      */
+    public function isUserVerified(): bool;
+
+    /**
+     * @api
+     */
     public function verify(
         ChallengeManagerInterface $challenge,
         RelyingParty $rp,

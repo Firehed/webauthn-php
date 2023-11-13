@@ -86,6 +86,18 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
         ])));
     }
 
+    public function testIsUserVerified(): void
+    {
+        $response = new GetResponse(
+            clientDataJson: $this->clientDataJson,
+            credentialId: $this->id,
+            signature: $this->signature,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            userHandle: null,
+        );
+        self::assertFalse($response->isUserVerified(), 'Fixture is not verified');
+    }
+
     // 7.2.11
     public function testCDJTypeMismatchIsError(): void
     {
