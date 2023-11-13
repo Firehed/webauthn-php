@@ -2,11 +2,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Firehed\WebAuthn\{
-    Codecs,
-    ExpiringChallenge,
-};
-
 session_start();
 
 $pdo = getDatabaseConnection();
