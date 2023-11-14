@@ -8,6 +8,9 @@ const startRegister = async (e) => {
         return
     }
 
+    const challengeReq = await fetch('/getChallenge.php')
+    const challenge = await challengeReq.json()
+
     const username = document.getElementById('username').value
 
     const response = await fetch('/readmeRegisterStep1.php', {
@@ -18,7 +21,6 @@ const startRegister = async (e) => {
         },
     })
     const responseData = await response.json()
-    const challenge = atob(responseData.challengeB64) // base64-decode
     const userInfo = responseData.user
 
     const createOptions = {
@@ -31,7 +33,9 @@ const startRegister = async (e) => {
                 displayName: 'User Name',
                 id: Uint8Array.from(userInfo.id, c => c.charCodeAt(0)),
             },
-            challenge: Uint8Array.from(challenge, c => c.charCodeAt(0)),
+            // This base64-decodes the response and translates it into the
+            // Webauthn-required format.
+            challenge: Uint8Array.from(atob(challenge.b64), c => c.charCodeAt(0)),
             pubKeyCredParams: [
                 {
                     alg: -7, // ES256

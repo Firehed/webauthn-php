@@ -143,6 +143,9 @@ const result = await fetch(request)
 
 3) Parse and verify the response and, if successful, associate with the user.
 
+> [!NOTE]
+> The `publicKey.user.id` field can be looked up and used later on during authentication.
+
 ```php
 <?php
 
@@ -306,8 +309,12 @@ $data = json_decode($json, true);
 
 $parser = new ResponseParser();
 $getResponse = $parser->parseGetResponse($data);
+$userHandle = $getResponse->getUserHandle();
 
 $credentialContainer = getCredentialsForUserId($pdo, $_SESSION['authenticating_user_id']);
+if ($userHandle !== null && $userHandle !== $_SESSION['authenticating_user_id']) {
+    throw new Exception('User handle does not match authentcating user');
+}
 
 try {
     // $challengeManager and $rp are the values from the setup step
@@ -330,6 +337,15 @@ $result = $stmt->execute([
 header('HTTP/1.1 200 OK');
 // Send back whatever your webapp needs to finish authentication
 ```
+
+> [!NOTE]
+> The `$userHandle` value provides flexibility for different authentication flows.
+> If null, the authenticator does not support user handles, and you MUST use a user-provided value to look up who is authenticating.
+> If a value is present, it will match a previously-registered `publicKey.user.id` value.
+> The userHandle SHOULD be used to cross-reference a user-provided id if set, and MAY be used to look up the authenticating user.
+> In either case, the previously-registered credentials in `$credentialContainer` MUST be fetched based on the user name or id.
+>
+> See [Autofill-assited requests](#autofill-assisted-requests) and [WebAuthn §7.2 Step 6](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#sctn-verifying-assertion) for more details.
 
 ## Additional details
 
@@ -393,16 +409,63 @@ const createOptions = {
   Examples: `example.com`, `www.example.com`, `localhost`.
 
 
+### Autofill-assisted requests
+
+The simplest implementation of WebAuthn still starts with a traditional username field.
+To make a more streamlined authentication experience, you may use Conditional Medation and Autofill-assisted requests.
+
+#### During registration
+
+Ensure that the `user.id` field is set appropriately.
+This SHOULD be an immutable value, such as (but not limited to) a primary key in a database.
+
+#### During authentication
+
+* Split apart the process of generating a challenge from looking up and providing previously-registered credential IDs.
+  This is genreally useful for all flows, but required to support Conditional Mediation since you don't know the user ahead of time.
+
+* Add a check for Conditional Mediation support. If supported, use it.
+
+  ```js
+  const isCMA = await PublicKeyCredential.isConditionalMediationAvailable()
+  if (!isCMA) {
+    // Autofill-assisted requests are not supported. Fall back to username flow.
+    return
+  }
+  const challenge = await getChallenge() // existing API call
+  const getOptions = {
+    publicKey: {
+      challenge,
+      // Set other options as appropriate
+    },
+    mediation: 'conditional', // Add this
+  }
+  const credential = await navigator.credentials.get(getOptions)
+  // proceed as usual
+  ```
+
+* Adjust verification API to use the userHandle from the credential.
+  This can be done either/or to have a single authentication endpoint.
+
+  ```php
+  // ...
+  $getResponse = $parser->parseGetResponse($data);
+  $userHandle = $getResponse->getUserHandle();
+  $userId = $_POST['username'] ?? null; // match your existing form/API formats
+  if ($userHandle === null) {
+    assert($userId !== null);
+    $user = findUserById($userId); // ORM lookup, etc
+  } else {
+    $user = findUserById($userHandle);
+    assert($userId === $user->id || $userId === null);
+  }
+  $credentialContainer = getCredentialsForUser($user);
+  // ...
+  ```
 
 
 
 Cleanup Tasks
-
-### Mediation/PassKeys
-
-- replace step 1 with just generating challenge (still put in session)
-- step 2 removes allowCredentials, adds mediation:conditional
-- step 3 replaces user from session with a user lookup from GetResponse.userHandle
 
 - [x] Pull across PublicKeyInterface
 - [x] Pull across ECPublicKey

@@ -22,6 +22,11 @@ class CreateResponse implements Responses\AttestationInterface
     ) {
     }
 
+    public function isUserVerified(): bool
+    {
+        return $this->ao->getAuthenticatorData()->isUserVerified();
+    }
+
     /**
      * @see 7.1
      * @link https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential

@@ -93,6 +93,7 @@ class ResponseParser
      *   authenticatorData: int[],
      *   clientDataJSON: int[],
      *   signature: int[],
+     *   userHandle: int[],
      * }
      *
      * $response is left untyped since it performs additional checking from
@@ -117,17 +118,21 @@ class ResponseParser
         if (!array_key_exists('signature', $response) || !is_array($response['signature'])) {
             throw new Errors\ParseError('7.2.2', 'response.signature');
         }
+        if (!array_key_exists('userHandle', $response) || !is_array($response['userHandle'])) {
+            throw new Errors\ParseError('7.2.2', 'response.userHandle');
+        }
 
-        // userHandle provides the user.id from registration
-        // var_dump(BinaryString::fromBytes($response['userHandle'])->unwrap());
-        // if userHandle is provided, feed to the response to be read by app
-        // and have key handles looked up for verify??
+        // userHandle provides the user.id from registration. Not necessarily
+        // binary-safe, but will be in the common-case. The recommended API
+        // format will send `[]` if the PublicKeyCredential.response.userHandle
+        // is null, so the value is special-cased below.
 
         return new GetResponse(
             credentialId: BinaryString::fromBytes($response['rawId']),
             rawAuthenticatorData: BinaryString::fromBytes($response['authenticatorData']),
             clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
             signature: BinaryString::fromBytes($response['signature']),
+            userHandle: $response['userHandle'] === [] ? null : BinaryString::fromBytes($response['userHandle']),
         );
     }
 }
