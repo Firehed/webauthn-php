@@ -19,21 +19,23 @@ namespace Firehed\WebAuthn;
  * format for subsequent registration/verification procedures.
  *
  * @api
+ *
+ * @phpstan-type Base64UrlString string
  */
 class ResponseParser
 {
 
     /**
      * @param array{
-     *   id: string,
-     *   rawId: string,
+     *   id: Base64UrlString,
+     *   rawId: Base64UrlString,
      *   response: array{
      *     clientDataJSON: string,
      *     authenticatorData: string,
      *     transports: string[],
-     *     publicKey?: string,
+     *     publicKey?: Base64UrlString,
      *     publicKeyAlgorithm: int,
-     *     attestationObject: string,
+     *     attestationObject: Base64UrlString,
      *   },
      *   authenticatorAttachment?: string,
      *   clientExtensionResults: array{
@@ -43,19 +45,24 @@ class ResponseParser
      */
     public function parseRegistrationResponseJson(array $response): Responses\AttestationInterface
     {
+        // NOTE: the GH PonyFill does not provide response.authenticatorData or
+        // response.publicKeyAlgorithm. It's fine since attestationObject
+        // contains the AD, but do note the discrepency.
         \PHPStan\dumpType($response);
         return null;
     }
     /**
+     * Based on spec and verified against GH ponyfill api
+     *
      * @param array{
-     *   id: string,
-     *   rawId: string,
+     *   id: Base64UrlString,
+     *   rawId: Base64UrlString,
      *   response: array{
-     *     clientDataJSON: string,
-     *     authenticatorData: string,
-     *     signature: string,
-     *     userHandle?: string,
-     *     attestationObject?: string,
+     *     clientDataJSON: Base64UrlString,
+     *     authenticatorData: Base64UrlString,
+     *     signature: Base64UrlString,
+     *     userHandle?: Base64UrlString,
+     *     attestationObject?: Base64UrlString,
      *   },
      *   authenticatorAttachment?: string,
      *   clientExtensionResults: array{
@@ -65,6 +72,7 @@ class ResponseParser
      */
     public function parseAuthenticationResponseJson(array $response): Responses\AssertionInterface
     {
+        // same as above
         \PHPStan\dumpType($response);
         return null;
     }
