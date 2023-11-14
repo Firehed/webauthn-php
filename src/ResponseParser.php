@@ -22,6 +22,53 @@ namespace Firehed\WebAuthn;
  */
 class ResponseParser
 {
+
+    /**
+     * @param array{
+     *   id: string,
+     *   rawId: string,
+     *   response: array{
+     *     clientDataJSON: string,
+     *     authenticatorData: string,
+     *     transports: string[],
+     *     publicKey?: string,
+     *     publicKeyAlgorithm: int,
+     *     attestationObject: string,
+     *   },
+     *   authenticatorAttachment?: string,
+     *   clientExtensionResults: array{
+     *   },
+     *   type: string,
+     * } $response
+     */
+    public function parseRegistrationResponseJson(array $response): Responses\AttestationInterface
+    {
+        \PHPStan\dumpType($response);
+        return null;
+    }
+    /**
+     * @param array{
+     *   id: string,
+     *   rawId: string,
+     *   response: array{
+     *     clientDataJSON: string,
+     *     authenticatorData: string,
+     *     signature: string,
+     *     userHandle?: string,
+     *     attestationObject?: string,
+     *   },
+     *   authenticatorAttachment?: string,
+     *   clientExtensionResults: array{
+     *   },
+     *   type: string,
+     * } $response
+     */
+    public function parseAuthenticationResponseJson(array $response): Responses\AssertionInterface
+    {
+        \PHPStan\dumpType($response);
+        return null;
+    }
+
     /**
      * Parses the JSON wire format from navigator.credentials.create
      *
