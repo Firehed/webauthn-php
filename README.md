@@ -29,6 +29,12 @@ This will cover the basic workflows for integrating this library to your web app
 There's a complete set of working examples in the [`examples`](examples) directory.
 Application logic is kept to a bare minimum in order to highlight the most important workflow steps.
 
+### Install
+
+```sh
+composer require firehed/webauthn
+```
+
 ### Setup
 
 Create a `RelyingParty` instance.
