@@ -9,13 +9,11 @@ namespace Firehed\WebAuthn\Attestations;
  */
 enum Format: string
 {
+    case AndroidKey = 'android-key';
+    case AndroidSafetyNet = 'android-safetynet';
+    case Apple = 'apple';
     case None = 'none';
+    case Packed = 'packed';
+    case TPM = 'tpm';
     case U2F = 'fido-u2f';
-    // These are defined in the spec but not yet supported by the library, and
-    // as such are left disabled for clarity.
-    // case AndroidKey = 'android-key';
-    // case AndroidSafetyNet = 'android-safetynet';
-    // case Apple = 'apple';
-    // case Packed = 'packed';
-    // case TPM = 'tpm';
 }
