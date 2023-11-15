@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\Attestations;
 
 /**
+ * Defined attestation formats. Note that not all are currently handled by this
+ * library.
+ *
+ * @internal
+ *
+ * @link https://w3c.github.io/webauthn/#sctn-defined-attestation-formats
  * @link https://www.iana.org/assignments/webauthn/webauthn.xhtml
  */
 enum Format: string
