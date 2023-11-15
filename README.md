@@ -629,6 +629,26 @@ If there are any unclear areas, please file an issue.
 
 There are additional notes in Best Practices / Data Handling around this.
 
+## Supported Identifiers
+
+When generating a credential, the client will attest to its authenticity.
+Due to an inability to generate responses with all formats, not all are supported (the risk of implementing to the spec without sufficient testing is too great).
+
+| Format | Supported | Spec | Notes |
+| --- | --- | --- | --- |
+| `packed` | ❌ | 8.2 | |
+| `tpm` | ❌ | 8.3 | |
+| `android-key` | ❌ | 8.4 | |
+| `android-safetynet` | ❌ | 8.5 | |
+| `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
+| `none` | ✅ | 8.7 | |
+| `apple` | ❌ | 8.8 | Apple does not appear to use this format, instead providing non-attested credentials. |
+| `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
+
+If you receive an `UnhandledMatchError` from the library pertaining to a format, please file an issue.
+The library aims to have full format coverage eventually, but _needs your help_ in order to get there.
+
+
 ## Resources and Errata
 
 This library is a rework of [`u2f-php`](https://github.com/Firehed/u2f-php), which is built around a much earlier version of the spec known as U2F, pioneered by YubiCo with their YubiKey products.

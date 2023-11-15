@@ -31,9 +31,9 @@ class AttestationObject implements AttestationObjectInterface
         assert(array_key_exists('attStmt', $decoded));
         assert(array_key_exists('authData', $decoded));
 
-        $stmt = match ($decoded['fmt']) { // @phpstan-ignore-line
-            'none' => new None($decoded['attStmt']),
-            'fido-u2f' => new FidoU2F($decoded['attStmt']),
+        $stmt = match (Format::tryFrom($decoded['fmt'])) { // @phpstan-ignore-line
+            Format::None => new None($decoded['attStmt']),
+            Format::U2F => new FidoU2F($decoded['attStmt']),
         };
 
         $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
