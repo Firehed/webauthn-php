@@ -174,23 +174,15 @@ try {
     return;
 }
 
-// Store the credential associated with the authenticated user. This is
-// incredibly application-specific. Below is a sample table.
-/*
-CREATE TABLE user_credentials (
-    id text PRIMARY KEY,
-    user_id text,
-    credential text,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-*/
+// Store the credential associated with the authenticated user. See
+// "Registration & Credential Storage" in the README for more info.
 
 $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($credential);
 $pdo = getDatabaseConnection();
-$stmt = $pdo->prepare('INSERT INTO user_credentials (id, user_id, credential) VALUES (:id, :user_id, :encoded);');
+$stmt = $pdo->prepare('INSERT INTO credentials (storage_id, user_id, credential) VALUES (:storage_id, :user_id, :encoded);');
 $result = $stmt->execute([
-    'id' => $credential->getStorageId(),
+    'storage_id' => $credential->getStorageId(),
     'user_id' => $user->getId(), // $user comes from your authn process
     'encoded' => $encodedCredential,
 ]);
@@ -332,9 +324,9 @@ try {
 // Update the credential
 $codec = new Codecs\Credential();
 $encodedCredential = $codec->encode($updatedCredential);
-$stmt = $pdo->prepare('UPDATE user_credentials SET credential = :encoded WHERE id = :id AND user_id = :user_id');
+$stmt = $pdo->prepare('UPDATE credentials SET credential = :encoded WHERE storage_id = :storage_id AND user_id = :user_id');
 $result = $stmt->execute([
-    'id' => $updatedCredential->getStorageId(),
+    'storage_id' => $updatedCredential->getStorageId(),
     'user_id' => $_SESSION['authenticating_user_id'],
     'encoded' => $encodedCredential,
 ]);
@@ -604,15 +596,59 @@ All exceptions thrown by the library implement `Firehed\WebAuthn\Errors\WebAuthn
 
 ### Registration & Credential Storage
 
-- Credentials SHOULD have a 1-to-many relationship with users; i.e. a user should be able to have more than one associated Credential
-- The credential id SHOULD be unique.
-  If during registration this unique constraint is violated AND it's associated with a different user, your application MUST handle this situation, either by returning an error or de-associating the credential with the other user.
-  See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 7.1 step 22 for more info.
-- The WebAuthn spec makes no guarnatees about the maximum credential id length, though none were observed to be over 64 bytes (raw binary) during library development.
-  It is RECOMMENDED to permit storage of up to 255 bytes, as this tends to be the most compact variable-length encoding in many databases.
-- The credential SHOULD be stored as a string encoded by `Codecs\Credential::encode()`, and decoded with `::decode`.
-  The storage system must allow for values up to 64KiB (65,535 bytes) of ASCII; the encoding will not contain values out of the base64 range.
-- It's RECOMMENDED to allow users to provide a name associated with their credentials (e.g. "work laptop", "backup fido key").
+A sample database table may look _something_ like this:
+
+```sql
+CREATE TABLE credentials (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    storage_id TEXT UNIQUE,
+    credential TEXT,
+    nickname TEXT
+);
+```
+
+You may also want other metadata such as insertion and/or update times, time of last use, etc.
+Such data is outside of the scope of this library.
+
+If during a persistence operation any data would be truncated, the application MUST detect this and raise an error.
+Often, this means enabling `PDO::ERRMODE_EXCEPTION` and ensuring the database instance has sufficiently strict runtime settings.
+
+#### `user_id`
+Reference to your users table.
+Users SHOULD be able to associate more than one credential with their account,
+and SHOULD have a mechanism to add additional and remove existing credentials.
+This will be specific to your application.
+
+#### `storage_id`
+This is the output of `$credential->getStorageId()`.
+It MAY be combined as a primary key (e.g. having only an `id` field, and populating it with `->getStorageId()`).
+The value will always be plain ASCII.
+
+This field SHOULD support text of at least 255 bytes (commonly `varchar(255)`).
+
+> [!NOTE]
+> The underlying WebAuthn spec makes no formal guarantee about the maximum length of a Credential's id.
+> This recommendation is based on observations and testing during library development.
+
+This field SHOULD have a `UNIQUE` index.
+If during storage the unique constraint is violated AND it's associated with a different user,
+your application MUST handle this situation,
+either by returning an error or de-associating the existing record with the other user.
+See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 7.1 step 22 for more info.
+
+#### `credential`
+This is the output of `Firehed\WebAuthn\Codecs\Credential::encode($credential)`.
+When retreived from the database for use during authentication, it should be unserialized with the complementing `->decode()` method on the same class.
+
+This field SHOULD support storing at least 2KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
+The value will always be plain ASCII.
+
+#### `nickname`
+The `nickname` field is optional, and (if used) stores a user-provided value that they can use when managing credentials.
+Only the owner of the credential should be able to see this nickname.
+
+
 
 ### Authentication
 
@@ -628,6 +664,26 @@ Anything intended explicitly for public use has been marked with `@api`.
 If there are any unclear areas, please file an issue.
 
 There are additional notes in Best Practices / Data Handling around this.
+
+## Supported Identifiers
+
+When generating a credential, the client will attest to its authenticity.
+Due to an inability to generate responses with all formats, not all are supported (the risk of implementing to the spec without sufficient testing is too great).
+
+| Format | Supported | Spec | Notes |
+| --- | --- | --- | --- |
+| `packed` | ❌ | 8.2 | |
+| `tpm` | ❌ | 8.3 | |
+| `android-key` | ❌ | 8.4 | |
+| `android-safetynet` | ❌ | 8.5 | |
+| `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
+| `none` | ✅ | 8.7 | |
+| `apple` | ❌ | 8.8 | Apple does not appear to use this format, instead providing non-attested credentials. |
+| `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
+
+If you receive an `UnhandledMatchError` from the library pertaining to a format, please file an issue.
+The library aims to have full format coverage eventually, but _needs your help_ in order to get there.
+
 
 ## Resources and Errata
 
