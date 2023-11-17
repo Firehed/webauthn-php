@@ -182,6 +182,9 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
         return $data;
     }
 
+    /**
+     * @return mixed[]
+     */
     private function readFixture(string $relativePath): array
     {
         return $this->safeReadJsonFile(__DIR__ . '/fixtures/toJSON/' . $relativePath);
