@@ -23,7 +23,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
     {
         $isUserVerified = $this->safeReadJsonFileRaw("$directory/verified.json");
 
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
 
         $registerInfo = $this->safeReadJsonFile("$directory/registerInfo.json");
         $registerChallenge = new Challenge(
@@ -66,7 +66,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
      */
     public function vectors(): array
     {
-        $paths = glob(__DIR__ . '/fixtures/*');
+        $paths = glob(__DIR__ . '/fixtures/ArrayBuffer/*');
         assert($paths !== false);
         $vectors = [];
         foreach ($paths as $path) {

@@ -20,7 +20,7 @@ namespace Firehed\WebAuthn;
  *
  * @api
  */
-class ResponseParser
+class ArrayBufferResponseParser implements ResponseParserInterface
 {
     /**
      * Parses the JSON wire format from navigator.credentials.create
