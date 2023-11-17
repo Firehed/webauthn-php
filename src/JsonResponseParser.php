@@ -18,7 +18,7 @@ use function is_string;
  *
  * @api
  */
-class JsonResponseParser
+class JsonResponseParser implements ResponseParserInterface
 {
     /**
      * Parses the JSON wire format from navigator.credentials.create

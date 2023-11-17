@@ -22,7 +22,7 @@ namespace Firehed\WebAuthn;
  *
  * @phpstan-type Base64UrlString string
  */
-class ArrayBufferResponseParser
+class ArrayBufferResponseParser implements ResponseParserInterface
 {
     /**
      * Parses the JSON wire format from navigator.credentials.create
