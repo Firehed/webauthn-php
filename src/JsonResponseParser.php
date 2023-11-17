@@ -12,15 +12,11 @@ use function is_string;
 
 /**
  * Parses and decodes the native `PublicKeyCredential.toJSON()` formats into the
- * necessary data structures for subsequent authentication procedures.
- *
- * This parser expects a specific wire format, documented as a JS example in
- * each method's docblock. That format will be converted into an internal
- * format for subsequent registration/verification procedures.
+ * necessary data structures for subsequent authentication procedures. When
+ * using this decoder, the original value provided by the javascript API should
+ * be passed in after parsing the raw JSON (using `associative: true`)
  *
  * @api
- *
- * @phpstan-type Base64UrlString string
  */
 class JsonResponseParser
 {
@@ -82,7 +78,6 @@ class JsonResponseParser
     }
 
     /**
-     *
      * This will arrive as the following shape:
      *
      * array{
@@ -126,11 +121,6 @@ class JsonResponseParser
         if (!array_key_exists('signature', $response) || !is_string($response['signature'])) {
             throw new Errors\ParseError('7.2.2', 'response.signature');
         }
-
-        // userHandle provides the user.id from registration. Not necessarily
-        // binary-safe, but will be in the common-case. The recommended API
-        // format will send `[]` if the PublicKeyCredential.response.userHandle
-        // is null, so the value is special-cased below.
 
         return new GetResponse(
             credentialId: self::parse($data['rawId'], '7.2.2', 'rawId'),
