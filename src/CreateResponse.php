@@ -58,7 +58,7 @@ class CreateResponse implements Responses\AttestationInterface
             $this->fail('7.1.8', 'C.challenge');
         }
 
-        $b64u = Codecs\Base64Url::encode($challenge->getBinary()->unwrap());
+        $b64u = $challenge->getBinary()->toBase64Url();
         if (!hash_equals($b64u, $cdjChallenge)) {
             $this->fail('7.1.8', 'C.challenge');
         }
