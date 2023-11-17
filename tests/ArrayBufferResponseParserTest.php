@@ -5,29 +5,10 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\ResponseParser
+ * @covers Firehed\WebAuthn\ArrayBufferResponseParser
  */
-class ResponseParserTest extends \PHPUnit\Framework\TestCase
+class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
 {
-    public function testPRRJ(): void
-    {
-        $j = <<<'JSON'
-        {
-            "type":"public-key",
-            "id":"XJ6Kap3UyS7bCRQwJpgJgV2gEBps1v7GnRCkN7t6MwOEDTz8YJdsDJWsQPKtX-Brt7DvNGPnK5lp0BicCQXSgw",
-            "rawId":"XJ6Kap3UyS7bCRQwJpgJgV2gEBps1v7GnRCkN7t6MwOEDTz8YJdsDJWsQPKtX-Brt7DvNGPnK5lp0BicCQXSgw",
-            "authenticatorAttachment":"cross-platform",
-            "response":{
-                "clientDataJSON":"eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiRXJ5VHdIYnFYbEhid3o4elBtN0Fyb2xIT1lJYUJ1eGZaTFVKd0pIajV1WSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJ9",
-                "attestationObject":"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQFyeimqd1Mku2wkUMCaYCYFdoBAabNb-xp0QpDe7ejMDhA08_GCXbAyVrEDyrV_ga7ew7zRj5yuZadAYnAkF0oOlAQIDJiABIVggnKywkljFLYA9zHL4kJm85-XgZCTV2GTmpFDIwCunKkUiWCDmnE7Dz-TKL_nKK5PudCIUxl9z5bEdNoqsGQnLP0RWsg",
-                "transports":["usb"]
-            },
-            "clientExtensionResults":{
-            }
-        }
-        JSON;
-    }
-
     /**
      * Test the happy case for various known-good responses.
      *
@@ -35,7 +16,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseCreateResponse(string $directory): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $registerResponse = $this->safeReadJsonFile("$directory/register.json");
         $attestation = $parser->parseCreateResponse($registerResponse);
 
@@ -48,7 +29,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseCreateResponseInputValidation(array $response): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $this->expectException(Errors\ParseError::class);
         $parser->parseCreateResponse($response);
     }
@@ -59,14 +40,14 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseGetResponseInputValidation(array $response): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $this->expectException(Errors\ParseError::class);
         $parser->parseGetResponse($response);
     }
 
     public function testParseGetResponseHandlesEmptyUserHandle(): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/login.json');
         $assertion = $parser->parseGetResponse($response);
 
@@ -75,7 +56,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
 
     public function testParseGetResponseHandlesProvidedUserHandle(): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/touchid/login.json');
         $assertion = $parser->parseGetResponse($response);
 
@@ -152,7 +133,7 @@ class ResponseParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseGetResponse(string $directory): void
     {
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
         $loginResponse = $this->safeReadJsonFile("$directory/login.json");
         $assertion = $parser->parseGetResponse($loginResponse);
 
