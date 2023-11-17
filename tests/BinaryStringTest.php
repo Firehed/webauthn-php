@@ -90,6 +90,21 @@ class BinaryStringTest extends \PHPUnit\Framework\TestCase
         self::assertSame('plaintext', $this->default->getRemaining());
     }
 
+    public function testBase64UrlIdentity(): void
+    {
+        $data = random_bytes(64);
+        $wrapped = new BinaryString($data);
+        $b64u = $wrapped->toBase64Url();
+        $decoded = BinaryString::fromBase64Url($b64u);
+        self::assertSame($data, $decoded->unwrap());
+    }
+
+    public function testBase64UrlDecode(): void
+    {
+        $decoded = BinaryString::fromBase64Url('PDw_Pz8-Pg');
+        self::assertSame('<<???>>', $decoded->unwrap());
+    }
+
     /**
      * @return array{BinaryString, BinaryString, bool}[]
      */
