@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\ResponseParser
+ * @covers Firehed\WebAuthn\JsonResponseParser
  */
 class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
 {

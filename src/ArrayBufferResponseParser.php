@@ -19,8 +19,6 @@ namespace Firehed\WebAuthn;
  * format for subsequent registration/verification procedures.
  *
  * @api
- *
- * @phpstan-type Base64UrlString string
  */
 class ArrayBufferResponseParser implements ResponseParserInterface
 {
