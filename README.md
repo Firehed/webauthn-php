@@ -127,6 +127,7 @@ const credential = await navigator.credentials.create(createOptions)
 // Format the credential to send to the server. This must match the format
 // handed by the ResponseParser class. The formatting code below can be used
 // without modification.
+
 const dataForResponseParser = {
     rawId: Array.from(new Uint8Array(credential.rawId)),
     type: credential.type,
@@ -156,13 +157,13 @@ const result = await fetch(request)
 
 use Firehed\WebAuthn\{
     Codecs,
-    ResponseParser,
+    ArrayBufferResponseParser,
 };
 
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-$parser = new ResponseParser();
+$parser = new ArrayBufferResponseParser();
 $createResponse = $parser->parseCreateResponse($data);
 
 try {
@@ -296,7 +297,7 @@ const result = await fetch(request)
 
 use Firehed\WebAuthn\{
     Codecs,
-    ResponseParser,
+    ArrayBufferResponseParser,
 };
 
 session_start();
@@ -304,7 +305,7 @@ session_start();
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-$parser = new ResponseParser();
+$parser = new ArrayBufferResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 $userHandle = $getResponse->getUserHandle();
 
@@ -558,7 +559,16 @@ Testing:
 Use the _exact data format_ shown in the examples above (`dataForResponseParser`) and use the `ResponseParser` class to process them.
 Those wire formats are covered by semantic versioning and guaranteed to not have breaking changes outside of a major version.
 
-Similarly, for data storage, the output of `Codecs\Credential::encode()` are also covered.
+#### Upcoming `.toJSON()` support
+Browsers are starting to support a [`.toJSON()`](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API#browser_compatibility) method on the WebAuthn PublicKeyCredential response objects.
+There is also a [polyfill](https://github.com/github/webauthn-json) available.
+As browser support for this format increases, it will become the recommended approach for sending responses back to the server for verification.
+
+If - and only if - you use that format (either natively or through a polyfill), update the JS code on both calls:
+```js
+const dataForResponseParser = credential.toJSON()
+```
+and on the receiving APIs, replace `ArrayBufferResponseParser` with `JsonResponseParser`.
 
 ### Challenge management
 
@@ -643,6 +653,8 @@ When retreived from the database for use during authentication, it should be uns
 
 This field SHOULD support storing at least 2KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
 The value will always be plain ASCII.
+
+This format IS COVERED by semantic versioning.
 
 #### `nickname`
 The `nickname` field is optional, and (if used) stores a user-provided value that they can use when managing credentials.
