@@ -127,7 +127,7 @@ class JsonResponseParser implements ResponseParserInterface
             rawAuthenticatorData: self::parse($response['authenticatorData'], '7.2.2', 'response.authenticatorData'),
             clientDataJson: self::parse($response['clientDataJSON'], '7.2.2', 'response.clientDataJSON'),
             signature: self::parse($response['signature'], '7.2.2', 'response.signature'),
-            userHandle: array_key_exists('userHandle', $response)
+            userHandle: array_key_exists('userHandle', $response) && $response['userHandle'] !== ''
                 ? self::parse($response['userHandle'], '7.2.2', 'response.userHandle')
                 : null,
         );

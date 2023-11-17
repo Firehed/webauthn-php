@@ -1,11 +1,1 @@
-{
-  "clientExtensionResults": {},
-  "id": "4YksOHha4xwr-chW6C8eEU-ZesLdXpzhEeyO_JJy5S89s0VL_sLeErQFyFwt2G9IBvG3uliDjk3EAQDXlQ7erQ",
-  "rawId": "4YksOHha4xwr-chW6C8eEU-ZesLdXpzhEeyO_JJy5S89s0VL_sLeErQFyFwt2G9IBvG3uliDjk3EAQDXlQ7erQ",
-  "response": {
-    "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAABhQ",
-    "clientDataJSON": "eyJjaGFsbGVuZ2UiOiJVSHBFYlZoTFMyWTJYMVl4YzB4NWNWcHpaM2xmUW5rMFJVSTBNRmhVV0hka2NuVkJPVE5yYmxCMk1BIiwib3JpZ2luIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwidHlwZSI6IndlYmF1dGhuLmdldCJ9",
-    "signature": "MEUCIQD7j61mCHUrJAH9PIkTNzH5tK9ALw7saUNazq2ZWptGhwIgfL6mw10zh2V7JFZoP99bAZRgWht-lV7TgxzaQ7J5UjE"
-  },
-  "type": "public-key"
-}
+{"type":"public-key","id":"4YksOHha4xwr-chW6C8eEU-ZesLdXpzhEeyO_JJy5S89s0VL_sLeErQFyFwt2G9IBvG3uliDjk3EAQDXlQ7erQ","rawId":"4YksOHha4xwr-chW6C8eEU-ZesLdXpzhEeyO_JJy5S89s0VL_sLeErQFyFwt2G9IBvG3uliDjk3EAQDXlQ7erQ","authenticatorAttachment":"cross-platform","response":{"clientDataJSON":"eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiek9fSUJWZTNpaXMxaDlsQ2JSRUNuZWdwZlFXX2JYeEhaRmxtWTMtMnJSayIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJ9","authenticatorData":"SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MBAAABig","signature":"MEUCIBbR4hzF0vyjzRTEtBXP2PoGCUGA4QEOWrQjz0bl6su7AiEAms8MGZKpXtfOwqssLFcdiI_0iVGespBPUnpbGvmjKWs","userHandle":""},"clientExtensionResults":{}}

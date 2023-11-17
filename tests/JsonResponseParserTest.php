@@ -45,10 +45,28 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
         $parser->parseGetResponse($response);
     }
 
+    public function testParseGetResponseHandlesFilledUserHandle(): void
+    {
+        $parser = new JsonResponseParser();
+        $response = $this->readFixture('safari-passkey-polyfill/login.json');
+        $assertion = $parser->parseGetResponse($response);
+
+        self::assertSame('usr_686mCXhr7Hm7wc49CPccMhpf', $assertion->getUserHandle());
+    }
+
     public function testParseGetResponseHandlesEmptyUserHandle(): void
     {
         $parser = new JsonResponseParser();
         $response = $this->readFixture('fido-u2f-polyfill/login.json');
+        $assertion = $parser->parseGetResponse($response);
+
+        self::assertNull($assertion->getUserHandle());
+    }
+
+    public function testParseGetResponseHandlesNullUserHandle(): void
+    {
+        $parser = new JsonResponseParser();
+        $response = $this->readFixture('fido-u2f-native/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertNull($assertion->getUserHandle());
