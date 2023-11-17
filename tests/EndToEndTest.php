@@ -23,7 +23,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
     {
         $isUserVerified = $this->safeReadJsonFileRaw("$directory/verified.json");
 
-        $parser = new ResponseParser();
+        $parser = new ArrayBufferResponseParser();
 
         $registerInfo = $this->safeReadJsonFile("$directory/registerInfo.json");
         $registerChallenge = new Challenge(
