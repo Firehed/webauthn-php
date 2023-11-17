@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Firehed\WebAuthn\{
     Codecs,
-    ResponseParser,
+    ArrayBufferResponseParser,
 };
 
 session_start();
@@ -16,7 +16,7 @@ assert($json !== false);
 $data = json_decode($json, true);
 assert(is_array($data));
 
-$parser = new ResponseParser();
+$parser = new ArrayBufferResponseParser();
 $getResponse = $parser->parseGetResponse($data);
 
 $rp = getRelyingParty();
