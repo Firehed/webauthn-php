@@ -66,7 +66,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
      */
     public function vectors(): array
     {
-        $paths = glob(__DIR__ . '/fixtures/*');
+        $paths = glob(__DIR__ . '/fixtures/ArrayBuffer/*');
         assert($paths !== false);
         $vectors = [];
         foreach ($paths as $path) {

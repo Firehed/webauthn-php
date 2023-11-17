@@ -48,7 +48,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesEmptyUserHandle(): void
     {
         $parser = new ArrayBufferResponseParser();
-        $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/login.json');
+        $response = $this->readFixture('fido-u2f/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertNull($assertion->getUserHandle());
@@ -57,7 +57,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesProvidedUserHandle(): void
     {
         $parser = new ArrayBufferResponseParser();
-        $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/touchid/login.json');
+        $response = $this->readFixture('touchid/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertSame('443945aa-8acc-4b84-f05f-ec8ef86e7c5d', $assertion->getUserHandle());
@@ -69,7 +69,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function badCreateResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/register.json');
+            $response = $this->readFixture('fido-u2f/register.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -99,7 +99,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function badGetResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->safeReadJsonFile(__DIR__ . '/fixtures/fido-u2f/login.json');
+            $response = $this->readFixture('fido-u2f/login.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -145,7 +145,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
      */
     public function goodVectors(): array
     {
-        $paths = glob(__DIR__ . '/fixtures/*');
+        $paths = glob(__DIR__ . '/fixtures/ArrayBuffer/*');
         assert($paths !== false);
         $vectors = [];
         foreach ($paths as $path) {
@@ -170,5 +170,10 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
         $data = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
         assert(is_array($data));
         return $data;
+    }
+
+    private function readFixture(string $relativePath): array
+    {
+        return $this->safeReadJsonFile(__DIR__ . '/fixtures/ArrayBuffer/' . $relativePath);
     }
 }
