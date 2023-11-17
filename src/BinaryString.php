@@ -26,6 +26,12 @@ class BinaryString
     ) {
     }
 
+    public static function fromBase64Url(string $base64Url): BinaryString
+    {
+        $base64 = strtr($base64Url, ['-' => '+', '_' => '/']);
+        return self::fromBase64($base64);
+    }
+
     public static function fromBase64(string $base64): BinaryString
     {
         $binary = base64_decode($base64, true);
