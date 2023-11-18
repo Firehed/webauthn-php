@@ -6,6 +6,8 @@ namespace Firehed\WebAuthn\COSE;
 
 /**
  * @link https://www.rfc-editor.org/rfc/rfc8152.html
+ * @link https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+ *
  * @see Section 8.1, table 5
  */
 enum Algorithm: int

@@ -25,7 +25,7 @@ class JsonEmitter
             'challenge' => $challenge->getBinary()->toBase64Url(),
 
             'pubKeyCredParams' => [
-                ['type' => Enums\PublicKeyCredentialType::PublicKey, 'alg' => Enums\CoseAlgorithmIdentifier::ES256],
+                ['type' => Enums\PublicKeyCredentialType::PublicKey, 'alg' => COSE\Algorithm::EcdsaSha256],
             ],
             'timeout' => $timeout,
             'excludeCredentials' => [
