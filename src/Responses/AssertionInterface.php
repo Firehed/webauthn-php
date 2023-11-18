@@ -11,7 +11,7 @@ use Firehed\WebAuthn\{
     CredentialContainer,
     CredentialInterface,
     RelyingParty,
-    UserVerificationRequirement,
+    Enums\UserVerificationRequirement,
 };
 
 /**
