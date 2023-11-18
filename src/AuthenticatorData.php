@@ -127,6 +127,16 @@ class AuthenticatorData
         return $this->signCount;
     }
 
+    public function isBackupEligible(): bool
+    {
+        return $this->isBackupEligible;
+    }
+
+    public function isBackedUp(): bool
+    {
+        return $this->isBackedUp;
+    }
+
     public function isUserPresent(): bool
     {
         return $this->isUserPresent;
