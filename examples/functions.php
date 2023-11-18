@@ -6,7 +6,7 @@ use Firehed\WebAuthn\{
     ChallengeManagerInterface,
     Codecs,
     CredentialContainer,
-    RelyingParty,
+    RelyingPartyInterface,
     SessionChallengeManager,
     SingleOriginRelyingParty,
 };
@@ -76,7 +76,7 @@ function getDatabaseConnection(): PDO
     return $pdo;
 }
 
-function getRelyingParty(): RelyingParty
+function getRelyingParty(): RelyingPartyInterface
 {
     // Note: in Dockerized environments, HOST will sometimes be set or
     // overridden. If running one and you want to configure your RP from an
