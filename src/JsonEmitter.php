@@ -4,15 +4,68 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+/**
+ * @phpstan-type Base64UrlString string
+ *
+ * @phpstan-type PublicKeyCredentialUserEntityJson array{
+ *   id: Base64UrlString,
+ *   name: string,
+ *   displayName: string,
+ * }
+ *
+ * @phpstan-type PublicKeyCredentialRpEntity array{
+ *   name: string,
+ *   id?: string,
+ * }
+ *
+ * @phpstan-type PublicKeyCredentialParameters array{
+ *   type: Enums\PublicKeyCredentialType,
+ *   alg: COSE\Algorithm,
+ * }
+ *
+ * @phpstan-type PublicKeyCredentialDescriptorJson array{
+ *   id: Base64UrlString,
+ *   type: Enums\PublicKeyCredentialType,
+ *   transports?: Enums\AuthenticatorTransport[],
+ * }
+ *
+ * @phpstan-type AuthenticatorSelectionCriteria array{
+ *   authenticatorAttachment?: Enums\AuthenticatorAttachment,
+ *   residentKey?: Enums\ResidentKeyRequirement,
+ *   requireResidentKey?: bool,
+ *   userVerification?: Enums\UserVerificationRequirement,
+ * }
+ *
+ * @phpstan-type AuthenticationExtensionsClientInputsJSON array{}
+ */
 class JsonEmitter
 {
+    public function __construct(
+        private ChallengeManagerInterface $challengeManager,
+    ) {
+    }
+
     /**
      * @link https://www.w3.org/TR/webauthn-3/#sctn-parseCreationOptionsFromJSON
+     *
+     * @return array{
+     *   rp: PublicKeyCredentialRpEntity,
+     *   user: PublicKeyCredentialUserEntityJson,
+     *   challenge: Base64UrlString,
+     *   pubKeyCredParams: PublicKeyCredentialParameters[],
+     *   timeout?: int,
+     *   excludeCredentials?: PublicKeyCredentialDescriptorJson[],
+     *   authenticatorSelection?: AuthenticatorSelectionCriteria,
+     *   hints?: Enums\PublicKeyCredentialHints[],
+     *   attestation?: Enums\AttestationConveyancePreference,
+     *   attestationFormats?: Attestations\Format[],
+     *   extensions: AuthenticationExtensionsClientInputsJSON
+     * }
      */
     public function createDataForCreationOptions(): array
     {
-        $challenge = Challenge::random();
-        $timeout = 10_000;
+        $challenge = $this->challengeManager->createChallenge();
+        $timeout = 300_000; // TODO: match to challenge TTL
         $d = [
             'rp' => [
                 'id' => $fixme,
