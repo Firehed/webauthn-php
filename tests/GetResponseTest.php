@@ -11,7 +11,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
 {
     // These hold the values which would be kept server-side.
     private CredentialInterface $credential;
-    private RelyingParty $rp;
+    private RelyingPartyInterface $rp;
     private ChallengeManagerInterface $cm;
 
     // These hold the _default_ values from a sample parsed response.

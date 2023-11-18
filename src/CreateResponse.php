@@ -33,7 +33,7 @@ class CreateResponse implements Responses\AttestationInterface
      */
     public function verify(
         ChallengeManagerInterface $challenge,
-        RelyingParty $rp,
+        RelyingPartyInterface $rp,
         Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code

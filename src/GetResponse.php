@@ -51,7 +51,7 @@ class GetResponse implements Responses\AssertionInterface
      */
     public function verify(
         ChallengeManagerInterface $challenge,
-        RelyingParty $rp,
+        RelyingPartyInterface $rp,
         CredentialContainer | CredentialInterface $credential,
         Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
     ): CredentialInterface {
