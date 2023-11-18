@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Enums;
 
-enum UserVerificationRequirement
+enum UserVerificationRequirement: string
 {
-    "required",
-    "preferred",
-    "discouraged"
+    case Discouraged = 'discouraged';
+    case Preferred = 'preferred';
+    case Required = 'required';
 }

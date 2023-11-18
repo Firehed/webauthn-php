@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Enums;
 
-enum AuthenticatorTransport
+enum AuthenticatorTransport: string
 {
-    "usb",
-    "nfc",
-    "ble",
-    "smart-card",
-    "hybrid",
-    "internal"
+    case Ble = 'ble';
+    case SmartCard = 'smart-card';
+    case Hybrid = 'hybrid';
+    case Internal = 'internal';
+    case Nfc = 'nfc';
+    case Usb = 'usb';
 }

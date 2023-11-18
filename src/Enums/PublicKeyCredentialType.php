@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Enums;
 
-enum PublicKeyCredentialType
+enum PublicKeyCredentialType: string
 {
-    "public-key"
+    case PublicKey = 'public-key';
 }

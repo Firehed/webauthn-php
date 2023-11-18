@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Enums;
 
-enum ResidentKeyRequirement
+enum ResidentKeyRequirement: string
 {
-    "discouraged",
-    "preferred",
-    "required"
+    case Discouraged = 'discouraged';
+    case Preferred = 'preferred';
+    case Required = 'required';
 }

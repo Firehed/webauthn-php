@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Enums;
 
-enum PublicKeyCredentialHints
+enum PublicKeyCredentialHints: string
 {
-    "security-key",
-    "client-device",
-    "hybrid",
+    case ClientDevice = 'client-device';
+    case Hybrid = 'hybrid';
+    case SecurityKey = 'security-key';
 }
