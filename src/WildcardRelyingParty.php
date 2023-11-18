@@ -6,7 +6,7 @@ namespace Firehed\WebAuthn;
 
 use UnexpectedValueException;
 
-class WildcardRelyingParty implements RelyingParty
+class WildcardRelyingParty implements RelyingPartyInterface
 {
     private bool $isLocal;
 

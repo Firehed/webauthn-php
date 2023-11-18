@@ -37,7 +37,7 @@ composer require firehed/webauthn
 
 ### Setup
 
-Create a `RelyingParty` instance.
+Create a `RelyingPartyInterface` instance.
 See [Relying Party](#relying-parties) for more information about selecting an implementation.
 
 ```php

@@ -9,7 +9,7 @@ namespace Firehed\WebAuthn;
  */
 class EndToEndTest extends \PHPUnit\Framework\TestCase
 {
-    private RelyingParty $rp;
+    private RelyingPartyInterface $rp;
 
     public function setUp(): void
     {

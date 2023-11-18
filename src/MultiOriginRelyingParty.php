@@ -16,7 +16,7 @@ use function sprintf;
  * This uses an explicit allowlist of valid origins for a given Relying Party
  * ID to perform matching.
  */
-class MultiOriginRelyingParty implements RelyingParty
+class MultiOriginRelyingParty implements RelyingPartyInterface
 {
     /**
      * @param string[] $origins A list of origins that the RP supports

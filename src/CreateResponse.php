@@ -33,8 +33,8 @@ class CreateResponse implements Responses\AttestationInterface
      */
     public function verify(
         ChallengeManagerInterface $challenge,
-        RelyingParty $rp,
-        UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
+        RelyingPartyInterface $rp,
+        Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code
         // 7.1.4 is temporarily skpped
@@ -89,7 +89,7 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.15
-        $isUserVerificationRequired = ($uv === UserVerificationRequirement::Required);
+        $isUserVerificationRequired = ($uv === Enums\UserVerificationRequirement::Required);
         if ($isUserVerificationRequired && !$authData->isUserVerified()) {
             $this->fail('7.1.15', 'authData.isUserVerified');
         }

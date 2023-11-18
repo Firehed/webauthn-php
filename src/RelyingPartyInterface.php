@@ -12,7 +12,7 @@ namespace Firehed\WebAuthn;
  * That's to say that the objects should be passed to the verify() methods, but
  * don't try to interact with them beyond that.
  */
-interface RelyingParty
+interface RelyingPartyInterface
 {
     /**
      * Used by steps 7.1.9 and 7.2.13

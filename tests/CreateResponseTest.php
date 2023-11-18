@@ -10,7 +10,7 @@ namespace Firehed\WebAuthn;
 class CreateResponseTest extends \PHPUnit\Framework\TestCase
 {
     // These hold the values which would be kept server-side.
-    private RelyingParty $rp;
+    private RelyingPartyInterface $rp;
     private ChallengeManagerInterface $cm;
 
     // These hold the _default_ values from a sample parsed response.
@@ -283,7 +283,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.15');
-        $response->verify($this->cm, $this->rp, UserVerificationRequirement::Required);
+        $response->verify($this->cm, $this->rp, Enums\UserVerificationRequirement::Required);
     }
 
     // 7.1.16

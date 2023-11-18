@@ -10,8 +10,8 @@ use Firehed\WebAuthn\{
     ChallengeManagerInterface,
     CredentialContainer,
     CredentialInterface,
-    RelyingParty,
-    UserVerificationRequirement,
+    RelyingPartyInterface,
+    Enums\UserVerificationRequirement,
 };
 
 /**
@@ -58,7 +58,7 @@ interface AssertionInterface
      */
     public function verify(
         ChallengeManagerInterface $challenge,
-        RelyingParty $rp,
+        RelyingPartyInterface $rp,
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
     ): CredentialInterface;
