@@ -9,7 +9,8 @@ namespace Firehed\WebAuthn\Enums;
  */
 enum CoseAlgorithmIdentifier: int
 {
-    case Ed25519 = -8;
+    // There's a LOT of formats. Only enable the supported ones for now.
     case ES256 = -7;
-    case RS256 = -257;
+    // case Ed25519 = -8;
+    // case RS256 = -257;
 }
