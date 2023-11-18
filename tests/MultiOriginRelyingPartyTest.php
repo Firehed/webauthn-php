@@ -13,7 +13,7 @@ use InvalidArgumentException;
  */
 class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
 {
-    private RelyingParty $rp;
+    private RelyingPartyInterface $rp;
 
     public function setUp(): void
     {
