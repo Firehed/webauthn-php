@@ -512,8 +512,9 @@ Security/Risk:
 Blocked?
 - [ ] ClientExtensionResults (7.1.4, 7.1.17, 7.2.4, 7.2.18)
     All of the handling seems to be optional. I could not get it to ever come out non-empty.
-- [ ] TokenBinding (7.1.10, 7.2.14)
+- [x] TokenBinding (7.1.10, 7.2.14)
     Unsupported except in Edge?
+    Removed in level 3 spec
 
 Naming?
 - [ ] Codecs\Credential
