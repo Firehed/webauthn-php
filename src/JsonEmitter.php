@@ -106,6 +106,18 @@ class JsonEmitter
 
     /**
      * @link https://www.w3.org/TR/webauthn-3/#sctn-parseRequestOptionsFromJSON
+     *
+     * @return array{
+     *   challenge: Base64UrlString,
+     *   timeout?: int,
+     *   rpId?: string,
+     *   allowCredentials?: PublicKeyCredentialDescriptorJson[],
+     *   userVerification?: Enums\UserVerificationRequirement,
+     *   hints?: Enums\PublicKeyCredentialHints[],
+     *   attestation?: Enums\AttestationConveyancePreference,
+     *   attestationFormats?: Attestations\Format,
+     *   extensions?: AuthenticationExtensionsClientInputsJSON,
+     * }
      */
     public function createDataForRequestOptions(): array
     {
@@ -113,7 +125,8 @@ class JsonEmitter
         // allowCredentials and set timeout to some reasonable value. If not,
         // assume it's a conditional mediation request, leave allowCredentials
         // empty, and disable the timeout.
-        $challenge = Challenge::random();
+
+        $challenge = $this->challengeManager->createChallenge();
         $timeout = 30_000;
         $d = [
             'challenge' => $challenge->getBinary()->toBase64Url(),
