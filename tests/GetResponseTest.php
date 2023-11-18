@@ -219,7 +219,7 @@ class GetResponseTest extends \PHPUnit\Framework\TestCase
             $this->cm,
             $this->rp,
             $this->credential,
-            UserVerificationRequirement::Required,
+            Enums\UserVerificationRequirement::Required,
         );
     }
 

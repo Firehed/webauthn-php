@@ -283,7 +283,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->expectRegistrationError('7.1.15');
-        $response->verify($this->cm, $this->rp, UserVerificationRequirement::Required);
+        $response->verify($this->cm, $this->rp, Enums\UserVerificationRequirement::Required);
     }
 
     // 7.1.16

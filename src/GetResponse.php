@@ -53,7 +53,7 @@ class GetResponse implements Responses\AssertionInterface
         ChallengeManagerInterface $challenge,
         RelyingParty $rp,
         CredentialContainer | CredentialInterface $credential,
-        UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
+        Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
     ): CredentialInterface {
         // 7.2.1-7.2.4 are done in client side js & the ResponseParser
 
@@ -133,7 +133,7 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.17
-        $isUserVerificationRequired = ($uv === UserVerificationRequirement::Required);
+        $isUserVerificationRequired = ($uv === Enums\UserVerificationRequirement::Required);
         if ($isUserVerificationRequired && !$authData->isUserVerified()) {
             $this->fail('7.2.17', 'authData.isUserVerified');
         }

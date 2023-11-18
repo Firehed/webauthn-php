@@ -9,7 +9,7 @@ use Firehed\WebAuthn\{
     ChallengeManagerInterface,
     CredentialInterface,
     RelyingParty,
-    UserVerificationRequirement,
+    Enums\UserVerificationRequirement,
 };
 
 /**
