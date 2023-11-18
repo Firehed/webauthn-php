@@ -41,6 +41,12 @@ class BinaryString
         return new BinaryString($binary);
     }
 
+    public function toBase64Url(): string
+    {
+        $base64 = base64_encode($this->unwrap());
+        return rtrim(strtr($base64, ['+' => '-', '/' => '_']), '=');
+    }
+
     /**
      * Turns a list of 8-bit integers into a BinaryString
      *

@@ -21,7 +21,7 @@ trait ChallengeManagerTestTrait
     {
         $cm = $this->getChallengeManager();
         $c = $cm->createChallenge();
-        $cdjValue = Codecs\Base64Url::encode($c->getBinary()->unwrap());
+        $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
         self::assertInstanceOf(ChallengeInterface::class, $found);
@@ -32,7 +32,7 @@ trait ChallengeManagerTestTrait
     {
         $cm = $this->getChallengeManager();
         $c = $cm->createChallenge();
-        $cdjValue = Codecs\Base64Url::encode($c->getBinary()->unwrap());
+        $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
         $again = $cm->useFromClientDataJSON($cdjValue);
@@ -46,7 +46,7 @@ trait ChallengeManagerTestTrait
         $cm = $this->getChallengeManager();
 
         $c = Challenge::random();
-        $cdjValue = Codecs\Base64Url::encode($c->getBinary()->unwrap());
+        $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
 
@@ -59,7 +59,7 @@ trait ChallengeManagerTestTrait
         $c = $cm->createChallenge();
 
         $userChallenge = Challenge::random();
-        $cdjValue = Codecs\Base64Url::encode($userChallenge->getBinary()->unwrap());
+        $cdjValue = $userChallenge->getBinary()->toBase64Url();
 
         $retrieved = $cm->useFromClientDataJSON($cdjValue);
         // The implmentation may return the previously-stored value or null,
