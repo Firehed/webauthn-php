@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
+ * Data format for WebAuthn Level 2 formats which lacked data for backup
+ * eligibility and did not track transports.
+ *
  * @internal
  */
-class Credential implements CredentialInterface
+class CredentialV1 implements CredentialInterface
 {
     // Risk factors:
     //   Create:
