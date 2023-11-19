@@ -15,6 +15,9 @@ class Credential implements CredentialInterface
     //    - certificate chain
     //   Get:
     //     - counter bad
+    /**
+     * @param Enums\AuthenticatorTransport[] $transports
+     */
     public function __construct(
         public readonly Enums\PublicKeyCredentialType $type,
         public readonly BinaryString $id,
@@ -57,9 +60,14 @@ class Credential implements CredentialInterface
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
         return new Credential(
+            $this->type,
             $this->id,
             $this->coseKey,
             $newSignCount,
+            $this->transports,
+            $this->uvInitialized,
+            $this->backupEligible,
+            $this->backupState,
         );
     }
 }
