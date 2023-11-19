@@ -52,10 +52,10 @@ class CredentialV1 implements CredentialInterface
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
-        return new Credential(
-            $this->id,
-            $this->coseKey,
-            $newSignCount,
+        return new CredentialV1(
+            id: $this->id,
+            coseKey: $this->coseKey,
+            signCount: $newSignCount,
         );
     }
 }
