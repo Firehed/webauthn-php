@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\Credential
+ * @covers Firehed\WebAuthn\CredentialV1
  */
-class CredentialTest extends \PHPUnit\Framework\TestCase
+class CredentialV1Test extends \PHPUnit\Framework\TestCase
 {
     public function testAccessors(): void
     {
@@ -15,7 +15,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $coseKey = self::createMock(COSEKey::class);
         $coseKey->method('getPublicKey')
             ->willReturn($pk);
-        $credential = new Credential(
+        $credential = new CredentialV1(
             id: BinaryString::fromHex('FFFF'),
             coseKey: $coseKey,
             signCount: 10,
@@ -36,7 +36,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $coseKey = self::createMock(COSEKey::class);
         $coseKey->method('getPublicKey')
             ->willReturn($pk);
-        $credential = new Credential(
+        $credential = new CredentialV1(
             id: BinaryString::fromHex('0000'),
             coseKey: $coseKey,
             signCount: 20,
