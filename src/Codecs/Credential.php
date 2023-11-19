@@ -102,10 +102,10 @@ class Credential
         $id = $credential->getId();
         $publicKey = $credential->getCoseCbor();
         $signCount = $credential->getSignCount();
-        $uvInitialized = $credential->isUserVerified();
-        $transports = [Enums\AuthenticatorTransport::Internal]; // came from registe response
-        $backupEligible = $credential->isBackupEligible();
-        $backupState = $credential->isBackedUp();
+        $uvInitialized = $credential->uvInitialized;
+        $transports = $credential->transports;
+        $backupEligible = $credential->isBackupEligible;
+        $backupState = $credential->isBackedUp;
 
         $ao = $credential->getAttestationObject();
         $aCDJ = $credential->getAttestationClientDataJSON();
