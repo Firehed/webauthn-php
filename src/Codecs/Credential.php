@@ -135,6 +135,10 @@ class Credential
             id: new BinaryString($id),
             coseKey: new COSEKey(new BinaryString($cbor)),
             signCount: $signCount,
+            // No way to know these from existing data.
+            isBackedUp: false,
+            isBackupEligible: false,
+            transports: [],
         );
     }
 }
