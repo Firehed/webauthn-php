@@ -25,7 +25,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             signCount: 10,
             isBackupEligible: true,
             isBackedUp: false,
-            uvInitialized: true,
+            isUvInitialized: true,
             transports: [
                 Enums\AuthenticatorTransport::Usb,
                 Enums\AuthenticatorTransport::Internal,

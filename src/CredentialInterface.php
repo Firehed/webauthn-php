@@ -43,6 +43,9 @@ interface CredentialInterface
 
     public function isBackupEligible(): bool;
     public function isBackedUp(): bool;
+    public function isUvInitialized(): bool;
+    /** @return Enums\AuthenticatorTransport[] */
+    public function getTransports(): array;
 
     /**
      * @internal

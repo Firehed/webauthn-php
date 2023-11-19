@@ -62,6 +62,9 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $credential = $codec->decode($encoded);
 
         self::assertTrue($credential->getId()->equals($id), 'Id changed');
+        self::assertFalse($credential->isBackedUp(), 'V1 does not support backed up');
+        self::assertFalse($credential->isBackupEligible(), 'V1 does not support backup eligibility');
+        self::assertFalse($credential->isUvInitialized(), 'V1 does not support UV tracking');
     }
 
     /**

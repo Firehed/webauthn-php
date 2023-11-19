@@ -102,8 +102,8 @@ class Credential
         $id = $credential->getId();
         $publicKey = $credential->getCoseCbor();
         $signCount = $credential->getSignCount();
-        $uvInitialized = $credential->uvInitialized;
-        $transports = $credential->transports;
+        $uvInitialized = $credential->isUvInitialized();
+        $transports = $credential->getTransports();
         $backupEligible = $credential->isBackupEligible();
         $backupState = $credential->isBackedUp();
 
@@ -139,7 +139,7 @@ class Credential
             // No way to know these from existing data.
             isBackedUp: false,
             isBackupEligible: false,
-            uvInitialized: false, // should have been stored :(
+            isUvInitialized: false, // should have been stored :(
             transports: [],
         );
     }

@@ -159,7 +159,7 @@ class CreateResponse implements Responses\AttestationInterface
             id: $this->id, // data->id?
             coseKey: $data->coseKey,
             signCount: $authData->getSignCount(),
-            uvInitialized: $authData->isUserVerified(),
+            isUvInitialized: $authData->isUserVerified(),
             // FIXME: how to thread this through?
             transports: [],
             isBackupEligible: $authData->isBackupEligible(),
