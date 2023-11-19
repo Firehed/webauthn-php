@@ -123,9 +123,3 @@ class JsonEmitter
         return $data;
     }
 }
-
-require 'vendor/autoload.php';
-session_start();
-$je = new JsonEmitter(new SessionChallengeManager());
-echo json_encode($je->createDataForCreationOptions(), JSON_PRETTY_PRINT);
-echo json_encode($je->createDataForRequestOptions(), JSON_PRETTY_PRINT);
