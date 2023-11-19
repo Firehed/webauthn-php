@@ -73,7 +73,7 @@ class CredentialV1 implements CredentialInterface
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
-        return new CredentialV1(
+        return new self(
             id: $this->id,
             coseKey: $this->coseKey,
             signCount: $newSignCount,
