@@ -11,12 +11,6 @@ use OutOfRangeException;
  * @internal
  *
  * @link https://www.w3.org/TR/webauthn-3/#sctn-authenticator-data
- *
- * @phpstan-type AttestedCredentialData array{
- *   aaguid: BinaryString,
- *   credentialId: BinaryString,
- *   credentialPublicKey: BinaryString,
- * }
  */
 class AuthenticatorData
 {
@@ -30,10 +24,7 @@ class AuthenticatorData
 
     private int $signCount;
 
-    /**
-     * @var ?AttestedCredentialData Attested Credential Data
-     */
-    private ?array $ACD = null;
+    private ?AttestedCredentialData $ACD = null;
 
     /**
      * @see https://w3c.github.io/webauthn/#sec-authenticator-data
@@ -80,11 +71,11 @@ class AuthenticatorData
             // FIXME: support extension data & offset handling
             $rawCredentialPublicKey = $bytes->getRemaining();
 
-            $authData->ACD = [
-                'aaguid' => new BinaryString($aaguid),
-                'credentialId' => new BinaryString($credentialId),
-                'credentialPublicKey' => new BinaryString($rawCredentialPublicKey),
-            ];
+            $authData->ACD = new AttestedCredentialData(
+                aaguid: new BinaryString($aaguid),
+                credentialId: new BinaryString($credentialId),
+                coseKey: new COSEKey(new BinaryString($rawCredentialPublicKey)),
+            );
         }
         if ($ED) {
             // @codeCoverageIgnoreStart
@@ -95,7 +86,7 @@ class AuthenticatorData
         return $authData;
     }
 
-    public function getAttestedCredential(): CredentialInterface
+    public function getAttestedCredentialData(): AttestedCredentialData
     {
         if ($this->ACD === null) {
             throw new OutOfRangeException(
@@ -110,11 +101,7 @@ class AuthenticatorData
             );
         }
 
-        return new Credential(
-            $this->ACD['credentialId'],
-            new COSEKey($this->ACD['credentialPublicKey']),
-            $this->signCount,
-        );
+        return $this->ACD;
     }
 
     public function getRpIdHash(): BinaryString

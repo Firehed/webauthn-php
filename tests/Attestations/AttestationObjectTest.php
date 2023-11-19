@@ -140,7 +140,7 @@ class AttestationObjectTest extends \PHPUnit\Framework\TestCase
         );
         self::assertSame(0, $ad->getSignCount(), 'sign count');
 
-        $credential = $ad->getAttestedCredential();
+        $credential = $ad->getAttestedCredentialData();
         // TODO: check keypair?
     }
 
