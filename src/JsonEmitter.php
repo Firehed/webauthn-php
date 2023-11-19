@@ -59,16 +59,14 @@ class JsonEmitter
      *   hints?: Enums\PublicKeyCredentialHints[],
      *   attestation?: Enums\AttestationConveyancePreference,
      *   attestationFormats?: Attestations\Format[],
-     *   extensions: AuthenticationExtensionsClientInputsJSON
+     *   extensions?: AuthenticationExtensionsClientInputsJSON
      * }
      */
     public function createDataForCreationOptions(): array
     {
         $challenge = $this->challengeManager->createChallenge();
-        $timeout = 300_000; // TODO: match to challenge TTL
-        $d = [
+        $data = [
             'rp' => [
-                'id' => $fixme,
                 'name' => $fixme,
             ],
             'user' => [
@@ -77,32 +75,12 @@ class JsonEmitter
                 'displayName' => $fixme,
             ],
             'challenge' => $challenge->getBinary()->toBase64Url(),
-
             'pubKeyCredParams' => [
                 ['type' => Enums\PublicKeyCredentialType::PublicKey, 'alg' => COSE\Algorithm::EcdsaSha256],
             ],
-            'timeout' => $timeout,
-            'excludeCredentials' => [
-                // array of { type: Enums\PublicKeyCredentialType, id: base64u,
-                // transports?: Enums\AuthenticatorTransport[] }
-            ],
-            'authenticatorSelection' => [
-                'authenticatorAttachment' => '',
-
-                'residentKey' => '',
-                'requireResidentKey' => false,
-                'userVerification' => 'preferred',
-            ],
-            'hints' => [], // Enums\PublicKeyCredentialHints[]
-            'attestation' => Enums\AttestationConveyancePreference::None,
-            'attestationFormats' => [
-                // Attestations\Format[],
-            ],
-            'extensions' => [
-            ],
+            // Future: support the other numerous flags
         ];
-
-        return array_filter($d);
+        return $data;
     }
 
     /**
