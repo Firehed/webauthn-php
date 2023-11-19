@@ -57,6 +57,12 @@ class Credential implements CredentialInterface
         return $this->coseKey->getPublicKey();
     }
 
+    /** @return Enums\AuthenticatorTransport[] */
+    public function getTransports(): array
+    {
+        return $this->transports;
+    }
+
     public function isBackupEligible(): bool
     {
         return $this->isBackupEligible;

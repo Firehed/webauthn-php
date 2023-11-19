@@ -9,44 +9,55 @@ namespace Firehed\WebAuthn;
  */
 class CredentialTest extends \PHPUnit\Framework\TestCase
 {
-    public function testAccessors(): void
+    private PublicKey\PublicKeyInterface $pk;
+    private Credential $credential;
+
+    public function setUp(): void
     {
-        $pk = self::createMock(PublicKey\PublicKeyInterface::class);
+        $this->pk = self::createMock(PublicKey\PublicKeyInterface::class);
         $coseKey = self::createMock(COSEKey::class);
         $coseKey->method('getPublicKey')
-            ->willReturn($pk);
-        $credential = new Credential(
+            ->willReturn($this->pk);
+        $this->credential = new Credential(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: BinaryString::fromHex('FFFF'),
             coseKey: $coseKey,
             signCount: 10,
+            isBackupEligible: true,
+            isBackedUp: false,
+            uvInitialized: true,
+            transports: [
+                Enums\AuthenticatorTransport::Usb,
+                Enums\AuthenticatorTransport::Internal,
+            ],
         );
+    }
 
-        self::assertSame(10, $credential->getSignCount(), 'Sign count wrong');
-        self::assertTrue(BinaryString::fromHex('FFFF')->equals($credential->getId()), 'ID changed');
-        // Leaving out the COSEey CBOR for now...tat needs work!
-        self::assertSame($pk, $credential->getPublicKey(), 'PubKey changed');
+    public function testAccessors(): void
+    {
+        self::assertSame(10, $this->credential->getSignCount(), 'Sign count wrong');
+        self::assertTrue(BinaryString::fromHex('FFFF')->equals($this->credential->getId()), 'ID changed');
+        // Leaving out the COSEey CBOR for now...that needs work!
+        self::assertSame($this->pk, $this->credential->getPublicKey(), 'PubKey changed');
         // This test is flexible...storageId needs to be kept stable but the
         // pre-1.0 version could change before final release
-        self::assertSame('ffff', $credential->getStorageId(), 'Storage ID wrong');
+        self::assertSame('ffff', $this->credential->getStorageId(), 'Storage ID wrong');
+        self::assertTrue($this->credential->isBackupEligible());
+        self::assertFalse($this->credential->isBackedUp());
+        self::assertEqualsCanonicalizing([
+            Enums\AuthenticatorTransport::Usb,
+            Enums\AuthenticatorTransport::Internal,
+        ], $this->credential->getTransports());
     }
 
     public function testUpdatingSignCount(): void
     {
-        $pk = self::createMock(PublicKey\PublicKeyInterface::class);
-        $coseKey = self::createMock(COSEKey::class);
-        $coseKey->method('getPublicKey')
-            ->willReturn($pk);
-        $credential = new Credential(
-            id: BinaryString::fromHex('0000'),
-            coseKey: $coseKey,
-            signCount: 20,
-        );
-        $new = $credential->withUpdatedSignCount(50);
-        self::assertNotSame($credential, $new, 'Credential must not be modified in-place');
+        $new = $this->credential->withUpdatedSignCount(50);
+        self::assertNotSame($this->credential, $new, 'Credential must not be modified in-place');
         self::assertSame(50, $new->getSignCount(), 'Sign count should match provided value');
-        self::assertSame($credential->getStorageId(), $new->getStorageId(), 'Id should stay the same');
+        self::assertSame($this->credential->getStorageId(), $new->getStorageId(), 'Id should stay the same');
         self::assertEquals(
-            $credential->getPublicKey(),
+            $this->credential->getPublicKey(),
             $new->getPublicKey(),
             'COSE key should be the same',
         );
