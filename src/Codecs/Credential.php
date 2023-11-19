@@ -94,6 +94,7 @@ class Credential
         return base64_encode($binary);
     }
 
+    /*
     public function encodeV2(CredentialInterface $credential): string
     {
         $version = 2;
@@ -110,6 +111,7 @@ class Credential
         $ao = $credential->getAttestationObject();
         $aCDJ = $credential->getAttestationClientDataJSON();
     }
+     */
 
     public function decode(string $encoded): CredentialInterface
     {
@@ -139,7 +141,7 @@ class Credential
             // No way to know these from existing data.
             isBackedUp: false,
             isBackupEligible: false,
-            isUvInitialized: false, // should have been stored :(
+            isUvInitialized: false,
             transports: [],
         );
     }
