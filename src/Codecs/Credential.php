@@ -132,6 +132,7 @@ class Credential
         $signCount = $bytes->readUint32();
 
         return new CredentialObj(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: new BinaryString($id),
             coseKey: new COSEKey(new BinaryString($cbor)),
             signCount: $signCount,

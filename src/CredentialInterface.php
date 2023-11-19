@@ -48,4 +48,8 @@ interface CredentialInterface
      * @internal
      */
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface;
+    // add:
+    // - withUvInitialized(bool)
+    // - withAttestationObject(AO)
+    // - withBackupState(bool)
 }

@@ -23,8 +23,8 @@ class Credential implements CredentialInterface
         private readonly BinaryString $id,
         private readonly COSEKey $coseKey,
         private readonly int $signCount,
-        public readonly array $transports,
-        public readonly bool $uvInitialized,
+        private readonly array $transports,
+        private readonly bool $uvInitialized,
         private readonly bool $isBackupEligible,
         private readonly bool $isBackedUp,
         // AO, CDJ?
