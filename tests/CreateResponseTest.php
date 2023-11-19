@@ -175,11 +175,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
 
     public function testIsUserVerified(): void
     {
-        $response = new CreateResponse(
-            id: $this->id,
-            ao: $this->attestationObject,
-            clientDataJson: $this->clientDataJson,
-        );
+        $response = $this->getDefaultResponse();
         self::assertFalse($response->isUserVerified(), 'Fixture is not verified');
     }
 
@@ -192,9 +188,11 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
         $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: $this->id,
             ao: $this->attestationObject,
             clientDataJson: $newCdj,
+            transports: [],
         );
 
         $this->expectRegistrationError('7.1.7');
@@ -203,11 +201,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
 
     public function testUsedChallengeIsError(): void
     {
-        $response = new CreateResponse(
-            id: $this->id,
-            ao: $this->attestationObject,
-            clientDataJson: $this->clientDataJson,
-        );
+        $response = $this->getDefaultResponse();
 
         $cred = $response->verify($this->cm, $this->rp);
 
@@ -225,9 +219,11 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
         $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: $this->id,
             ao: $this->attestationObject,
             clientDataJson: $newCdj,
+            transports: [],
         );
 
         $this->expectRegistrationError('7.1.8');
@@ -243,9 +239,11 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         $newCdj = new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR));
 
         $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: $this->id,
             ao: $this->attestationObject,
             clientDataJson: $newCdj,
+            transports: [],
         );
 
         $this->expectRegistrationError('7.1.0');
@@ -256,11 +254,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     public function testRelyingPartyIdMismatchIsError(): void
     {
         $rp = new SingleOriginRelyingParty('https://some-other-site.example.com');
-        $response = new CreateResponse(
-            id: $this->id,
-            ao: $this->attestationObject,
-            clientDataJson: $this->clientDataJson,
-        );
+        $response = $this->getDefaultResponse();
 
         $this->expectRegistrationError('7.1.13');
         $response->verify($this->cm, $rp);
@@ -276,11 +270,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     // 7.1.15
     public function testUserVerifiedNotPresentWhenRequiredIsError(): void
     {
-        $response = new CreateResponse(
-            id: $this->id,
-            ao: $this->attestationObject,
-            clientDataJson: $this->clientDataJson,
-        );
+        $response = $this->getDefaultResponse();
 
         $this->expectRegistrationError('7.1.15');
         $response->verify($this->cm, $this->rp, Enums\UserVerificationRequirement::Required);
@@ -319,21 +309,18 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         ;
 
         $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
             id: $this->id,
             ao: $ao,
             clientDataJson: $this->clientDataJson,
+            transports: [],
         );
         $response->verify($this->cm, $this->rp);
     }
 
     public function testSuccess(): void
     {
-        $response = new CreateResponse(
-            id: $this->id,
-            ao: $this->attestationObject,
-            clientDataJson: $this->clientDataJson,
-        );
-
+        $response = $this->getDefaultResponse();
         $cred = $response->verify($this->cm, $this->rp);
 
         self::assertSame(0, $cred->getSignCount());
@@ -344,5 +331,16 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(Errors\RegistrationError::class);
         // TODO: how to assert on $section
+    }
+
+    private function getDefaultResponse(): CreateResponse
+    {
+        return new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id,
+            ao: $this->attestationObject,
+            clientDataJson: $this->clientDataJson,
+            transports: [],
+        );
     }
 }
