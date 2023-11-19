@@ -58,12 +58,6 @@ class JsonResponseParser implements ResponseParserInterface
         if (!array_key_exists('rawId', $data) || !is_string($data['rawId'])) {
             throw new Errors\ParseError('7.1.2', 'rawId');
         }
-        if (!array_key_exists('transports', $data) || !is_array($data['transports'])) {
-            throw new Errors\ParseError('7.1.2', 'transports');
-        }
-        // "client platforms MUST ignore unknown values" -> tryFrom+filter
-        $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $data['transports']));
-
         if (!array_key_exists('response', $data) || !is_array($data['response'])) {
             throw new Errors\ParseError('7.1.2', 'response');
         }
@@ -74,6 +68,12 @@ class JsonResponseParser implements ResponseParserInterface
         if (!array_key_exists('clientDataJSON', $response) || !is_string($response['clientDataJSON'])) {
             throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
+        if (!array_key_exists('transports', $response) || !is_array($response['transports'])) {
+            throw new Errors\ParseError('7.1.2', 'transports');
+        }
+        // "client platforms MUST ignore unknown values" -> tryFrom+filter
+        $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $response['transports']));
+
         return new CreateResponse(
             type: Enums\PublicKeyCredentialType::from($data['type']),
             id: self::parse($data['rawId'], '7.1.2', 'rawId'),
