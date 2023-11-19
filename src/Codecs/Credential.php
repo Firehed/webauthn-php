@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn\Codecs;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\CredentialInterface;
-use Firehed\WebAuthn\Credential as CredentialObj;
+use Firehed\WebAuthn\CredentialV1;
 use Firehed\WebAuthn\Enums;
 
 /**
@@ -110,6 +110,17 @@ class Credential
 
         $ao = $credential->getAttestationObject();
         $aCDJ = $credential->getAttestationClientDataJSON();
+        return new CredentialV2(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: new BinaryString($id),
+            coseKey: new COSEKey(new BinaryString($cbor)),
+            signCount: $signCount,
+            // No way to know these from existing data.
+            isBackedUp: false,
+            isBackupEligible: false,
+            isUvInitialized: false,
+            transports: [],
+        );
     }
      */
 
@@ -133,16 +144,10 @@ class Credential
 
         $signCount = $bytes->readUint32();
 
-        return new CredentialObj(
-            type: Enums\PublicKeyCredentialType::PublicKey,
+        return new CredentialV1(
             id: new BinaryString($id),
             coseKey: new COSEKey(new BinaryString($cbor)),
             signCount: $signCount,
-            // No way to know these from existing data.
-            isBackedUp: false,
-            isBackupEligible: false,
-            isUvInitialized: false,
-            transports: [],
         );
     }
 }
