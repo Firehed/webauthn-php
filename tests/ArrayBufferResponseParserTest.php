@@ -23,6 +23,31 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
         self::assertInstanceOf(CreateResponse::class, $attestation);
     }
 
+    public function testParseCreateResponseWithTransports(): void
+    {
+        $response = $this->readFixture('touchid/register.json');
+        $response['transports'] = ['internal', 'hybrid'];
+
+        $parser = new ArrayBufferResponseParser();
+        $parsed = $parser->parseCreateResponse($response);
+        self::assertEqualsCanonicalizing([
+            Enums\AuthenticatorTransport::Hybrid,
+            Enums\AuthenticatorTransport::Internal,
+        ], $parsed->transports); // @phpstan-ignore-line (interface/impl cheat)
+    }
+
+    public function testParseCreateResponseWithInvalidTransports(): void
+    {
+        $response = $this->readFixture('touchid/register.json');
+        $response['transports'] = ['invalid', 'usb'];
+
+        $parser = new ArrayBufferResponseParser();
+        $parsed = $parser->parseCreateResponse($response);
+        self::assertEqualsCanonicalizing([
+            Enums\AuthenticatorTransport::Usb,
+        ], $parsed->transports); // @phpstan-ignore-line (interface/impl cheat)
+    }
+
     /**
      * @dataProvider badCreateResponses
      * @param mixed[] $response

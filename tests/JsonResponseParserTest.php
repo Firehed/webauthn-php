@@ -34,6 +34,18 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
         $parser->parseCreateResponse($response);
     }
 
+    public function testParseCreateResponseWithInvalidTransports(): void
+    {
+        $response = $this->readFixture('safari-passkey-polyfill/register.json');
+        $response['response']['transports'] = ['invalid', 'usb'];
+
+        $parser = new JsonResponseParser();
+        $parsed = $parser->parseCreateResponse($response);
+        self::assertEqualsCanonicalizing([
+            Enums\AuthenticatorTransport::Usb,
+        ], $parsed->transports); // @phpstan-ignore-line (interface/impl cheat)
+    }
+
     /**
      * @dataProvider badGetResponses
      * @param mixed[] $response
