@@ -168,9 +168,8 @@ class CreateResponse implements Responses\AttestationInterface
         );
 
         // This is not part of the official procedure, but serves as a general
-        // sanity-check around data handling. It also silences an unused
-        // variable warning in PHPStan :)
-        // assert($credential->getId()->equals($this->id));
+        // sanity-check around data handling.
+        assert($this->id->equals($data->credentialId));
 
         return $credential;
 
