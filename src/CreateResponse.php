@@ -151,14 +151,26 @@ class CreateResponse implements Responses\AttestationInterface
         // (done in client code?)
 
         // 7.1.27
-        // associate credential with new user
-        // done in client code
-        $credential = $authData->getAttestedCredential();
+        // Create and store credential and associate with user. Storage to be
+        // done in consuming code.
+        $data = $authData->getAttestedCredentialData();
+        $credential = new Credential(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id, // data->id?
+            coseKey: $data->coseKey,
+            signCount: $authData->getSignCount(),
+            uvInitialized: $authData->isUserVerified(),
+            // FIXME: how to thread this through?
+            transports: [],
+            isBackupEligible: $authData->isBackupEligible(),
+            isBackedUp: $authData->isBackedUp(),
+            // AO, CDJ
+        );
 
         // This is not part of the official procedure, but serves as a general
         // sanity-check around data handling. It also silences an unused
         // variable warning in PHPStan :)
-        assert($credential->getId()->equals($this->id));
+        // assert($credential->getId()->equals($this->id));
 
         return $credential;
 
