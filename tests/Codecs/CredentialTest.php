@@ -24,11 +24,14 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $cbor = hex2bin($cborHex);
         assert($cbor !== false);
         $coseKey = new COSEKey(new BinaryString($cbor));
-        $credential = new CredentialObj(
-            new BinaryString(random_bytes(10)),
-            $coseKey,
-            15,
-        );
+
+        $id = new BinaryString(random_bytes(10));
+        $signCount = random_int(0, 20000);
+        $credential = self::createMock(CredentialInterface::class);
+        $credential->method('getId')->willReturn($id);
+        $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
+        $credential->method('getSignCount')->willReturn($signCount);
+
 
         $codec = new Credential();
 
@@ -38,16 +41,16 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         // var_dump($exported, $imported);
 
         self::assertTrue(
-            $credential->getId()->equals($imported->getId()),
+            $id->equals($imported->getId()),
             'id was not retained',
         );
         self::assertSame(
-            $credential->getPublicKey()->getPemFormatted(),
+            $coseKey->getPublicKey()->getPemFormatted(),
             $imported->getPublicKey()->getPemFormatted(),
             'public key was not retained',
         );
         self::assertSame(
-            $credential->getSignCount(),
+            $signCount,
             $imported->getSignCount(),
             'signCount was not retained',
         );
