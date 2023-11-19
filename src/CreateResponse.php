@@ -22,7 +22,6 @@ class CreateResponse implements Responses\AttestationInterface
      * @param Enums\AuthenticatorTransport[] $transports
      */
     public function __construct(
-        private Enums\PublicKeyCredentialType $type,
         private BinaryString $id,
         private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
@@ -159,19 +158,13 @@ class CreateResponse implements Responses\AttestationInterface
         // (done in client code?)
 
         // 7.1.27
-        // Create and store credential and associate with user. Storage to be
-        // done in consuming code.
+        // associate credential with new user
+        // done in client code
         $data = $authData->getAttestedCredentialData();
-        $credential = new CredentialV2(
-            type: $this->type,
-            id: $this->id, // data->id?
+        $credential = new CredentialV1(
+            id: $this->id,
             signCount: $authData->getSignCount(),
             coseKey: $data->coseKey,
-            isUvInitialized: $authData->isUserVerified(),
-            transports: $this->transports,
-            isBackupEligible: $authData->isBackupEligible(),
-            isBackedUp: $authData->isBackedUp(),
-            // AO, CDJ
         );
 
         // This is not part of the official procedure, but serves as a general

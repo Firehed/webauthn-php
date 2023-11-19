@@ -75,7 +75,6 @@ class JsonResponseParser implements ResponseParserInterface
         $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $response['transports']));
 
         return new CreateResponse(
-            type: Enums\PublicKeyCredentialType::from($data['type']),
             id: self::parse($data['rawId'], '7.1.2', 'rawId'),
             ao: Attestations\AttestationObject::fromCbor(
                 self::parse($response['attestationObject'], '7.1.2', 'response.attestationObject'),
