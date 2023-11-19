@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn\Codecs;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\CredentialInterface;
-use Firehed\WebAuthn\Credential as CredentialObj;
+use Firehed\WebAuthn\CredentialV1;
 
 /**
  * This codec is responsible for serializing a CredentialInterface object to
@@ -113,7 +113,7 @@ class Credential
 
         $signCount = $bytes->readUint32();
 
-        return new CredentialObj(
+        return new CredentialV1(
             new BinaryString($id),
             new COSEKey(new BinaryString($cbor)),
             $signCount,
