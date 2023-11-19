@@ -69,6 +69,7 @@ class JsonEmitter
         $d = [
             'rp' => [
                 'id' => $fixme,
+                'name' => $fixme,
             ],
             'user' => [
                 'id' => $fixme_base64url,
@@ -119,37 +120,33 @@ class JsonEmitter
      *   extensions?: AuthenticationExtensionsClientInputsJSON,
      * }
      */
-    public function createDataForRequestOptions(): array
-    {
-        // TODO: if we have a user (credential container?), fill out
-        // allowCredentials and set timeout to some reasonable value. If not,
-        // assume it's a conditional mediation request, leave allowCredentials
-        // empty, and disable the timeout.
-
+    public function createDataForRequestOptions(
+        ?CredentialContainer $credentials = null,
+    ): array {
         $challenge = $this->challengeManager->createChallenge();
-        $timeout = 30_000;
-        $d = [
+
+        $data = [
             'challenge' => $challenge->getBinary()->toBase64Url(),
-            'timeout' => $timeout,
-            'rpId' => $fixme,
-            'allowCredentials' => [
-                // same format as excludeCredentials above
-            ],
-            'userVerification' => Enums\UserVerificationRequirement::Preferred,
-            'hints' => [], // Enums\PublicKeyCredentialHints[]
-            'attestation' => Enums\AttestationConveyancePreference::None,
-            'attestationFormats' => [
-                // sorted, most preferred first
-                // Attestations/Format[] (move to enums?)
-            ],
-            'extensions' => [
-            ],
         ];
-        return array_filter($d);
+        if ($credentials === null) {
+            // No allowCredentials, this is assumed to be a conditional
+            // mediation request where the user is not yet known.
+        } else {
+            $data['timeout'] = 300_000; // 5 min
+            // Future scope/concept:
+            // $data['allowCredentials'] = array_map(fn ($credential) => [
+            //     'id' => $credential->getBase64UrlId(),
+            //     'type' => $credential->getType(),
+            //     transports: previously registered transports if known
+            // ], $credentials);
+        }
+
+        return $data;
     }
 }
 
 require 'vendor/autoload.php';
-$je = new JsonEmitter();
+session_start();
+$je = new JsonEmitter(new SessionChallengeManager());
 echo json_encode($je->createDataForCreationOptions(), JSON_PRETTY_PRINT);
 echo json_encode($je->createDataForRequestOptions(), JSON_PRETTY_PRINT);
