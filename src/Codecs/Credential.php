@@ -132,9 +132,9 @@ class Credential
         $signCount = $bytes->readUint32();
 
         return new CredentialObj(
-            new BinaryString($id),
-            new COSEKey(new BinaryString($cbor)),
-            $signCount,
+            id: new BinaryString($id),
+            coseKey: new COSEKey(new BinaryString($cbor)),
+            signCount: $signCount,
         );
     }
 }
