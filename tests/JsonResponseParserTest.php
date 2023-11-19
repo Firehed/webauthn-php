@@ -37,7 +37,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseCreateResponseWithInvalidTransports(): void
     {
         $response = $this->readFixture('safari-passkey-polyfill/register.json');
-        $response['response']['transports'] = ['invalid', 'usb'];
+        $response['response']['transports'] = ['invalid', 'usb']; // @phpstan-ignore-line
 
         $parser = new JsonResponseParser();
         $parsed = $parser->parseCreateResponse($response);
@@ -121,6 +121,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
             'invalid attestationObject' => $makeVector(['response' => ['attestationObject' => 'not base 64']]),
             'no clientDataJSON' => $makeVector(['response' => ['clientDataJSON' => null]]),
             'invalid clientDataJSON' => $makeVector(['response' => ['clientDataJSON' => 'not base 64']]),
+            'no transports' => $makeVector(['response' => ['transports' => null]]),
         ];
     }
 

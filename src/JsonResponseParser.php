@@ -69,7 +69,7 @@ class JsonResponseParser implements ResponseParserInterface
             throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
         if (!array_key_exists('transports', $response) || !is_array($response['transports'])) {
-            throw new Errors\ParseError('7.1.2', 'transports');
+            throw new Errors\ParseError('7.1.2', 'response.transports');
         }
         // "client platforms MUST ignore unknown values" -> tryFrom+filter
         $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $response['transports']));
