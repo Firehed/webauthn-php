@@ -62,9 +62,10 @@ class JsonEmitter
      *   extensions?: AuthenticationExtensionsClientInputsJSON
      * }
      */
-    public function createDataForCreationOptions(): array
+    private function createDataForCreationOptionsWIP(): array // @phpstan-ignore-line
     {
         $challenge = $this->challengeManager->createChallenge();
+        $fixme = $fixme_base64url = '';
         $data = [
             'rp' => [
                 'name' => $fixme,
