@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn;
 /**
  * @internal
  */
-class Credential implements CredentialInterface
+class CredentialV2 implements CredentialInterface
 {
     // Risk factors:
     //   Create:
