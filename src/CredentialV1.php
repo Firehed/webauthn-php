@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
+ * Data format for WebAuthn Level 2 formats which lacked data for backup
+ * eligibility and did not track transports.
+ *
  * @internal
  */
-class Credential implements CredentialInterface
+class CredentialV1 implements CredentialInterface
 {
     // Risk factors:
     //   Create:
@@ -49,10 +52,10 @@ class Credential implements CredentialInterface
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
-        return new Credential(
-            $this->id,
-            $this->coseKey,
-            $newSignCount,
+        return new CredentialV1(
+            id: $this->id,
+            coseKey: $this->coseKey,
+            signCount: $newSignCount,
         );
     }
 }

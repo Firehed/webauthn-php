@@ -154,7 +154,7 @@ class CreateResponse implements Responses\AttestationInterface
         // associate credential with new user
         // done in client code
         $data = $authData->getAttestedCredentialData();
-        $credential = new Credential(
+        $credential = new CredentialV1(
             id: $this->id,
             signCount: $authData->getSignCount(),
             coseKey: $data->coseKey,
