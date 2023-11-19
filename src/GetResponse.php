@@ -207,10 +207,10 @@ class GetResponse implements Responses\AssertionInterface
 
         // $credential = $credential->withBackupState($authData->isBackedUp());
         // - if !credential.uvInitialized, update it to authData.UV
-        if (!$credential->isUserVerified()) {
+        // if (!$credential->isUserVerified()) {
             // Only sometimes?
             // $credential = $credential->withUserVerified($ad->uv);
-        }
+        // }
         // - if AO present, update credential.AO + CDJ
 
         // Send back the (updated?) credential so that the sign counter can be

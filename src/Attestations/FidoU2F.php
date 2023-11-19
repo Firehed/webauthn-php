@@ -55,9 +55,9 @@ class FidoU2F implements AttestationStatementInterface
 
         // 8.6.v.3
         $rpIdHash = $data->getRpIdHash();
-        $attestedCredential = $data->getAttestedCredential();
-        $credentialId = $attestedCredential->getId();
-        $credentialPublicKey = $attestedCredential->getPublicKey();
+        $attestedCredentialData = $data->getAttestedCredentialData();
+        $credentialId = $attestedCredentialData->credentialId;
+        $credentialPublicKey = $attestedCredentialData->coseKey->getPublicKey();
         assert($credentialPublicKey instanceof EllipticCurve);
 
         // 8.6.v.4
