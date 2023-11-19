@@ -20,9 +20,9 @@ class Credential implements CredentialInterface
      */
     public function __construct(
         public readonly Enums\PublicKeyCredentialType $type,
-        public readonly BinaryString $id,
+        private readonly BinaryString $id,
         private readonly COSEKey $coseKey,
-        public readonly int $signCount,
+        private readonly int $signCount,
         public readonly array $transports,
         public readonly bool $uvInitialized,
         private readonly bool $isBackupEligible,
