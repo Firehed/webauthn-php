@@ -104,8 +104,8 @@ class Credential
         $signCount = $credential->getSignCount();
         $uvInitialized = $credential->uvInitialized;
         $transports = $credential->transports;
-        $backupEligible = $credential->isBackupEligible;
-        $backupState = $credential->isBackedUp;
+        $backupEligible = $credential->isBackupEligible();
+        $backupState = $credential->isBackedUp();
 
         $ao = $credential->getAttestationObject();
         $aCDJ = $credential->getAttestationClientDataJSON();

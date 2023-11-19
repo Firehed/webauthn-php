@@ -41,6 +41,9 @@ interface CredentialInterface
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface;
 
+    public function isBackupEligible(): bool;
+    public function isBackedUp(): bool;
+
     /**
      * @internal
      */

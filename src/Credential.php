@@ -25,8 +25,8 @@ class Credential implements CredentialInterface
         public readonly int $signCount,
         public readonly array $transports,
         public readonly bool $uvInitialized,
-        public readonly bool $backupEligible,
-        public readonly bool $backupState,
+        private readonly bool $isBackupEligible,
+        private readonly bool $isBackedUp,
         // AO, CDJ?
     ) {
     }
@@ -57,6 +57,16 @@ class Credential implements CredentialInterface
         return $this->coseKey->getPublicKey();
     }
 
+    public function isBackupEligible(): bool
+    {
+        return $this->isBackupEligible;
+    }
+
+    public function isBackedUp(): bool
+    {
+        return $this->isBackedUp;
+    }
+
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
         return new Credential(
@@ -66,8 +76,8 @@ class Credential implements CredentialInterface
             $newSignCount,
             $this->transports,
             $this->uvInitialized,
-            $this->backupEligible,
-            $this->backupState,
+            $this->isBackupEligible,
+            $this->isBackedUp,
         );
     }
 }
