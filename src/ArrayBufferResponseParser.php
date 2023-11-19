@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use function array_filter;
+use function array_key_exists;
+use function array_map;
+use function is_array;
+
 /**
  * Translates the library-official over-the-wire data formats into the
  * necessary data structures for subsequent authentication procedures.
@@ -70,7 +75,10 @@ class ArrayBufferResponseParser implements ResponseParserInterface
             throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
 
-        $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $response['transports'] ?? []));
+        $transports = array_filter(array_map(
+            Enums\AuthenticatorTransport::tryFrom(...),
+            $response['transports'] ?? []
+        ));
 
         return new CreateResponse(
             id: BinaryString::fromBytes($response['rawId']),
