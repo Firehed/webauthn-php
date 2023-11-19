@@ -111,9 +111,15 @@ class AuthenticatorData
         }
 
         return new Credential(
-            $this->ACD['credentialId'],
-            new COSEKey($this->ACD['credentialPublicKey']),
-            $this->signCount,
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->ACD['credentialId'],
+            coseKey: new COSEKey($this->ACD['credentialPublicKey']),
+            signCount: $this->signCount,
+            uvInitialized: $this->isUserVerified,
+            isBackupEligible: $this->isBackupEligible,
+            isBackedUp: $this->isBackedUp,
+            // FIXME: how to thread this through?
+            transports: [],
         );
     }
 

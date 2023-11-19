@@ -139,6 +139,7 @@ class Credential
             // No way to know these from existing data.
             isBackedUp: false,
             isBackupEligible: false,
+            uvInitialized: false, // should have been stored :(
             transports: [],
         );
     }
