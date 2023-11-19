@@ -327,6 +327,30 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         // Look for a specific id and public key?
     }
 
+    public function testTransportsEndUpInCredential(): void
+    {
+        $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id,
+            ao: $this->attestationObject,
+            clientDataJson: $this->clientDataJson,
+            transports: [
+                Enums\AuthenticatorTransport::Usb,
+                Enums\AuthenticatorTransport::Internal,
+                Enums\AuthenticatorTransport::Ble,
+                Enums\AuthenticatorTransport::SmartCard,
+            ],
+        );
+
+        $cred = $response->verify($this->cm, $this->rp);
+        self::assertEqualsCanonicalizing([
+            Enums\AuthenticatorTransport::Ble,
+            Enums\AuthenticatorTransport::Internal,
+            Enums\AuthenticatorTransport::SmartCard,
+            Enums\AuthenticatorTransport::Usb,
+        ], $cred->getTransports());
+    }
+
     private function expectRegistrationError(string $section): void
     {
         $this->expectException(Errors\RegistrationError::class);
