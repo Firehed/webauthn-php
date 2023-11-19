@@ -8,7 +8,7 @@ use Firehed\WebAuthn\{
     BinaryString,
     COSEKey,
     CredentialInterface,
-    Credential as CredentialObj,
+    CredentialV1,
 };
 
 /**
@@ -24,7 +24,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $cbor = hex2bin($cborHex);
         assert($cbor !== false);
         $coseKey = new COSEKey(new BinaryString($cbor));
-        $credential = new CredentialObj(
+        $credential = new CredentialV1(
             new BinaryString(random_bytes(10)),
             $coseKey,
             15,
