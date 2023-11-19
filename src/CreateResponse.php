@@ -15,11 +15,15 @@ use UnexpectedValueException;
  */
 class CreateResponse implements Responses\AttestationInterface
 {
+    /**
+     * @param Enums\AuthenticatorTransport[] $transports
+     */
     public function __construct(
         private Enums\PublicKeyCredentialType $type,
         private BinaryString $id,
         private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
+        private array $transports,
     ) {
     }
 
@@ -161,8 +165,7 @@ class CreateResponse implements Responses\AttestationInterface
             coseKey: $data->coseKey,
             signCount: $authData->getSignCount(),
             isUvInitialized: $authData->isUserVerified(),
-            // FIXME: how to thread this through?
-            transports: [],
+            transports: $this->transports,
             isBackupEligible: $authData->isBackupEligible(),
             isBackedUp: $authData->isBackedUp(),
             // AO, CDJ
