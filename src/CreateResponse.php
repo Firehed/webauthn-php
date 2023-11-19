@@ -159,7 +159,7 @@ class CreateResponse implements Responses\AttestationInterface
         // Create and store credential and associate with user. Storage to be
         // done in consuming code.
         $data = $authData->getAttestedCredentialData();
-        $credential = new Credential(
+        $credential = new CredentialV2(
             type: $this->type,
             id: $this->id, // data->id?
             coseKey: $data->coseKey,
