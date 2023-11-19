@@ -16,12 +16,19 @@ class Credential implements CredentialInterface
     //   Get:
     //     - counter bad
     public function __construct(
-        private readonly BinaryString $id,
+        public readonly Enums\PublicKeyCredentialType $type,
+        public readonly BinaryString $id,
         private readonly COSEKey $coseKey,
-        private readonly int $signCount,
+        public readonly int $signCount,
+        public readonly array $transports,
+        public readonly bool $uvInitialized,
+        public readonly bool $backupEligible,
+        public readonly bool $backupState,
+        // AO, CDJ?
     ) {
     }
 
+    // FIXME: Move this to base64url
     public function getStorageId(): string
     {
         return bin2hex($this->id->unwrap());
