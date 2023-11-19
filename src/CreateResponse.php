@@ -16,6 +16,7 @@ use UnexpectedValueException;
 class CreateResponse implements Responses\AttestationInterface
 {
     public function __construct(
+        private Enums\PublicKeyCredentialType $type,
         private BinaryString $id,
         private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
@@ -155,7 +156,7 @@ class CreateResponse implements Responses\AttestationInterface
         // done in consuming code.
         $data = $authData->getAttestedCredentialData();
         $credential = new Credential(
-            type: Enums\PublicKeyCredentialType::PublicKey,
+            type: $this->type,
             id: $this->id, // data->id?
             coseKey: $data->coseKey,
             signCount: $authData->getSignCount(),
