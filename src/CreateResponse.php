@@ -29,7 +29,7 @@ class CreateResponse implements Responses\AttestationInterface
 
     /**
      * @see 7.1
-     * @link https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential
+     * @link https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential
      */
     public function verify(
         ChallengeManagerInterface $challenge,
@@ -69,7 +69,7 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.10
-        // TODO: tokenBinding (may not exist on localhost??)
+        // TODO: topOrigin (new in lv3)
 
         // 7.1.11
         $hash = new BinaryString(hash('sha256', $this->clientDataJson->unwrap(), true));
@@ -95,24 +95,32 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.16
+        if (!$authData->isBackupEligible() && $authData->isBackedUp()) {
+            $this->fail('7.1.16', 'authData.BE=0 + BS=1');
+        }
+
+        // 7.1.17, 7.1.18
+        // TODO: examine backup eligible/state for user flows and policies
+
+        // 7.1.19
         // js options ~ publicKey.pubKeyCredParams[].alg
         // match $authData->ACD->alg (== ECDSA-SHA-256 = -7)
 
-        // 7.1.17
+        // 7.1.20
         // TODO: clientExtensionResults / options.extensions
 
-        // 7.1.18
+        // 7.1.21
         // Already parsed in AttestationParser::parse upstraem
 
-        // 7.1.19
+        // 7.1.22
         // Verification is format-specific.
         $result = $this->ao->verify($hash);
 
-        // 7.1.20
+        // 7.1.23
         // get trust anchors for format (return value from verify() above?)
         // -> format-specific metadata services?
 
-        // 7.1.21
+        // 7.1.24
         // assess verification result
         //
         // In the original u2f-php lib, this was done with openssl:
@@ -133,11 +141,16 @@ class CreateResponse implements Responses\AttestationInterface
         };
         // ```
 
-        // 7.1.22
+        // 7.1.25
+        if ($this->id->getLength() > 1023) {
+            $this->fail('7.1.25', 'credentialId too long');
+        }
+
+        // 7.1.26
         // check that credentialId is not registered to another user
         // (done in client code?)
 
-        // 7.1.23
+        // 7.1.27
         // associate credential with new user
         // done in client code
         $credential = $authData->getAttestedCredential();
@@ -149,7 +162,7 @@ class CreateResponse implements Responses\AttestationInterface
 
         return $credential;
 
-        // 7.1.24
+        // 7.1.28
         // fail registration if attestation is "verified but is not
         // trustworthy"
     }
