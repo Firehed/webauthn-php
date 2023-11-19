@@ -8,6 +8,7 @@ use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\Credential as CredentialObj;
+use Firehed\WebAuthn\Enums;
 
 /**
  * This codec is responsible for serializing a CredentialInterface object to
@@ -91,6 +92,23 @@ class Credential
         $binary = pack('C', $version) . $versionSpecificFormat;
 
         return base64_encode($binary);
+    }
+
+    public function encodeV2(CredentialInterface $credential): string
+    {
+        $version = 2;
+
+        $type = Enums\PublicKeyCredentialType::PublicKey;
+        $id = $credential->getId();
+        $publicKey = $credential->getCoseCbor();
+        $signCount = $credential->getSignCount();
+        $uvInitialized = $credential->isUserVerified();
+        $transports = [Enums\AuthenticatorTransport::Internal]; // came from registe response
+        $backupEligible = $credential->isBackupEligible();
+        $backupState = $credential->isBackedUp();
+
+        $ao = $credential->getAttestationObject();
+        $aCDJ = $credential->getAttestationClientDataJSON();
     }
 
     public function decode(string $encoded): CredentialInterface
