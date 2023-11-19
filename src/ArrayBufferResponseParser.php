@@ -64,9 +64,11 @@ class ArrayBufferResponseParser implements ResponseParserInterface
             throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
         return new CreateResponse(
+            type: Enums\PublicKeyCredentialType::from($response['type']),
             id: BinaryString::fromBytes($response['rawId']),
             ao: Attestations\AttestationObject::fromCbor(BinaryString::fromBytes($response['attestationObject'])),
             clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
+            transports: [], // Not supported in this wire format :(
         );
     }
 
