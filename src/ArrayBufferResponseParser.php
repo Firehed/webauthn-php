@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use function array_filter;
+use function array_key_exists;
+use function array_map;
+use function is_array;
+
 /**
  * Translates the library-official over-the-wire data formats into the
  * necessary data structures for subsequent authentication procedures.
@@ -32,6 +37,7 @@ class ArrayBufferResponseParser implements ResponseParserInterface
      *  type: credential.type,
      *  attestationObject: new Uint8Array(credential.response.attestationObject),
      *  clientDataJSON: new Uint8Array(credential.response.clientDataJSON),
+     *  transports: credential.response.getTransports(),
      * }
      * ```
      *
@@ -42,7 +48,12 @@ class ArrayBufferResponseParser implements ResponseParserInterface
      *   type: string,
      *   attestationObject: int[],
      *   clientDataJSON: int[],
+     *   transports?: string[],
      * }
+     *
+     * Note that `transports` has been added after the original data format.
+     * It's RECOMMENDED to be provided in all requests, but this should avoid
+     * disrupting applictions where it is not.
      *
      * $response is left untyped since it performs additional checking from
      * untrusted user data.
@@ -63,10 +74,17 @@ class ArrayBufferResponseParser implements ResponseParserInterface
         if (!array_key_exists('clientDataJSON', $response) || !is_array($response['clientDataJSON'])) {
             throw new Errors\ParseError('7.1.2', 'response.clientDataJSON');
         }
+
+        $transports = array_filter(array_map(
+            Enums\AuthenticatorTransport::tryFrom(...),
+            $response['transports'] ?? []
+        ));
+
         return new CreateResponse(
             id: BinaryString::fromBytes($response['rawId']),
             ao: Attestations\AttestationObject::fromCbor(BinaryString::fromBytes($response['attestationObject'])),
             clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),
+            transports: $transports,
         );
     }
 

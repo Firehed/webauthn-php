@@ -15,10 +15,17 @@ use UnexpectedValueException;
  */
 class CreateResponse implements Responses\AttestationInterface
 {
+    /**
+     * Note: transports are made public to simplify testing, and are not
+     * considered part of any sort of public API.
+     *
+     * @param Enums\AuthenticatorTransport[] $transports
+     */
     public function __construct(
         private BinaryString $id,
         private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
+        public readonly array $transports,
     ) {
     }
 
@@ -159,7 +166,6 @@ class CreateResponse implements Responses\AttestationInterface
             signCount: $authData->getSignCount(),
             coseKey: $data->coseKey,
         );
-
 
         // This is not part of the official procedure, but serves as a general
         // sanity-check around data handling.

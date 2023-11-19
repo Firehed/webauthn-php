@@ -58,6 +58,7 @@ const startRegister = async (e) => {
         type: credential.type,
         attestationObject: Array.from(new Uint8Array(credential.response.attestationObject)),
         clientDataJSON: Array.from(new Uint8Array(credential.response.clientDataJSON)),
+        transports: credential.response.getTransports(),
     }
 
     // Send this to your endpoint - adjust to your needs.
