@@ -8,7 +8,7 @@ use Firehed\WebAuthn\{
     BinaryString,
     COSEKey,
     CredentialInterface,
-    Credential as CredentialObj,
+    CredentialV1,
 };
 
 /**
@@ -31,7 +31,6 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $credential->method('getId')->willReturn($id);
         $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
         $credential->method('getSignCount')->willReturn($signCount);
-
 
         $codec = new Credential();
 

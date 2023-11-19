@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * Data format for storage of WebAuth Level 2 credentials, which were prior to
- * flags about backup status, etc.
+ * Data format for WebAuthn Level 2 formats which lacked data for backup
+ * eligibility and did not track transports.
  *
  * @internal
  */
@@ -74,9 +74,9 @@ class CredentialV1 implements CredentialInterface
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
         return new CredentialV1(
-            $this->id,
-            $this->coseKey,
-            $newSignCount,
+            id: $this->id,
+            coseKey: $this->coseKey,
+            signCount: $newSignCount,
         );
     }
 }

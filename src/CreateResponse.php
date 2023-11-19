@@ -162,8 +162,8 @@ class CreateResponse implements Responses\AttestationInterface
         $credential = new CredentialV2(
             type: $this->type,
             id: $this->id, // data->id?
-            coseKey: $data->coseKey,
             signCount: $authData->getSignCount(),
+            coseKey: $data->coseKey,
             isUvInitialized: $authData->isUserVerified(),
             transports: $this->transports,
             isBackupEligible: $authData->isBackupEligible(),
