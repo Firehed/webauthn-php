@@ -16,6 +16,9 @@ use UnexpectedValueException;
 class CreateResponse implements Responses\AttestationInterface
 {
     /**
+     * Note: transports are made public to simplify testing, and are not
+     * considered part of any sort of public API.
+     *
      * @param Enums\AuthenticatorTransport[] $transports
      */
     public function __construct(
@@ -23,7 +26,7 @@ class CreateResponse implements Responses\AttestationInterface
         private BinaryString $id,
         private Attestations\AttestationObjectInterface $ao,
         private BinaryString $clientDataJson,
-        private array $transports,
+        public readonly array $transports,
     ) {
     }
 
