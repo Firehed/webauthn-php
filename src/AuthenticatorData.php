@@ -10,7 +10,7 @@ use OutOfRangeException;
 /**
  * @internal
  *
- * @link https://www.w3.org/TR/webauthn-2/#sctn-authenticator-data
+ * @link https://www.w3.org/TR/webauthn-3/#sctn-authenticator-data
  *
  * @phpstan-type AttestedCredentialData array{
  *   aaguid: BinaryString,
@@ -20,6 +20,8 @@ use OutOfRangeException;
  */
 class AuthenticatorData
 {
+    private bool $isBackupEligible;
+    private bool $isBackedUp;
     private bool $isUserPresent;
 
     private bool $isUserVerified;
@@ -43,15 +45,25 @@ class AuthenticatorData
 
         $flags = $bytes->readUint8();
         $UP = ($flags & 0x01) === 0x01; // bit 0: User Present
+        // 0x02: RFU1
         $UV = ($flags & 0x04) === 0x04; // bit 2: User Verified
+        $BE = ($flags & 0x08) === 0x08; // bit 3: Backup Eligibility
+        $BS = ($flags & 0x10) === 0x10; // bit 4: Backup State
+        // 0x20: RFU2
         $AT = ($flags & 0x40) === 0x40; // bit 6: Attested credential data incl.
         $ED = ($flags & 0x80) === 0x80; // bit 7: Extension data incl.
+
+        if ($BS) {
+            assert($BE === true, 'Backup state is true when not eligible');
+        }
 
         $signCount = $bytes->readUint32();
 
         $authData = new AuthenticatorData();
         $authData->isUserPresent = $UP;
         $authData->isUserVerified = $UV;
+        $authData->isBackupEligible = $BE;
+        $authData->isBackedUp = $BS;
         $authData->rpIdHash = new BinaryString($rpIdHash);
         $authData->signCount = $signCount;
 
@@ -113,6 +125,16 @@ class AuthenticatorData
     public function getSignCount(): int
     {
         return $this->signCount;
+    }
+
+    public function isBackupEligible(): bool
+    {
+        return $this->isBackupEligible;
+    }
+
+    public function isBackedUp(): bool
+    {
+        return $this->isBackedUp;
     }
 
     public function isUserPresent(): bool
