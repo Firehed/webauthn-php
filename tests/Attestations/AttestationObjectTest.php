@@ -127,6 +127,7 @@ class AttestationObjectTest extends \PHPUnit\Framework\TestCase
         ]);
         $ao = new AttestationObject($cbor);
 
+        self::assertTrue($cbor->equals($ao->getCbor()));
         // These assertions are slightly superficial, but it does serve as an
         // integration test that the data threads through.
 
