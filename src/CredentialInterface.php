@@ -41,8 +41,24 @@ interface CredentialInterface
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface;
 
+    public function isBackupEligible(): bool;
+    public function isBackedUp(): bool;
+    public function isUvInitialized(): bool;
+    /** @return Enums\AuthenticatorTransport[] */
+    public function getTransports(): array;
+
+    /**
+     * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
+     */
+    public function getAttestationData(): ?array;
+
+
     /**
      * @internal
      */
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface;
+    // add:
+    // - withUvInitialized(bool)
+    // - withAttestation(AO, attCDJ)
+    // - withBackupState(bool)
 }

@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * Data format for WebAuthn Level 2 formats which lacked data for backup
- * eligibility and did not track transports.
- *
  * @internal
  */
-class CredentialV1 implements CredentialInterface
+class CredentialV2 implements CredentialInterface
 {
     // Risk factors:
     //   Create:
@@ -18,10 +15,21 @@ class CredentialV1 implements CredentialInterface
     //    - certificate chain
     //   Get:
     //     - counter bad
+    /**
+     * @param Enums\AuthenticatorTransport[] $transports
+     */
     public function __construct(
+        public readonly Enums\PublicKeyCredentialType $type,
         private readonly BinaryString $id,
         private readonly COSEKey $coseKey,
         private readonly int $signCount,
+        private readonly array $transports,
+        private readonly bool $isUvInitialized,
+        private readonly bool $isBackupEligible,
+        private readonly bool $isBackedUp,
+        // optional/required as a pair?
+        private readonly ?Attestations\AttestationObjectInterface $ao,
+        private readonly ?BinaryString $attestationCDJ,
     ) {
     }
 
@@ -51,37 +59,46 @@ class CredentialV1 implements CredentialInterface
         return $this->coseKey->getPublicKey();
     }
 
+    /** @return Enums\AuthenticatorTransport[] */
     public function getTransports(): array
     {
-        return [];
+        return $this->transports;
     }
 
     public function isBackupEligible(): bool
     {
-        return false;
+        return $this->isBackupEligible;
     }
 
     public function isBackedUp(): bool
     {
-        return false;
+        return $this->isBackedUp;
     }
 
     public function isUvInitialized(): bool
     {
-        return false;
+        return $this->isUvInitialized;
     }
 
-    public function getAttestationData(): null
+    public function getAttestationData(): array
     {
-        return null;
+        // if AO or CDJ are null, return null
+        return [$this->ao, $this->attestationCDJ];
     }
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
         return new self(
-            id: $this->id,
-            coseKey: $this->coseKey,
-            signCount: $newSignCount,
+            $this->type,
+            $this->id,
+            $this->coseKey,
+            $newSignCount,
+            $this->transports,
+            isUvInitialized: $this->isUvInitialized,
+            isBackupEligible: $this->isBackupEligible,
+            isBackedUp: $this->isBackedUp,
+            ao: $this->ao,
+            attestationCDJ: $this->attestationCDJ,
         );
     }
 }
