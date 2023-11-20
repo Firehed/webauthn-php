@@ -149,11 +149,9 @@ class Credential
         if ($ao = $credential->getAttestationObject()) {
             $flags |= (1 << 4);
         }
-        /*
-        if ($aCDJ = $credential->getAttestationClientDataJSON()) {
+        if ($aCDJ = $credential->getAttestationClientDataJson()) {
             $flags |= (1 << 5);
         }
-         */
 
         $rawId = $credential->getId()->unwrap();
         $rawCbor = $credential->getCoseCbor()->unwrap();

@@ -48,6 +48,7 @@ interface CredentialInterface
     public function getTransports(): array;
 
     public function getAttestationObject(): ?Attestations\AttestationObjectInterface;
+    public function getAttestationClientDataJson(): ?BinaryString;
 
 
     /**
