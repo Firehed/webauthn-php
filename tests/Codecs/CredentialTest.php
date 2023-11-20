@@ -9,6 +9,7 @@ use Firehed\WebAuthn\{
     COSEKey,
     CredentialInterface,
     CredentialV1,
+    Enums,
 };
 
 /**
@@ -31,6 +32,11 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $credential->method('getId')->willReturn($id);
         $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
         $credential->method('getSignCount')->willReturn($signCount);
+        $credential->method('getTransports')->willReturn([
+            Enums\AuthenticatorTransport::Ble,
+            Enums\AuthenticatorTransport::Usb,
+            Enums\AuthenticatorTransport::SmartCard,
+        ]);
 
         $codec = new Credential();
 

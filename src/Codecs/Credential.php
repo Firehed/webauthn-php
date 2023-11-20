@@ -8,6 +8,7 @@ use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\CredentialV1;
+use Firehed\WebAuthn\CredentialV2;
 use Firehed\WebAuthn\Enums;
 
 /**
@@ -58,6 +59,13 @@ use Firehed\WebAuthn\Enums;
  */
 class Credential
 {
+    public function encode(CredentialInterface $credential): string
+    {
+        return match (true) {
+            $credential instanceof CredentialV1 => $this->encodeV1($credential),
+            default => $this->encodeV2($credential),
+        };
+    }
     /**
      * Version 1:
      *
@@ -70,7 +78,7 @@ class Credential
      * signCount is a big-endian unsigned long (32bit)
      *
      */
-    public function encode(CredentialInterface $credential): string
+    public function encodeV1(CredentialInterface $credential): string
     {
         $version = 1;
 
@@ -94,35 +102,117 @@ class Credential
         return base64_encode($binary);
     }
 
-    /*
+    /**
+     * Version 2:
+     *
+     * [ flags ] [ idLength ] [ id ] [ signCount ] [ coseKeyLength ] [ coseKey
+     * ] [ transports ]
+     * Flags: 1 byte (big-endian), where bit 0 is the least significant big
+     *   0: UV is initialized
+     *   1: Backup Eligible
+     *   2: Backup State
+     *   3: Transports included
+     *   4: Attestation Object included
+     *   5: Attestation Client Data JSON included
+     *   6-7: RFU
+     *
+     * Transports: if [flags] has bit 3 set, the next byte tracks supported
+     * authenticator transports. If flags bit 3 is not set, the transports byte
+     * will be skipped.
+     *   0-5: see TRANSPORT_FLAGS
+     *   6: Reserved for Future Use (RFU1)
+     *   7: Reserved for Future Use (RFU2)
+     */
     public function encodeV2(CredentialInterface $credential): string
     {
+        // if ($credential->type !== Enums\PublicKeyCredentialType::PublicKey) {
+        // block this for now. May use flags bits to differentiate.
+        // }
         $version = 2;
 
-        $type = Enums\PublicKeyCredentialType::PublicKey;
-        $id = $credential->getId();
-        $publicKey = $credential->getCoseCbor();
-        $signCount = $credential->getSignCount();
-        $uvInitialized = $credential->isUvInitialized();
-        $transports = $credential->getTransports();
-        $backupEligible = $credential->isBackupEligible();
-        $backupState = $credential->isBackedUp();
+        $flags = 0;
+        if ($credential->isUvInitialized()) {
+            $flags |= (1 << 0);
+        }
+        if ($credential->isBackupEligible()) {
+            $flags |= (1 << 1);
+        }
+        if ($credential->isBackedUp()) {
+            $flags |= (1 << 2);
+        }
 
-        $ao = $credential->getAttestationObject();
-        $aCDJ = $credential->getAttestationClientDataJSON();
-        return new CredentialV2(
-            type: Enums\PublicKeyCredentialType::PublicKey,
-            id: new BinaryString($id),
-            coseKey: new COSEKey(new BinaryString($cbor)),
-            signCount: $signCount,
-            // No way to know these from existing data.
-            isBackedUp: false,
-            isBackupEligible: false,
-            isUvInitialized: false,
-            transports: [],
+        $transportFlags = self::getTransportFlags($credential->getTransports());
+        if ($transportFlags !== 0) {
+            $flags |= (1 << 3);
+        }
+
+        /*
+        if ($ao = $credential->getAttestationObject()) {
+            $flags |= (1 << 4);
+        }
+        if ($aCDJ = $credential->getAttestationClientDataJSON()) {
+            $flags |= (1 << 5);
+        }
+         */
+
+        $rawId = $credential->getId()->unwrap();
+        $rawCbor = $credential->getCoseCbor()->unwrap();
+        $signCount = $credential->getSignCount();
+
+        $versionSpecificFormat = sprintf(
+            '%s%s%s%s%s%s%s',
+            pack('C', $flags),
+            pack('n', strlen($rawId)), // idLength
+            $rawId,
+            pack('N', $credential->getSignCount()),
+            pack('N', strlen($rawCbor)), // coseKeyLength
+            $rawCbor,
+            $transportFlags > 0 ? pack('C', $transportFlags) : '',
+            // AO.length, AO
+            // CDJ.length, CDJ
         );
+
+        $binary = pack('C', $version) . $versionSpecificFormat;
+
+        return base64_encode($binary);
     }
+
+    /**
+     * @param Enums\AuthenticatorTransport[] $transports
      */
+    private static function getTransportFlags(array $transports): int
+    {
+        $flags = 0;
+        foreach ($transports as $transport) {
+            $bit = array_search($transport, self::TRANPSORT_FLAGS, true);
+            $flags |= (1 << $bit);
+        }
+        return $flags;
+    }
+
+    /**
+     * @return Enums\AuthenticatorTransport[]
+     */
+    private static function parseTransportFlags(int $flags): array
+    {
+        $transports = [];
+        for ($bit = 0; $bit <= 5; $bit++) {
+            $value = 1 << $bit;
+            if (($flags & $value) === $value) {
+                $transports[] = self::TRANPSORT_FLAGS[$bit];
+            }
+        }
+        return $transports;
+    }
+
+    private const TRANPSORT_FLAGS = [
+        0 => Enums\AuthenticatorTransport::Ble,
+        1 => Enums\AuthenticatorTransport::Hybrid,
+        2 => Enums\AuthenticatorTransport::Internal,
+        3 => Enums\AuthenticatorTransport::Nfc,
+        4 => Enums\AuthenticatorTransport::SmartCard,
+        5 => Enums\AuthenticatorTransport::Usb,
+    ];
 
     public function decode(string $encoded): CredentialInterface
     {
@@ -133,9 +223,14 @@ class Credential
 
         $version = $bytes->readUint8();
         assert(($version & 0x80) === 0, 'High bit in version must not be set');
-        // match -> decodeV1 ?
-        assert($version === 1);
+        return match ($version) {
+            1 => $this->decodeV1($bytes),
+            2 => $this->decodeV2($bytes),
+        };
+    }
 
+    private function decodeV1(BinaryString $bytes): CredentialInterface
+    {
         $idLength = $bytes->readUint16();
         $id = $bytes->read($idLength);
 
@@ -148,6 +243,47 @@ class Credential
             id: new BinaryString($id),
             coseKey: new COSEKey(new BinaryString($cbor)),
             signCount: $signCount,
+        );
+    }
+
+    private function decodeV2(BinaryString $bytes): CredentialInterface
+    {
+        $flags = $bytes->readUint8();
+
+        $idLength = $bytes->readUint16();
+        $id = $bytes->read($idLength);
+
+        $signCount = $bytes->readUint32();
+
+        $cborLength = $bytes->readUint32();
+        $cbor = $bytes->read($cborLength);
+
+        // 0x01: UV
+        $UV = ($flags & 0x01) === 0x01;
+        // 0x02: BE
+        $BE = ($flags & 0x02) === 0x02;
+        // 0x04: BS
+        $BS = ($flags & 0x04) === 0x04;
+
+        // 0x08: transports included
+        if (($flags & 0x08) === 0x08) {
+            $transportFlags = $bytes->readUint8();
+            $transports = self::parseTransportFlags($transportFlags);
+        } else {
+            $transports = [];
+        }
+        // 0x10: AO
+        // 0x20: ACDJ
+
+        return new CredentialV2(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: new BinaryString($id),
+            transports: $transports,
+            signCount: $signCount,
+            isUvInitialized: $UV,
+            isBackupEligible: $BE,
+            isBackedUp: $BS,
+            coseKey: new COSEKey(new BinaryString($cbor)),
         );
     }
 }
