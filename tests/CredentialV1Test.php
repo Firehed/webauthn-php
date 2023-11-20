@@ -28,6 +28,12 @@ class CredentialV1Test extends \PHPUnit\Framework\TestCase
         // This test is flexible...storageId needs to be kept stable but the
         // pre-1.0 version could change before final release
         self::assertSame('ffff', $credential->getStorageId(), 'Storage ID wrong');
+
+        self::assertFalse($credential->isBackupEligible(), 'Backup tracking not in format');
+        self::assertFalse($credential->isBackedUp(), 'Backup tracking not in format');
+        self::assertFalse($credential->isUvInitialized(), 'UV tracking not in format');
+        self::assertSame([], $credential->getTransports(), 'Transport tracking not in format');
+        self::assertNull($credential->getAttestationData(), 'Attestation tracking not in format');
     }
 
     public function testUpdatingSignCount(): void

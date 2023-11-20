@@ -71,7 +71,7 @@ class CredentialV1 implements CredentialInterface
         return false;
     }
 
-    public function getAttestationData(): null
+    public function getAttestationData(): ?array
     {
         return null;
     }
