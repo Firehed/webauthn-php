@@ -77,7 +77,7 @@ class JsonResponseParser implements ResponseParserInterface
         return new CreateResponse(
             type: Enums\PublicKeyCredentialType::from($data['type']),
             id: self::parse($data['rawId'], '7.1.2', 'rawId'),
-            ao: Attestations\AttestationObject::fromCbor(
+            ao: new Attestations\AttestationObject(
                 self::parse($response['attestationObject'], '7.1.2', 'response.attestationObject'),
             ),
             clientDataJson: self::parse($response['clientDataJSON'], '7.1.2', 'response.clientDataJSON'),

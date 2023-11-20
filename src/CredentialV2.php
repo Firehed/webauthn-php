@@ -27,7 +27,8 @@ class CredentialV2 implements CredentialInterface
         private readonly bool $isUvInitialized,
         private readonly bool $isBackupEligible,
         private readonly bool $isBackedUp,
-        // AO, CDJ?
+        private readonly Attestations\AttestationObjectInterface $ao,
+        private readonly BinaryString $attestationCDJ,
     ) {
     }
 
@@ -76,6 +77,15 @@ class CredentialV2 implements CredentialInterface
     public function isUvInitialized(): bool
     {
         return $this->isUvInitialized;
+    }
+
+    public function getAttestationObject(): Attestations\AttestationObjectInterface
+    {
+        return $this->ao;
+    }
+    public function getAttestationClientDataJson(): BinaryString
+    {
+        return $this->attestationCDJ;
     }
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
