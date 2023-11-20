@@ -99,6 +99,8 @@ class CredentialV2 implements CredentialInterface
             isUvInitialized: $this->isUvInitialized,
             isBackupEligible: $this->isBackupEligible,
             isBackedUp: $this->isBackedUp,
+            ao: $this->ao,
+            attestationCDJ: $this->attestationCDJ,
         );
     }
 }

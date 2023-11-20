@@ -57,6 +57,6 @@ interface CredentialInterface
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface;
     // add:
     // - withUvInitialized(bool)
-    // - withAttestationObject(AO)
+    // - withAttestation(AO, attCDJ)
     // - withBackupState(bool)
 }
