@@ -47,6 +47,9 @@ interface CredentialInterface
     /** @return Enums\AuthenticatorTransport[] */
     public function getTransports(): array;
 
+    public function getAttestationObject(): ?Attestations\AttestationObjectInterface;
+
+
     /**
      * @internal
      */

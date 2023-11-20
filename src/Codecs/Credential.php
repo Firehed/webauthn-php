@@ -146,10 +146,10 @@ class Credential
             $flags |= (1 << 3);
         }
 
-        /*
         if ($ao = $credential->getAttestationObject()) {
             $flags |= (1 << 4);
         }
+        /*
         if ($aCDJ = $credential->getAttestationClientDataJSON()) {
             $flags |= (1 << 5);
         }
