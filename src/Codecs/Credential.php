@@ -59,6 +59,11 @@ use Firehed\WebAuthn\Enums;
  */
 class Credential
 {
+    public function __construct(
+        private readonly bool $storeRegistrationData = true,
+    ) {
+    }
+
     public function encode(CredentialInterface $credential): string
     {
         return match (true) {
@@ -146,11 +151,19 @@ class Credential
             $flags |= (1 << 3);
         }
 
+        // this->storeRegistrationData &&
         if ($ao = $credential->getAttestationObject()) {
             $flags |= (1 << 4);
+            $aoData = $ao->getCbor();
+            $aoLength = $aoData->getLength();
+            // pack(N, $aoLength) . $aoData->unwrap()
         }
+
+        // this->storeRegistrationData &&
         if ($aCDJ = $credential->getAttestationClientDataJson()) {
             $flags |= (1 << 5);
+            // Recoding the CDJ as CBOR would be more compact, but the current
+            // lib is decode-only
         }
 
         $rawId = $credential->getId()->unwrap();
@@ -270,6 +283,7 @@ class Credential
         } else {
             $transports = [];
         }
+
         // 0x10: AO
         // 0x20: ACDJ
 

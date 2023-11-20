@@ -52,4 +52,9 @@ class AttestationObject implements AttestationObjectInterface
     {
         return $this->stmt->verify($this->data, $clientDataHash);
     }
+
+    public function getCbor(): BinaryString
+    {
+        return $this->rawCbor;
+    }
 }
