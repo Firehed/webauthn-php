@@ -145,7 +145,7 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
             218, 147, 101, 51, 204, 147, 69, 30,
             246, 195, 159, 113,
         ]);
-        $this->attestationObject = Attestations\AttestationObject::fromCbor($aoData);
+        $this->attestationObject = new Attestations\AttestationObject($aoData);
 
         $this->clientDataJson = BinaryString::fromBytes([
             123, 34, 116, 121, 112, 101, 34, 58,
