@@ -111,15 +111,14 @@ class Credential
      * Version 2:
      *
      * [ flags ] [ idLength ] [ id ] [ signCount ] [ coseKeyLength ] [ coseKey
-     * ] [ transports ]
+     * ] [ transports ] [ attestationData ]
      * Flags: 1 byte (big-endian), where bit 0 is the least significant big
      *   0: UV is initialized
      *   1: Backup Eligible
      *   2: Backup State
      *   3: Transports included
-     *   4: Attestation Object included
-     *   5: Attestation Client Data JSON included
-     *   6-7: RFU
+     *   4: Attestation Data included
+     *   5-7: RFU
      *
      * Transports: if [flags] has bit 3 set, the next byte tracks supported
      * authenticator transports. If flags bit 3 is not set, the transports byte
@@ -127,6 +126,12 @@ class Credential
      *   0-5: see TRANSPORT_FLAGS
      *   6: Reserved for Future Use (RFU1)
      *   7: Reserved for Future Use (RFU2)
+     *
+     * Attestation Data: if [flags] has bit 4 set, a tuple follows:
+     * - aoLength
+     * - aoData (CBOR)
+     * - cdjLength
+     * - cdj (original json)
      */
     public function encodeV2(CredentialInterface $credential): string
     {
@@ -152,18 +157,16 @@ class Credential
         }
 
         // this->storeRegistrationData &&
-        if ($ao = $credential->getAttestationObject()) {
+        $attestationData = $credential->getAttestationData();
+        if ($attestationData !== null) {
             $flags |= (1 << 4);
+            [$ao, $aCDJ] = $attestationData;
             $aoData = $ao->getCbor();
             $aoLength = $aoData->getLength();
-            // pack(N, $aoLength) . $aoData->unwrap()
-        }
+            $cdjLenth = $aCDJ->getLength();
 
-        // this->storeRegistrationData &&
-        if ($aCDJ = $credential->getAttestationClientDataJson()) {
-            $flags |= (1 << 5);
-            // Recoding the CDJ as CBOR would be more compact, but the current
-            // lib is decode-only
+            // pack(N, $aoLength) . $aoData->unwrap()
+            // pack(N, $cdjLenth) . $aCDJ->unwrap()
         }
 
         $rawId = $credential->getId()->unwrap();
@@ -284,8 +287,7 @@ class Credential
             $transports = [];
         }
 
-        // 0x10: AO
-        // 0x20: ACDJ
+        // 0x10: attData
 
         return new CredentialV2(
             type: Enums\PublicKeyCredentialType::PublicKey,

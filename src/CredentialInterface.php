@@ -47,8 +47,10 @@ interface CredentialInterface
     /** @return Enums\AuthenticatorTransport[] */
     public function getTransports(): array;
 
-    public function getAttestationObject(): ?Attestations\AttestationObjectInterface;
-    public function getAttestationClientDataJson(): ?BinaryString;
+    /**
+     * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
+     */
+    public function getAttestationData(): ?array;
 
 
     /**

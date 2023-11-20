@@ -71,6 +71,11 @@ class CredentialV1 implements CredentialInterface
         return false;
     }
 
+    public function getAttestationData(): null
+    {
+        return null;
+    }
+
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
     {
         return new self(

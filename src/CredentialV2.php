@@ -79,13 +79,9 @@ class CredentialV2 implements CredentialInterface
         return $this->isUvInitialized;
     }
 
-    public function getAttestationObject(): Attestations\AttestationObjectInterface
+    public function getAttestationData(): array
     {
-        return $this->ao;
-    }
-    public function getAttestationClientDataJson(): BinaryString
-    {
-        return $this->attestationCDJ;
+        return [$this->ao, $this->attestationCDJ];
     }
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
