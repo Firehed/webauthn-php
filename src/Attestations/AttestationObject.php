@@ -16,16 +16,14 @@ use Firehed\WebAuthn\BinaryString;
  */
 class AttestationObject implements AttestationObjectInterface
 {
-    private function __construct(
-        private readonly AuthenticatorData $data,
-        private readonly AttestationStatementInterface $stmt,
-    ) {
-    }
+    private readonly AuthenticatorData $data;
+    private readonly AttestationStatementInterface $stmt;
 
-    public static function fromCbor(BinaryString $cbor): AttestationObject
-    {
+    public function __construct(
+        private readonly BinaryString $rawCbor,
+    ) {
         $decoder = new Decoder();
-        $decoded = $decoder->decode($cbor->unwrap());
+        $decoded = $decoder->decode($rawCbor->unwrap());
 
         assert(array_key_exists('fmt', $decoded));
         assert(array_key_exists('attStmt', $decoded));
@@ -38,7 +36,8 @@ class AttestationObject implements AttestationObjectInterface
 
         $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
 
-        return new AttestationObject($ad, $stmt);
+        $this->data = $ad;
+        $this->stmt = $stmt;
     }
 
     public function getAuthenticatorData(): AuthenticatorData
@@ -52,5 +51,10 @@ class AttestationObject implements AttestationObjectInterface
     public function verify(BinaryString $clientDataHash): VerificationResult
     {
         return $this->stmt->verify($this->data, $clientDataHash);
+    }
+
+    public function getCbor(): BinaryString
+    {
+        return $this->rawCbor;
     }
 }
