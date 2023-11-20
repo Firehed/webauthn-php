@@ -48,6 +48,9 @@ interface CredentialInterface
     public function getTransports(): array;
 
     /**
+     * Returns (optionally) an AttestationObject and the raw ClientDataJSON
+     * that was signed by that attestation. These are always used as a pair.
+     *
      * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
      */
     public function getAttestationData(): ?array;
