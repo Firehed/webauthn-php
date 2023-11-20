@@ -294,10 +294,11 @@ class Credential
             $aoLength = $bytes->readUint32();
             $cdjLength = $bytes->readUint32();
             $rawAo = $bytes->read($aoLength);
-            $cdj = $bytes->read($cdjLength);
-            $ao = new AttestationObject($rawAo);
+            $cdj = new BinaryString($bytes->read($cdjLength));
+            $ao = new AttestationObject(new BinaryString($rawAo));
         } else {
             // Uhh??
+            $ao = $cdj = null;
         }
 
         return new CredentialV2(
