@@ -27,8 +27,9 @@ class CredentialV2 implements CredentialInterface
         private readonly bool $isUvInitialized,
         private readonly bool $isBackupEligible,
         private readonly bool $isBackedUp,
-        private readonly Attestations\AttestationObjectInterface $ao,
-        private readonly BinaryString $attestationCDJ,
+        // optional/required as a pair?
+        private readonly ?Attestations\AttestationObjectInterface $ao,
+        private readonly ?BinaryString $attestationCDJ,
     ) {
     }
 
@@ -81,6 +82,7 @@ class CredentialV2 implements CredentialInterface
 
     public function getAttestationData(): array
     {
+        // if AO or CDJ are null, return null
         return [$this->ao, $this->attestationCDJ];
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Codecs;
 
+use Firehed\WebAuthn\Attestations\AttestationObject;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\CredentialInterface;
@@ -288,6 +289,16 @@ class Credential
         }
 
         // 0x10: attData
+        $AT = ($flags & 0x10) === 0x10;
+        if ($AT) {
+            $aoLength = $bytes->readUint32();
+            $cdjLength = $bytes->readUint32();
+            $rawAo = $bytes->read($aoLength);
+            $cdj = $bytes->read($cdjLength);
+            $ao = new AttestationObject($rawAo);
+        } else {
+            // Uhh??
+        }
 
         return new CredentialV2(
             type: Enums\PublicKeyCredentialType::PublicKey,
@@ -298,6 +309,8 @@ class Credential
             isBackupEligible: $BE,
             isBackedUp: $BS,
             coseKey: new COSEKey(new BinaryString($cbor)),
+            ao: $ao,
+            attestationCDJ: $cdj,
         );
     }
 }
