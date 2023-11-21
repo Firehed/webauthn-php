@@ -186,16 +186,30 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
                 type: Enums\PublicKeyCredentialType::PublicKey,
                 coseKey: $coseKey,
                 signCount: random_int(20, 20000),
-                isBackupEligible: true,
+                isBackupEligible: false,
                 isBackedUp: false,
                 isUvInitialized: false,
                 transports: [
-                    Enums\AuthenticatorTransport::Ble,
-                    Enums\AuthenticatorTransport::Usb,
-                    Enums\AuthenticatorTransport::SmartCard,
+                    Enums\AuthenticatorTransport::Nfc,
+                    Enums\AuthenticatorTransport::Internal,
                 ],
                 attestation: [$ao, $cdj],
             )],
+            [new CredentialV2(
+                id: $makeId(),
+                type: Enums\PublicKeyCredentialType::PublicKey,
+                coseKey: $coseKey,
+                signCount: random_int(20, 20000),
+                isBackupEligible: true,
+                isBackedUp: true,
+                isUvInitialized: false,
+                transports: [],
+                attestation: [$ao, $cdj],
+            )],
+            // Ideally, this would have a ton of permutations of the various
+            // flags. That's un unreasonable amount of test vectors to write.
+            // For now, this aims to hit the likely issues: off-by-one errors,
+            // especially those stemming from skip-bits
         ];
     }
 }
