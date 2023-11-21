@@ -61,6 +61,15 @@ use UnhandledMatchError;
  */
 class Credential
 {
+    private const TRANPSORT_FLAGS = [
+        0 => Enums\AuthenticatorTransport::Ble,
+        1 => Enums\AuthenticatorTransport::Hybrid,
+        2 => Enums\AuthenticatorTransport::Internal,
+        3 => Enums\AuthenticatorTransport::Nfc,
+        4 => Enums\AuthenticatorTransport::SmartCard,
+        5 => Enums\AuthenticatorTransport::Usb,
+    ];
+
     public function __construct(
         private readonly bool $storeRegistrationData = true,
     ) {
@@ -230,15 +239,6 @@ class Credential
         }
         return $transports;
     }
-
-    private const TRANPSORT_FLAGS = [
-        0 => Enums\AuthenticatorTransport::Ble,
-        1 => Enums\AuthenticatorTransport::Hybrid,
-        2 => Enums\AuthenticatorTransport::Internal,
-        3 => Enums\AuthenticatorTransport::Nfc,
-        4 => Enums\AuthenticatorTransport::SmartCard,
-        5 => Enums\AuthenticatorTransport::Usb,
-    ];
 
     public function decode(string $encoded): CredentialInterface
     {
