@@ -25,11 +25,8 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
     public function testRoundtrip(CredentialInterface $credential): void
     {
         $codec = new Credential();
-
         $exported = $codec->encode($credential);
-
         $imported = $codec->decode($exported);
-        // var_dump($exported, $imported);
 
         self::assertTrue(
             $credential->getId()->equals($imported->getId()),
@@ -75,6 +72,12 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             $imported->getPublicKey()->getPemFormatted(),
             'public key changed',
         );
+
+        $attestationStrippingCodec = new Credential(storeRegistrationData: false);
+        $strippedEncoded = $attestationStrippingCodec->encode($credential);
+        $stripped = $attestationStrippingCodec->decode($strippedEncoded);
+
+        self::assertNull($stripped->getAttestationData(), 'Attestation should have been removed');
     }
 
     /**
