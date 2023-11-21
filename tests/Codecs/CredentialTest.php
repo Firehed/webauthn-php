@@ -116,13 +116,6 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $coseKey = new COSEKey(new BinaryString($cbor));
 
         $makeId = fn () => new BinaryString(random_bytes(10));
-        // $signCount = random_int(0, 20000);
-        // $credential = self::createMock(CredentialInterface::class);
-        // $credential->method('getId')->willReturn($id);
-        // $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
-        // $credential->method('getSignCount')->willReturn($signCount);
-        // $credential->method('getTransports')->willReturn([
-        // ]);
 
         return [
             [new CredentialV2(

@@ -49,7 +49,7 @@ use Firehed\WebAuthn\Enums;
  *
  * version shall be a single byte.
  * The highest bit (big-endian) shall be 0.
- * A high bit of 1 is reserve for future use, and if encountered, an error
+ * A high bit of 1 is reserved for future use, and if encountered, an error
  * should be thrown.
  * The lowest seven bits shall be interpreted as a big-endian7-bit integer.
  *
@@ -133,6 +133,10 @@ class Credential
      * - aoData (CBOR)
      * - cdjLength
      * - cdj (original json)
+     *
+     * Note: this has CBOR and JSON inside of a packed format, which is a bit
+     * strange. A v3 of this codec may use a pure-CBOR representation which
+     * should be marginally more efficient.
      */
     public function encodeV2(CredentialInterface $credential): string
     {
@@ -159,7 +163,7 @@ class Credential
 
         // this->storeRegistrationData &&
         $attestationData = $credential->getAttestationData();
-        if ($attestationData !== null) {
+        if ($attestationData !== null && $this->storeRegistrationData) {
             $flags |= (1 << 4);
             [$ao, $aCDJ] = $attestationData;
             $aoData = $ao->getCbor();
