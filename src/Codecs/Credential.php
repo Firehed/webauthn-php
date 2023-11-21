@@ -11,6 +11,7 @@ use Firehed\WebAuthn\CredentialInterface;
 use Firehed\WebAuthn\CredentialV1;
 use Firehed\WebAuthn\CredentialV2;
 use Firehed\WebAuthn\Enums;
+use UnhandledMatchError;
 
 /**
  * This codec is responsible for serializing a CredentialInterface object to
@@ -251,6 +252,7 @@ class Credential
         return match ($version) {
             1 => $this->decodeV1($bytes),
             2 => $this->decodeV2($bytes),
+            default => throw new UnhandledMatchError('Unsupported version'),
         };
     }
 
