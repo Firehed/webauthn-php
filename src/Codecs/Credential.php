@@ -130,8 +130,8 @@ class Credential
      *
      * Attestation Data: if [flags] has bit 4 set, a tuple follows:
      * - aoLength
-     * - aoData (CBOR)
      * - cdjLength
+     * - aoData (CBOR)
      * - cdj (original json)
      *
      * Note: this has CBOR and JSON inside of a packed format, which is a bit
@@ -170,8 +170,15 @@ class Credential
             $aoLength = $aoData->getLength();
             $cdjLenth = $aCDJ->getLength();
 
-            // pack(N, $aoLength) . $aoData->unwrap()
-            // pack(N, $cdjLenth) . $aCDJ->unwrap()
+            $attestation = sprintf(
+                '%s%s%s%s',
+                pack('N', $aoLength),
+                pack('N', $cdjLenth),
+                $aoData->unwrap(),
+                $aCDJ->unwrap(),
+            );
+        } else {
+            $attestation = '';
         }
 
         $rawId = $credential->getId()->unwrap();
@@ -179,7 +186,7 @@ class Credential
         $signCount = $credential->getSignCount();
 
         $versionSpecificFormat = sprintf(
-            '%s%s%s%s%s%s%s',
+            '%s%s%s%s%s%s%s%s',
             pack('C', $flags),
             pack('n', strlen($rawId)), // idLength
             $rawId,
@@ -187,8 +194,7 @@ class Credential
             pack('N', strlen($rawCbor)), // coseKeyLength
             $rawCbor,
             $transportFlags > 0 ? pack('C', $transportFlags) : '',
-            // AO.length, AO
-            // CDJ.length, CDJ
+            $attestation,
         );
 
         $binary = pack('C', $version) . $versionSpecificFormat;
