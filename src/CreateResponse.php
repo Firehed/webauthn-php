@@ -171,8 +171,7 @@ class CreateResponse implements Responses\AttestationInterface
             transports: $this->transports,
             isBackupEligible: $authData->isBackupEligible(),
             isBackedUp: $authData->isBackedUp(),
-            ao: $this->ao,
-            attestationCDJ: $this->clientDataJson,
+            attestation: [$this->ao, $this->clientDataJson],
         );
 
         // This is not part of the official procedure, but serves as a general

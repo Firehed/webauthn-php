@@ -296,9 +296,10 @@ class Credential
             $rawAo = $bytes->read($aoLength);
             $cdj = new BinaryString($bytes->read($cdjLength));
             $ao = new AttestationObject(new BinaryString($rawAo));
+            $attestation = [$ao, $cdj];
         } else {
             // Uhh??
-            $ao = $cdj = null;
+            $attestation = null;
         }
 
         return new CredentialV2(
@@ -310,8 +311,7 @@ class Credential
             isBackupEligible: $BE,
             isBackedUp: $BS,
             coseKey: new COSEKey(new BinaryString($cbor)),
-            ao: $ao,
-            attestationCDJ: $cdj,
+            attestation: $attestation,
         );
     }
 }
