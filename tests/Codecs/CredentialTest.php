@@ -9,6 +9,7 @@ use Firehed\WebAuthn\{
     COSEKey,
     CredentialInterface,
     CredentialV1,
+    CredentialV2,
     Enums,
 };
 
@@ -17,27 +18,11 @@ use Firehed\WebAuthn\{
  */
 class CredentialTest extends \PHPUnit\Framework\TestCase
 {
-    public function testRoundtrip(): void
+    /**
+     * @dataProvider credentials
+     */
+    public function testRoundtrip(CredentialInterface $credential): void
     {
-        $cborHex = 'a50102032620012158204e9270bfb3a8cc360898793848bfe85451817' .
-            'daaccc539e258a027c1118d81a22258201b9404e4ec6e7b303373c3f4b8fad46' .
-            '4f255005a94e9b6f1a5b919654d7bb90e';
-        $cbor = hex2bin($cborHex);
-        assert($cbor !== false);
-        $coseKey = new COSEKey(new BinaryString($cbor));
-
-        $id = new BinaryString(random_bytes(10));
-        $signCount = random_int(0, 20000);
-        $credential = self::createMock(CredentialInterface::class);
-        $credential->method('getId')->willReturn($id);
-        $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
-        $credential->method('getSignCount')->willReturn($signCount);
-        $credential->method('getTransports')->willReturn([
-            Enums\AuthenticatorTransport::Ble,
-            Enums\AuthenticatorTransport::Usb,
-            Enums\AuthenticatorTransport::SmartCard,
-        ]);
-
         $codec = new Credential();
 
         $exported = $codec->encode($credential);
@@ -46,18 +31,33 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         // var_dump($exported, $imported);
 
         self::assertTrue(
-            $id->equals($imported->getId()),
+            $credential->getId()->equals($imported->getId()),
             'id was not retained',
         );
         self::assertSame(
-            $coseKey->getPublicKey()->getPemFormatted(),
+            $credential->getPublicKey()->getPemFormatted(),
             $imported->getPublicKey()->getPemFormatted(),
             'public key was not retained',
         );
         self::assertSame(
-            $signCount,
+            $credential->getSignCount(),
             $imported->getSignCount(),
             'signCount was not retained',
+        );
+        self::assertSame(
+            $credential->isUvInitialized(),
+            $imported->isUvInitialized(),
+            'isUvInitialized was not retained',
+        );
+        self::assertSame(
+            $credential->isBackupEligible(),
+            $imported->isBackupEligible(),
+            'signCount was not retained',
+        );
+        self::assertSame(
+            $credential->isBackedUp(),
+            $imported->isBackedUp(),
+            'isBackedUp was not retained',
         );
     }
 
@@ -100,6 +100,46 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
                     '5c27b411312d145d'
                 ),
             ],
+        ];
+    }
+
+    /**
+     * @return array{CredentialInterface}[]
+     */
+    public static function credentials(): array
+    {
+        $cborHex = 'a50102032620012158204e9270bfb3a8cc360898793848bfe85451817' .
+            'daaccc539e258a027c1118d81a22258201b9404e4ec6e7b303373c3f4b8fad46' .
+            '4f255005a94e9b6f1a5b919654d7bb90e';
+        $cbor = hex2bin($cborHex);
+        assert($cbor !== false);
+        $coseKey = new COSEKey(new BinaryString($cbor));
+
+        $makeId = fn () => new BinaryString(random_bytes(10));
+        // $signCount = random_int(0, 20000);
+        // $credential = self::createMock(CredentialInterface::class);
+        // $credential->method('getId')->willReturn($id);
+        // $credential->method('getCoseCbor')->willReturn($coseKey->cbor);
+        // $credential->method('getSignCount')->willReturn($signCount);
+        // $credential->method('getTransports')->willReturn([
+        // ]);
+
+        return [
+            [new CredentialV2(
+                id: $makeId(),
+                type: Enums\PublicKeyCredentialType::PublicKey,
+                coseKey: $coseKey,
+                signCount: random_int(20, 20000),
+                isBackupEligible: true,
+                isBackedUp: false,
+                isUvInitialized: true,
+                transports: [
+                    Enums\AuthenticatorTransport::Ble,
+                    Enums\AuthenticatorTransport::Usb,
+                    Enums\AuthenticatorTransport::SmartCard,
+                ],
+                attestation: null,
+            )],
         ];
     }
 }
