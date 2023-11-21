@@ -60,6 +60,11 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             $imported->isBackedUp(),
             'isBackedUp was not retained',
         );
+        self::assertSame(
+            $credential->getAttestationData(),
+            $imported->getAttestationData(),
+            'Attestation data was not retained',
+        );
     }
 
     /**
@@ -120,7 +125,6 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
 
         $aod = BinaryString::fromBase64Url('o2NmbXRoZmlkby11MmZnYXR0U3RtdKJjeDVjgVkCMTCCAi0wggEXoAMCAQICBAW2BXkwCwYJKoZIhvcNAQELMC4xLDAqBgNVBAMTI1l1YmljbyBVMkYgUm9vdCBDQSBTZXJpYWwgNDU3MjAwNjMxMCAXDTE0MDgwMTAwMDAwMFoYDzIwNTAwOTA0MDAwMDAwWjAoMSYwJAYDVQQDDB1ZdWJpY28gVTJGIEVFIFNlcmlhbCA5NTgxNTAzMzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABP243rOh7XDrY2wGbrYAaZal-XD8tduI_DswXUHllm8MG1S4Uv7woJB-0X87_8KdTTIbnPioSizqoDjKvTXVmN6jJjAkMCIGCSsGAQQBgsQKAgQVMS4zLjYuMS40LjEuNDE0ODIuMS4xMAsGCSqGSIb3DQEBCwOCAQEAftP7bMwlIBP4LyGMKjfaYDHSDn8wgdr8rrEo_H-bIzkUv7ZNYTXxfOIh-nZPRT7xJzqM6WWVZEK7Lx5HSD9zfcvJi1hTd_71CycOAon4hDbxrc9JsmIe5eMC31VbmrdCcuBp-RgUmz3sTxIiixDA-I3javWKdLtEK4WuAFNkvaZwIFj8Hy2Hm1MBEepg6Gxj8X-llEzIPwqiaYSLPuOIpsCeawWVP8u49H6Don4AcqY8Mq1khk6SbXES-hmX94OWVvuzK-j3iJ0PAUVRmiev3Y5GsEykKQ2FQLY0uIYWHnWIyGKZ3N1kNdFnijpvCnSCnE3T9ww1JNHd8W14rdIbZGNzaWdYSDBGAiEA6Q_IoHy9emgqbyDa_5id6H0_MJvAkT28HNb0iEO36MUCIQDD-UZZBz0PIZUrJ77OliPPmtFOSOW_u1vzX7aYe4lcLWhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQHyt9XuGzGoH2HhmGh_lNyFaCv-v9V79jigJZuZ5LtnWuOw9Ph-WfrA1HeHw33tqFbQ_5AYjo6E6atlqFXZ6NRqlAQIDJiABIVggaORWdx8A3Tw55VDl5Hi3H-RC_TxUJvuyeFjTFHz4zHwiWCC2nNEOYCncBKKLJpU536AHVsp4sHIJWtt8fAqF5ihlmA');
         $ao = new AttestationObject($aod);
-        print_r($ao);
 
         $cdj = BinaryString::fromBase64Url('eyJjaGFsbGVuZ2UiOiI2RVJyZkVJU1hpclhObWJfWExrQ2UzZER2aXRwR2RhWW9fcVg3QnliYW9BIiwib3JpZ2luIjoiaHR0cDovL2xvY2FsaG9zdDo3Nzc3IiwidHlwZSI6IndlYmF1dGhuLmNyZWF0ZSJ9');
         echo $cdj->unwrap();
