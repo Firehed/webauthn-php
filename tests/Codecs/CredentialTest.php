@@ -60,14 +60,21 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             $imported->isBackedUp(),
             'isBackedUp was not retained',
         );
-        self::assertSame(
+        self::assertEqualsCanonicalizing(
+            $credential->getTransports(),
+            $imported->getTransports(),
+            'transports were not retained',
+        );
+        self::assertEquals(
             $credential->getAttestationData(),
             $imported->getAttestationData(),
             'Attestation data was not retained',
         );
-        // FIXME: add
-        // Transports
-        // COSE CBOR/PK
+        self::assertSame(
+            $credential->getPublicKey()->getPemFormatted(),
+            $imported->getPublicKey()->getPemFormatted(),
+            'public key changed',
+        );
     }
 
     /**
@@ -130,7 +137,6 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         $ao = new AttestationObject($aod);
 
         $cdj = BinaryString::fromBase64Url('eyJjaGFsbGVuZ2UiOiI2RVJyZkVJU1hpclhObWJfWExrQ2UzZER2aXRwR2RhWW9fcVg3QnliYW9BIiwib3JpZ2luIjoiaHR0cDovL2xvY2FsaG9zdDo3Nzc3IiwidHlwZSI6IndlYmF1dGhuLmNyZWF0ZSJ9');
-        echo $cdj->unwrap();
 
         return [
             [new CredentialV2(
