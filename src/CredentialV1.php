@@ -6,7 +6,8 @@ namespace Firehed\WebAuthn;
 
 /**
  * Data format for WebAuthn Level 2 formats which lacked data for backup
- * eligibility and did not track transports.
+ * eligibility and did not track transports. The numerous hardcoded return
+ * values are for the unsupported/untracked data.
  *
  * @internal
  */
@@ -71,7 +72,7 @@ class CredentialV1 implements CredentialInterface
         return false;
     }
 
-    public function getAttestationData(): null
+    public function getAttestationData(): ?array
     {
         return null;
     }

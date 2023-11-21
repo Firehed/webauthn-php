@@ -12,17 +12,14 @@ namespace Firehed\WebAuthn;
 interface CredentialInterface
 {
     /**
-     * @api
+     * Returns (optionally) an AttestationObject and the raw ClientDataJSON
+     * that was signed by that attestation. These are always used as a pair.
      *
-     * Returns an encoded version of the credential's id guaranteed to return
-     * no binary characters.
-     */
-    public function getStorageId(): string;
-
-    /**
      * @internal
+     *
+     * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
      */
-    public function getId(): BinaryString;
+    public function getAttestationData(): ?array;
 
     /**
      * @internal
@@ -34,24 +31,47 @@ interface CredentialInterface
     /**
      * @internal
      */
-    public function getSignCount(): int;
+    public function getId(): BinaryString;
 
     /**
      * @internal
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface;
 
-    public function isBackupEligible(): bool;
-    public function isBackedUp(): bool;
-    public function isUvInitialized(): bool;
-    /** @return Enums\AuthenticatorTransport[] */
+    /**
+     * @internal
+     */
+    public function getSignCount(): int;
+
+    /**
+     * @api
+     *
+     * Returns an encoded version of the credential's id guaranteed to return
+     * no binary characters.
+     */
+    public function getStorageId(): string;
+
+    /**
+     * @internal
+     *
+     * @return Enums\AuthenticatorTransport[]
+     */
     public function getTransports(): array;
 
     /**
-     * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
+     * @internal
      */
-    public function getAttestationData(): ?array;
+    public function isBackupEligible(): bool;
 
+    /**
+     * @internal
+     */
+    public function isBackedUp(): bool;
+
+    /**
+     * @internal
+     */
+    public function isUvInitialized(): bool;
 
     /**
      * @internal

@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
+ * @phpstan-type AttestationTuple array{
+ *   Attestations\AttestationObjectInterface,
+ *   BinaryString,
+ * }
+ *
  * @internal
  */
 class CredentialV2 implements CredentialInterface
@@ -17,6 +22,7 @@ class CredentialV2 implements CredentialInterface
     //     - counter bad
     /**
      * @param Enums\AuthenticatorTransport[] $transports
+     * @param ?AttestationTuple $attestation,
      */
     public function __construct(
         public readonly Enums\PublicKeyCredentialType $type,
@@ -27,16 +33,13 @@ class CredentialV2 implements CredentialInterface
         private readonly bool $isUvInitialized,
         private readonly bool $isBackupEligible,
         private readonly bool $isBackedUp,
-        // optional/required as a pair?
-        private readonly ?Attestations\AttestationObjectInterface $ao,
-        private readonly ?BinaryString $attestationCDJ,
+        private readonly ?array $attestation,
     ) {
     }
 
-    // FIXME: Move this to base64url
     public function getStorageId(): string
     {
-        return bin2hex($this->id->unwrap());
+        return $this->id->toBase64Url();
     }
 
     public function getSignCount(): int
@@ -80,10 +83,9 @@ class CredentialV2 implements CredentialInterface
         return $this->isUvInitialized;
     }
 
-    public function getAttestationData(): array
+    public function getAttestationData(): ?array
     {
-        // if AO or CDJ are null, return null
-        return [$this->ao, $this->attestationCDJ];
+        return $this->attestation;
     }
 
     public function withUpdatedSignCount(int $newSignCount): CredentialInterface
@@ -97,8 +99,7 @@ class CredentialV2 implements CredentialInterface
             isUvInitialized: $this->isUvInitialized,
             isBackupEligible: $this->isBackupEligible,
             isBackedUp: $this->isBackedUp,
-            ao: $this->ao,
-            attestationCDJ: $this->attestationCDJ,
+            attestation: $this->attestation,
         );
     }
 }
