@@ -129,10 +129,10 @@ class Credential
      *   7: Reserved for Future Use (RFU2)
      *
      * Attestation Data: if [flags] has bit 4 set, a tuple follows:
-     * - aoLength
-     * - cdjLength
-     * - aoData (CBOR)
-     * - cdj (original json)
+     * - aoLength (u32)
+     * - cdjLength (u32)
+     * - aoData - string of length `aoLength`
+     * - clientDataJSON - string of legnth `cdjLength`
      *
      * Note: this has CBOR and JSON inside of a packed format, which is a bit
      * strange. A v3 of this codec may use a pure-CBOR representation which
@@ -188,10 +188,10 @@ class Credential
         $versionSpecificFormat = sprintf(
             '%s%s%s%s%s%s%s%s',
             pack('C', $flags),
-            pack('n', strlen($rawId)), // idLength
+            pack('n', strlen($rawId)),
             $rawId,
             pack('N', $credential->getSignCount()),
-            pack('N', strlen($rawCbor)), // coseKeyLength
+            pack('N', strlen($rawCbor)),
             $rawCbor,
             $transportFlags > 0 ? pack('C', $transportFlags) : '',
             $attestation,
