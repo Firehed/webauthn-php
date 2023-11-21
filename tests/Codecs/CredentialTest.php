@@ -65,6 +65,9 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
             $imported->getAttestationData(),
             'Attestation data was not retained',
         );
+        // FIXME: add
+        // Transports
+        // COSE CBOR/PK
     }
 
     /**
