@@ -85,7 +85,7 @@ class Credential
      * signCount is a big-endian unsigned long (32bit)
      *
      */
-    public function encodeV1(CredentialInterface $credential): string
+    private function encodeV1(CredentialInterface $credential): string
     {
         $version = 1;
 
@@ -139,7 +139,7 @@ class Credential
      * strange. A v3 of this codec may use a pure-CBOR representation which
      * should be marginally more efficient.
      */
-    public function encodeV2(CredentialInterface $credential): string
+    private function encodeV2(CredentialInterface $credential): string
     {
         // if ($credential->type !== Enums\PublicKeyCredentialType::PublicKey) {
         // block this for now. May use flags bits to differentiate.
