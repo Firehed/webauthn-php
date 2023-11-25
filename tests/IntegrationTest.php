@@ -10,11 +10,15 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Firehed\WebAuthn\EE2
  */
-class EE2Test extends TestCase
+class IntegrationTest extends TestCase
 {
+    /**
+     * @return array<string, array{string}>
+     */
     public static function vectors(): array
     {
-        $dirs = glob('tests/ee/*');
+        $dirs = glob('tests/integration/*');
+        assert($dirs !== false);
         $out = [];
         foreach ($dirs as $dir) {
             $out[$dir] = [$dir];
@@ -44,7 +48,7 @@ class EE2Test extends TestCase
         );
 
 
-        var_dump($cd, $cr, $createResponse);
+        var_dump($cred);
 
     }
 
