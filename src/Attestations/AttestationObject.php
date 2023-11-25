@@ -29,12 +29,15 @@ class AttestationObject implements AttestationObjectInterface
         assert(array_key_exists('attStmt', $decoded));
         assert(array_key_exists('authData', $decoded));
 
+        $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
+        // d($ad);
+        // d($decoded);
         $stmt = match (Format::tryFrom($decoded['fmt'])) { // @phpstan-ignore-line
             Format::None => new None($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
+            Format::Packed => new Packed($decoded['attStmt']),
         };
 
-        $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
 
         $this->data = $ad;
         $this->stmt = $stmt;
