@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Firehed\WebAuthn\EE2
+ *
+ * TODO: merge EndToEndTest into here
  */
 class IntegrationTest extends TestCase
 {
@@ -71,23 +73,8 @@ class IntegrationTest extends TestCase
 
             public function useFromClientDataJSON(string $base64Url): ChallengeInterface
             {
-                return new FixedChallenge($base64Url);
+                return new TestUtilities\FixedChallenge($base64Url);
             }
         };
-    }
-}
-
-class FixedChallenge implements ChallengeInterface
-{
-    public function __construct(private string $b64u)
-    {
-    }
-    public function getBinary(): BinaryString
-    {
-        return BinaryString::fromBase64Url($this->b64u);
-    }
-    public function getBase64(): string
-    {
-        throw new \Exception('not here');
     }
 }
