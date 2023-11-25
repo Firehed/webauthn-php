@@ -9,8 +9,11 @@ use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
 use Firehed\WebAuthn\PublicKey\EllipticCurve;
+use Firehed\WebAuthn\COSE;
 
-
+/**
+ * @link https://www.w3.org/TR/webauthn-3/#sctn-packed-attestation
+ */
 class Packed implements AttestationStatementInterface
 {
     /**
@@ -28,36 +31,48 @@ class Packed implements AttestationStatementInterface
     public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult
     {
         // Need AD raw version?
-        $signedData = new BinaryString($data->getRaw()->unwrap(), $clientDataHash->unwrap());
+        $signedData = new BinaryString(sprintf(
+            '%s%s',
+            $data->getRaw()->unwrap(),
+            $clientDataHash->unwrap(),
+        ));
 
-        assert($this->data['alg'] === -7);
+        $acd = $data->getAttestedCredentialData();
+        $alg = COSE\Algorithm::tryFrom($this->data['alg']);
+        if ($alg !== $acd->coseKey->algorithm) {
+            throw new \Exception('8.2/v3.a');
+        }
 
         if (array_key_exists('x5c', $this->data)) {
-            // Check attstn
-            d(count($this->data['x5c']));
-            foreach ($this->data['x5c'] as $chainEntry) {
-            }
+            // THIS IS THEORETICAL AND NOT YET TESTED
+            $x5c = $this->data['x5c'];
+            assert(is_array($x5c) && count($x5c) >= 1);
+            $attestnCertX509 = $x5c[0];
+            // Convert to PEM (or not?) and run through openssl cert parsing
+
+            // check for extension OID 1.3.6.1.4.1.45724.1.1.4 (id-fido-gen-ce-aaguid)
+            // if present, check that it === $acd->aaguid
+
+            // Optionally, inspect x5c and consult externally provided
+            // knowledge to determine whether attStmt conveys a Basic or
+            // AttCA attestation.
+            throw new \UnexpectedValueException('X5C trust path is not implemented for packed attestations');
         } else {
             // Self attestation in use
-            // d('self attest');
-            $attestedCredentialData = $data->getAttestedCredentialData();
-            $credentialPublicKey = $attestedCredentialData->coseKey->getPublicKey();
-
-            var_dump(
-                $signedData,
-                new BinaryString($this->data['sig']),
-                $credentialPublicKey->getPemFormatted(),
-            );
+            $credentialPublicKey = $acd->coseKey->getPublicKey();
 
             $result = openssl_verify(
                 $signedData->unwrap(),
                 $this->data['sig'],
-                // $attCert->getPemFormatted(),
                 $credentialPublicKey->getPemFormatted(),
                 \OPENSSL_ALGO_SHA256,
             );
-            var_dump($result);
-        }
 
+            if ($result !== 1) {
+                throw new \Exception('OpenSSL signature verification failed');
+            }
+
+            return new VerificationResult(AttestationType::Self);
+        }
     }
 }
