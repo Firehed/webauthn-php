@@ -46,9 +46,10 @@ class Packed implements AttestationStatementInterface
         if (array_key_exists('x5c', $this->data)) {
             // THIS IS THEORETICAL AND NOT YET TESTED
             $x5c = $this->data['x5c'];
-            assert(is_array($x5c) && count($x5c) >= 1);
+            assert(is_array($x5c) && count($x5c) >= 1); // @phpstan-ignore-line
             $attestnCertX509 = $x5c[0];
             // Convert to PEM (or not?) and run through openssl cert parsing
+            // openssl_verify w/ signedData, sig, $attestnCert
 
             // check for extension OID 1.3.6.1.4.1.45724.1.1.4 (id-fido-gen-ce-aaguid)
             // if present, check that it === $acd->aaguid
