@@ -29,13 +29,14 @@ class IntegrationTest extends TestCase
         // @phpstan-ignore-next-line
         $rp = new SingleOriginRelyingParty($metadata['origin']);
 
-        $cd = self::read($dir, 'reg-req');
+        // FIXME: replace this with somewhere where the id is provided by the
+        // test, not the response
         $challengeManager = new TestUtilities\TestVectorChallengeManager();
 
         $jrp = new JsonResponseParser();
 
-        $cr = self::read($dir, 'reg-res');
-        $createResponse = $jrp->parseCreateResponse($cr);
+        $createData = self::read($dir, 'reg-res');
+        $createResponse = $jrp->parseCreateResponse($createData);
 
         $cred = $createResponse->verify(
             $challengeManager,
