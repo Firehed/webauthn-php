@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
  * @covers \Firehed\WebAuthn\Attestations\FidoU2F
  * @covers \Firehed\WebAuthn\Attestations\None
  * @covers \Firehed\WebAuthn\Attestations\Packed
+ * @covers \Firehed\WebAuthn\AuthenticatorData
  *
  * TODO: merge EndToEndTest into here
  */
