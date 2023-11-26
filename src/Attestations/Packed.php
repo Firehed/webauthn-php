@@ -12,6 +12,9 @@ use Firehed\WebAuthn\PublicKey\EllipticCurve;
 use Firehed\WebAuthn\COSE;
 
 /**
+ * @internal
+ *
+ * §8.2
  * @link https://www.w3.org/TR/webauthn-3/#sctn-packed-attestation
  */
 class Packed implements AttestationStatementInterface
