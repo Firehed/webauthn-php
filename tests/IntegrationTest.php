@@ -30,9 +30,10 @@ class IntegrationTest extends TestCase
         // @phpstan-ignore-next-line
         $rp = new SingleOriginRelyingParty($metadata['origin']);
 
-        // FIXME: replace this with somewhere where the id is provided by the
-        // test, not the response
-        $challengeManager = new TestUtilities\TestVectorChallengeManager();
+        $createReq = self::read($dir, 'reg-req');
+        $challengeManager = new TestUtilities\TestVectorChallengeManager(
+            $createReq['publicKey']['challenge'], // @phpstan-ignore-line
+        );
 
         $jrp = new JsonResponseParser();
 

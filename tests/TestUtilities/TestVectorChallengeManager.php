@@ -13,20 +13,21 @@ use Firehed\WebAuthn\{
 
 class TestVectorChallengeManager implements ChallengeManagerInterface
 {
+    public function __construct(private string $b64u)
+    {
+    }
+
     public function createChallenge(): ChallengeInterface
     {
         throw new Exception('Not for use during testing');
     }
 
-    /**
-     * This would be an EXTREMELY INSECURE implementation, as it would allow
-     * clients to control the challenges and bypass server-side verification
-     * that it was a legitimiately issued challenge.
-     *
-     * ABSOLUTELY DO NOT EVER DO THIS IN A REAL IMPLEMENTATION.
-     */
-    public function useFromClientDataJSON(string $base64Url): ChallengeInterface
+    public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
     {
-        return new TestVectorFixedChallenge($base64Url);
+        if ($this->b64u === $base64Url) {
+            return new TestVectorFixedChallenge($base64Url);
+        } else {
+            return null;
+        }
     }
 }
