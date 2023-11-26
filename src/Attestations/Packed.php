@@ -10,6 +10,7 @@ use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
 use Firehed\WebAuthn\PublicKey\EllipticCurve;
 use Firehed\WebAuthn\COSE;
+use UnexpectedValueException;
 
 /**
  * @internal
@@ -48,9 +49,10 @@ class Packed implements AttestationStatementInterface
 
         if (array_key_exists('x5c', $this->data)) {
             // THIS IS THEORETICAL AND NOT YET TESTED
-            $x5c = $this->data['x5c'];
-            assert(is_array($x5c) && count($x5c) >= 1); // @phpstan-ignore-line
-            $attestnCertX509 = $x5c[0];
+            // $x5c = $this->data['x5c'];
+            // assert(is_array($x5c) && count($x5c) >= 1);
+            // $attestnCertX509 = $x5c[0];
+            //
             // Convert to PEM (or not?) and run through openssl cert parsing
             // openssl_verify w/ signedData, sig, $attestnCert
 
@@ -60,7 +62,12 @@ class Packed implements AttestationStatementInterface
             // Optionally, inspect x5c and consult externally provided
             // knowledge to determine whether attStmt conveys a Basic or
             // AttCA attestation.
-            throw new \UnexpectedValueException('X5C trust path is not implemented for packed attestations');
+
+            // Once there are some known test vectors, this will get built out
+            // for real.
+            throw new UnexpectedValueException(
+                'X5C trust path is not yet implemented for packed attestations'
+            );
         } else {
             // Self attestation in use
             $credentialPublicKey = $acd->coseKey->getPublicKey();
