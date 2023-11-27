@@ -7,6 +7,7 @@ namespace Firehed\WebAuthn\Attestations;
 use Firehed\CBOR\Decoder;
 use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
+use UnhandledMatchError;
 
 /**
  * @internal
@@ -33,6 +34,7 @@ class AttestationObject implements AttestationObjectInterface
             Format::None => new None($decoded['attStmt']),
             Format::Packed => new Packed($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
+            default => throw new UnhandledMatchError('Unhandled attestation format ' . $decoded['fmt']),
         };
 
         $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
