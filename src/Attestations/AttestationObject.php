@@ -34,6 +34,7 @@ class AttestationObject implements AttestationObjectInterface
             Format::None => new None($decoded['attStmt']),
             Format::Packed => new Packed($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
+            Format::AndroidSafetyNet => new AndroidSafetyNet($decoded['attStmt']),
             default => throw new UnhandledMatchError('Unhandled attestation format ' . $decoded['fmt']),
         };
 
