@@ -40,10 +40,13 @@ class IntegrationTest extends TestCase
         $createData = self::read($dir, 'reg-res');
         $createResponse = $jrp->parseCreateResponse($createData);
 
+        // var_dump($metadata);
+
         $cred = $createResponse->verify(
             $challengeManager,
             $rp,
         );
+
 
         // More assertions to come!
         self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Credential ID wrong');

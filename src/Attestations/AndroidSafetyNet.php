@@ -34,7 +34,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
 
         $headerObj = json_decode($headerDecoded, true, flags: JSON_THROW_ON_ERROR);
         $payloadObj = json_decode($payloadDecoded, true, flags: JSON_THROW_ON_ERROR);
-        var_dump($headerObj, $payloadObj, $sig);
+        // var_dump($headerObj, $payloadObj, $sig);
 
         // Verify response.payload.nonce matches:
         $signed = new BinaryString($data->getRaw()->unwrap() . $clientDataHash->unwrap());
@@ -45,9 +45,34 @@ class AndroidSafetyNet implements AttestationStatementInterface
             throw new \Exception('Invalid signature');
         }
 
-        // Verift that the SAfetyNet response actually came from the servie
-        var_dump($hashEnc);
+        // Verify that the SafetyNet response actually came from the service
+        // https://developer.android.com/privacy-and-security/safetynet/attestation#verify-attestation-response
+        // var_dump($hashEnc);
+        // Extract the SSL certificate chain from the JWS message.
+        foreach ($headerObj['x5c'] as $cert) {
+            $crt = self::parseDer($cert);
+            $info = openssl_x509_parse($crt);
+            // print_r($info);
+        }
+// Validate the SSL certificate chain and use SSL hostname matching to verify that the leaf certificate was issued to the hostname attest.android.com.
+// Use the certificate to verify the signature of the JWS message.
+// Check the data of the JWS message to make sure it matches the data within your original request. In particular, make sure that the timestamp has been validated and that the nonce, package name, and hashes of the app's signing certificate(s) match the expected values.
 
 
     }
- }
+
+    private static function parseDer(string $base64)
+    {
+        $certificate = base64_decode($base64);
+
+        // Convert DER to PEM format
+        $certificate = "-----BEGIN CERTIFICATE-----\n"
+            . chunk_split(base64_encode($certificate), 64, "\n")
+            . "-----END CERTIFICATE-----";
+
+        // Read and parse the certificate
+        $certResource = openssl_x509_read($certificate);
+
+        return ($certResource);
+    }
+}
