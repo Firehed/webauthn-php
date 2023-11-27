@@ -38,7 +38,7 @@ class COSEKey
     // index_key_value = -1 (same as index_curve, for Symmetric)
 
     private COSE\KeyType $keyType;
-    private COSE\Algorithm $algorithm;
+    public readonly COSE\Algorithm $algorithm;
     private COSE\Curve $curve;
     private BinaryString $x;
     private BinaryString $y;

@@ -686,18 +686,17 @@ Due to an inability to generate responses with all formats, not all are supporte
 
 | Format | Supported | Spec | Notes |
 | --- | --- | --- | --- |
-| `packed` | ❌ | 8.2 | |
+| `packed` | ⚠️ | 8.2 | Only Self-attestation mode is supported. |
 | `tpm` | ❌ | 8.3 | |
 | `android-key` | ❌ | 8.4 | |
 | `android-safetynet` | ❌ | 8.5 | |
 | `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
-| `none` | ✅ | 8.7 | |
+| `none` | ✅ | 8.7 | Used by Apple in Safari when using Passkeys (even when direct attestation is requested) |
 | `apple` | ❌ | 8.8 | Apple does not appear to use this format, instead providing non-attested credentials. |
 | `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
 
 If you receive an `UnhandledMatchError` from the library pertaining to a format, please file an issue.
 The library aims to have full format coverage eventually, but _needs your help_ in order to get there.
-
 
 ## Resources and Errata
 

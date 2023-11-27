@@ -1,0 +1,16 @@
+{
+    "id": "objbZte3s6U5c1pBk9xaFkJjPYJONcRQDLFtOG6ZT48",
+    "rawId": "objbZte3s6U5c1pBk9xaFkJjPYJONcRQDLFtOG6ZT48",
+    "response": {
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiWVdKalpHVm1aMmhwYW10c2JXNXZjSEZ5YzNSMWRuZDRlWG94TWpNME5UWSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6Nzc3NyIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+        "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2NBAAAAAHcbSP3T1E90kjL8FXqwUHoAIKG422bXt7OlOXNaQZPcWhZCYz2CTjXEUAyxbThumU-PpQECAyYgASFYILNzEOMQsixkAKM6HvStkVXbMVMR6tPeNcLzSx-Q5Sp8Ilgg7-KVsEP1caDxWHvtjdh_h1x-Y22FK--D7JDw3DV71bg",
+        "transports": [
+            "internal"
+        ],
+        "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEs3MQ4xCyLGQAozoe9K2RVdsxUxHq0941wvNLH5DlKnzv4pWwQ_VxoPFYe-2N2H-HXH5jbYUr74PskPDcNXvVuA",
+        "publicKeyAlgorithm": -7,
+        "attestationObject": "o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZyZjc2lnWEYwRAIgW64Yf6x9H7ep97dFhoLm0hTZvHymFzVMjMdl3QtsQmQCIG4rKbH5KjLbTYW7Lfh8vFRAHvuugvoo-2gDaXsQ3jwWaGF1dGhEYXRhWKRJlg3liA6MaHQ0Fw9kdmBbj-SuuaKGMseZXPO6gx2XY0EAAAAAdxtI_dPUT3SSMvwVerBQegAgobjbZte3s6U5c1pBk9xaFkJjPYJONcRQDLFtOG6ZT4-lAQIDJiABIVggs3MQ4xCyLGQAozoe9K2RVdsxUxHq0941wvNLH5DlKnwiWCDv4pWwQ_VxoPFYe-2N2H-HXH5jbYUr74PskPDcNXvVuA"
+    },
+    "authenticatorAttachment": "platform",
+    "type": "public-key"
+}
