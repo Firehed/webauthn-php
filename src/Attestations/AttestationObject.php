@@ -31,6 +31,7 @@ class AttestationObject implements AttestationObjectInterface
 
         $stmt = match (Format::tryFrom($decoded['fmt'])) { // @phpstan-ignore-line
             Format::None => new None($decoded['attStmt']),
+            Format::Packed => new Packed($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
         };
 

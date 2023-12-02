@@ -26,6 +26,7 @@ class AuthenticatorData
 
     private ?AttestedCredentialData $ACD = null;
 
+    private BinaryString $original;
     /**
      * @see https://w3c.github.io/webauthn/#sec-authenticator-data
      * WebAuthn 6.1
@@ -57,6 +58,7 @@ class AuthenticatorData
         $authData->isBackedUp = $BS;
         $authData->rpIdHash = new BinaryString($rpIdHash);
         $authData->signCount = $signCount;
+        $authData->original = $bytes;
 
         if ($AT) {
             // https://www.w3.org/TR/2019/REC-webauthn-1-20190304/#sec-attested-credential-data
@@ -132,5 +134,9 @@ class AuthenticatorData
     public function isUserVerified(): bool
     {
         return $this->isUserVerified;
+    }
+    public function getRaw(): BinaryString
+    {
+        return $this->original;
     }
 }
