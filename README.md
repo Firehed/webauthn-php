@@ -649,8 +649,9 @@ See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 
 This is the output of `Firehed\WebAuthn\Codecs\Credential::encode($credential)`.
 When retreived from the database for use during authentication, it should be unserialized with the complementing `->decode()` method on the same class.
 
-This field SHOULD support storing at least 2KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
+This field SHOULD support storing at least 4KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
 The value will always be plain ASCII.
+To reduce the stored size, you MAY pass `storeRegistrationData: false` to the codec's constructor; be aware that doing so will eliminate the ability to re-validate credentials in the future.
 
 This format IS COVERED by semantic versioning.
 
