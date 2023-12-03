@@ -81,6 +81,7 @@ class ArrayBufferResponseParser implements ResponseParserInterface
         ));
 
         return new CreateResponse(
+            type: Enums\PublicKeyCredentialType::from($response['type']),
             id: BinaryString::fromBytes($response['rawId']),
             ao: new Attestations\AttestationObject(BinaryString::fromBytes($response['attestationObject'])),
             clientDataJson: BinaryString::fromBytes($response['clientDataJSON']),

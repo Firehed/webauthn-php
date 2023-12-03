@@ -10,6 +10,12 @@ namespace Firehed\WebAuthn;
  *   BinaryString,
  * }
  *
+ * Note: several data points are contained within the attestation object (most
+ * of it, actually). Since storing the attestation is optional, they're
+ * separated out and stored indepedently. They're also intentionally not
+ * cross-checked, since it's valid for the values to drift on subsequent
+ * authentication.
+ *
  * @internal
  */
 class CredentialV2 implements CredentialInterface

@@ -16,5 +16,7 @@ interface AttestationObjectInterface
 {
     public function getAuthenticatorData(): AuthenticatorData;
 
+    public function getCbor(): BinaryString;
+
     public function verify(BinaryString $clientDataHash): VerificationResult;
 }

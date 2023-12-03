@@ -634,14 +634,10 @@ This will be specific to your application.
 
 #### `storage_id`
 This is the output of `$credential->getStorageId()`.
-It MAY be combined as a primary key (e.g. having only an `id` field, and populating it with `->getStorageId()`).
+It MAY be used as a primary key (e.g. having only an `id` field, and populating it with `->getStorageId()`).
 The value will always be plain ASCII.
 
-This field SHOULD support text of at least 255 bytes (commonly `varchar(255)`).
-
-> [!NOTE]
-> The underlying WebAuthn spec makes no formal guarantee about the maximum length of a Credential's id.
-> This recommendation is based on observations and testing during library development.
+The raw value is [at most 1,023 bytes](https://www.w3.org/TR/webauthn-3/#credential-id), and is exported as Base64URL, so storage should support **at least `1,364` characters**.
 
 This field SHOULD have a `UNIQUE` index.
 If during storage the unique constraint is violated AND it's associated with a different user,
@@ -653,8 +649,9 @@ See https://www.w3.org/TR/webauthn-2/#sctn-registering-a-new-credential section 
 This is the output of `Firehed\WebAuthn\Codecs\Credential::encode($credential)`.
 When retreived from the database for use during authentication, it should be unserialized with the complementing `->decode()` method on the same class.
 
-This field SHOULD support storing at least 2KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
+This field SHOULD support storing at least 4KiB, and it's RECOMMENDED to support storing at least 64KiB (commonly `TEXT` or `varchar(65535)`).
 The value will always be plain ASCII.
+To reduce the stored size, you MAY pass `storeRegistrationData: false` to the codec's constructor; be aware that doing so will eliminate the ability to re-validate credentials in the future.
 
 This format IS COVERED by semantic versioning.
 
