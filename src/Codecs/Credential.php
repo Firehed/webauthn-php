@@ -41,6 +41,8 @@ use UnhandledMatchError;
  *
  * The format spec is for internal use only.
  *
+ * All integer formats are big-endian.
+ *
  * Format spec:
  *
  * A CredentialObj shall be encoded to a string.
@@ -49,10 +51,10 @@ use UnhandledMatchError;
  * [ version ] [ version-specific data ]
  *
  * version shall be a single byte.
- * The highest bit (big-endian) shall be 0.
+ * The highest bit shall be 0.
  * A high bit of 1 is reserved for future use, and if encountered, an error
  * should be thrown.
- * The lowest seven bits shall be interpreted as a big-endian7-bit integer.
+ * The lowest seven bits shall be interpreted as a 7-bit integer (i.e. 00-7F).
  *
  * The remainder of the string is a variable-length value that is specific to
  * the version.
@@ -91,11 +93,11 @@ class Credential
      *
      * [ id length ] [ id ] [ coseKeyLength ] [ coseKeyCbor ] [ signCount ]
      *
-     * id legnth is a big-endian unsigned short (16bit)
+     * id legnth is an unsigned short (16bit)
      * id is a string of variable length [id length]
-     * coseKeyLength is a big-endian unsigned long (32bit)
+     * coseKeyLength is an unsigned long (32bit)
      * coseKeyCbor is a string of variable legnth [coseKeyCbor]
-     * signCount is a big-endian unsigned long (32bit)
+     * signCount is an unsigned long (32bit)
      *
      */
     private function encodeV1(CredentialInterface $credential): string
@@ -127,7 +129,7 @@ class Credential
      *
      * [ flags ] [ idLength ] [ id ] [ signCount ] [ coseKeyLength ] [ coseKey
      * ] [ transports ] [ attestationData ]
-     * Flags: 1 byte (big-endian), where bit 0 is the least significant big
+     * Flags: 1 byte where bit 0 is the least significant bit
      *   0: UV is initialized
      *   1: Backup Eligible
      *   2: Backup State
@@ -151,6 +153,11 @@ class Credential
      * Note: this has CBOR and JSON inside of a packed format, which is a bit
      * strange. A v3 of this codec may use a pure-CBOR representation which
      * should be marginally more efficient.
+     *
+     * This capures all of the recommended Credential Record data as of
+     * WebAuthn Level 3 (except `type` which only has one value).
+     *
+     * @link https://www.w3.org/TR/webauthn-3/#credential-record
      */
     private function encodeV2(CredentialInterface $credential): string
     {
