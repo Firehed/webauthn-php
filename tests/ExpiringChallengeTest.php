@@ -43,7 +43,6 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
         $_ = $ec->getBinary();
     }
 
-
     public function testPastExpirationThrowsWhenGettingBase64(): void
     {
         $interval = new DateInterval('PT2S');
@@ -52,6 +51,16 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
 
         self::expectException(Errors\ExpiredChallengeError::class);
         $ec->getBase64();
+    }
+
+    public function testPastExpirationThrowsWhenGettingBase64Url(): void
+    {
+        $interval = new DateInterval('PT2S');
+        $interval->invert = 1; // Negative
+        $ec = new ExpiringChallenge($interval);
+
+        self::expectException(Errors\ExpiredChallengeError::class);
+        $ec->getBase64Url();
     }
 
     public function testPastExpirationThrowsWhenGettingBinary(): void
