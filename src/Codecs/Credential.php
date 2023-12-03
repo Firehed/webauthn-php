@@ -70,6 +70,10 @@ class Credential
         5 => Enums\AuthenticatorTransport::Usb,
     ];
 
+    private const PACK_UINT8 = 'C';
+    private const PACK_UINT16 = 'n';
+    private const PACK_UINT32 = 'N';
+
     public function __construct(
         private readonly bool $storeRegistrationData = true,
     ) {
@@ -103,17 +107,17 @@ class Credential
 
         $versionSpecificFormat = sprintf(
             '%s%s%s%s%s',
-            pack('n', strlen($rawId)),
+            pack(self::PACK_UINT16, strlen($rawId)),
             $rawId,
-            pack('N', strlen($rawCbor)),
+            pack(self::PACK_UINT32, strlen($rawCbor)),
             $rawCbor,
-            pack('N', $credential->getSignCount()),
+            pack(self::PACK_UINT32, $credential->getSignCount()),
         );
 
         // append a checksum (crc32?) that import can validate?
         // e.g. assert(crc32(substr(data, 1, -4)) === substr(data, -4))
 
-        $binary = pack('C', $version) . $versionSpecificFormat;
+        $binary = pack(self::PACK_UINT8, $version) . $versionSpecificFormat;
 
         return base64_encode($binary);
     }
@@ -171,7 +175,6 @@ class Credential
             $flags |= (1 << 3);
         }
 
-        // this->storeRegistrationData &&
         $attestationData = $credential->getAttestationData();
         if ($attestationData !== null && $this->storeRegistrationData) {
             $flags |= (1 << 4);
@@ -182,8 +185,8 @@ class Credential
 
             $attestation = sprintf(
                 '%s%s%s%s',
-                pack('N', $aoLength),
-                pack('N', $cdjLenth),
+                pack(self::PACK_UINT32, $aoLength),
+                pack(self::PACK_UINT32, $cdjLenth),
                 $aoData->unwrap(),
                 $aCDJ->unwrap(),
             );
@@ -195,19 +198,20 @@ class Credential
         $rawCbor = $credential->getCoseCbor()->unwrap();
         $signCount = $credential->getSignCount();
 
+        assert($flags >= 0x00 && $flags <= 0xFF); // @phpstan-ignore-line
         $versionSpecificFormat = sprintf(
             '%s%s%s%s%s%s%s%s',
-            pack('C', $flags),
-            pack('n', strlen($rawId)),
+            pack(self::PACK_UINT8, $flags),
+            pack(self::PACK_UINT16, strlen($rawId)),
             $rawId,
-            pack('N', $credential->getSignCount()),
-            pack('N', strlen($rawCbor)),
+            pack(self::PACK_UINT32, $credential->getSignCount()),
+            pack(self::PACK_UINT32, strlen($rawCbor)),
             $rawCbor,
-            $transportFlags > 0 ? pack('C', $transportFlags) : '',
+            $transportFlags > 0 ? pack(self::PACK_UINT8, $transportFlags) : '',
             $attestation,
         );
 
-        $binary = pack('C', $version) . $versionSpecificFormat;
+        $binary = pack(self::PACK_UINT8, $version) . $versionSpecificFormat;
 
         return base64_encode($binary);
     }
