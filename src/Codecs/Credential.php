@@ -310,7 +310,6 @@ class Credential
             $ao = new AttestationObject(new BinaryString($rawAo));
             $attestation = [$ao, $cdj];
         } else {
-            // Uhh??
             $attestation = null;
         }
 
