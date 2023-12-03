@@ -26,10 +26,9 @@ class CredentialV1 implements CredentialInterface
     ) {
     }
 
-    // FIXME: Move this to base64url
     public function getStorageId(): string
     {
-        return bin2hex($this->id->unwrap());
+        return $this->id->toBase64Url();
     }
 
     public function getSignCount(): int
