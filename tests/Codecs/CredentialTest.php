@@ -92,6 +92,19 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         self::assertFalse($credential->isBackedUp(), 'V1 does not support backed up');
         self::assertFalse($credential->isBackupEligible(), 'V1 does not support backup eligibility');
         self::assertFalse($credential->isUvInitialized(), 'V1 does not support UV tracking');
+
+        $reencoded = $codec->encode($credential);
+        self::assertSame($encoded, $reencoded, 'Should have reencoded to v1');
+    }
+
+    /**
+     * @dataProvider v2Credentials
+     */
+    public function testVersion2Import(string $encoded): void
+    {
+        $codec = new Credential();
+        $decoded = $codec->decode($encoded);
+        self::assertInstanceOf(CredentialV2::class, $decoded);
     }
 
     /**
@@ -118,6 +131,47 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
                     '7e042026e324ee979e94d0373d46546fc3f859bdc394a3e55b4215db' .
                     '5c27b411312d145d'
                 ),
+            ],
+        ];
+    }
+
+    /**
+     * @return array{string}[]
+     */
+    public static function v2Credentials(): array
+    {
+        return [
+            'no att cert' => [
+                'AgsACv69Y58M4y3CsWkAADEXAAAATaUBAgMmIAEhWCBOknC/s6jMNgiYeThI' .
+                'v+hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
+                '8aW5GWVNe7kOMQ==',
+            ],
+            'saved att cert' => [
+                'AhgACr/Sj9YstWchvM4AADBlAAAATaUBAgMmIAEhWCBOknC/s6jMNgiYeThI' .
+                'v+hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
+                '8aW5GWVNe7kODAAAA20AAAB1o2NmbXRoZmlkby11MmZnYXR0U3RtdKJjeDVj' .
+                'gVkCMTCCAi0wggEXoAMCAQICBAW2BXkwCwYJKoZIhvcNAQELMC4xLDAqBgNV' .
+                'BAMTI1l1YmljbyBVMkYgUm9vdCBDQSBTZXJpYWwgNDU3MjAwNjMxMCAXDTE0' .
+                'MDgwMTAwMDAwMFoYDzIwNTAwOTA0MDAwMDAwWjAoMSYwJAYDVQQDDB1ZdWJp' .
+                'Y28gVTJGIEVFIFNlcmlhbCA5NTgxNTAzMzBZMBMGByqGSM49AgEGCCqGSM49' .
+                'AwEHA0IABP243rOh7XDrY2wGbrYAaZal+XD8tduI/DswXUHllm8MG1S4Uv7w' .
+                'oJB+0X87/8KdTTIbnPioSizqoDjKvTXVmN6jJjAkMCIGCSsGAQQBgsQKAgQV' .
+                'MS4zLjYuMS40LjEuNDE0ODIuMS4xMAsGCSqGSIb3DQEBCwOCAQEAftP7bMwl' .
+                'IBP4LyGMKjfaYDHSDn8wgdr8rrEo/H+bIzkUv7ZNYTXxfOIh+nZPRT7xJzqM' .
+                '6WWVZEK7Lx5HSD9zfcvJi1hTd/71CycOAon4hDbxrc9JsmIe5eMC31VbmrdC' .
+                'cuBp+RgUmz3sTxIiixDA+I3javWKdLtEK4WuAFNkvaZwIFj8Hy2Hm1MBEepg' .
+                '6Gxj8X+llEzIPwqiaYSLPuOIpsCeawWVP8u49H6Don4AcqY8Mq1khk6SbXES' .
+                '+hmX94OWVvuzK+j3iJ0PAUVRmiev3Y5GsEykKQ2FQLY0uIYWHnWIyGKZ3N1k' .
+                'NdFnijpvCnSCnE3T9ww1JNHd8W14rdIbZGNzaWdYSDBGAiEA6Q/IoHy9emgq' .
+                'byDa/5id6H0/MJvAkT28HNb0iEO36MUCIQDD+UZZBz0PIZUrJ77OliPPmtFO' .
+                'SOW/u1vzX7aYe4lcLWhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4/krrmi' .
+                'hjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQHyt9XuGzGoH2Hhm' .
+                'Gh/lNyFaCv+v9V79jigJZuZ5LtnWuOw9Ph+WfrA1HeHw33tqFbQ/5AYjo6E6' .
+                'atlqFXZ6NRqlAQIDJiABIVggaORWdx8A3Tw55VDl5Hi3H+RC/TxUJvuyeFjT' .
+                'FHz4zHwiWCC2nNEOYCncBKKLJpU536AHVsp4sHIJWtt8fAqF5ihlmHsiY2hh' .
+                'bGxlbmdlIjoiNkVScmZFSVNYaXJYTm1iX1hMa0NlM2REdml0cEdkYVlvX3FY' .
+                'N0J5YmFvQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6Nzc3NyIsInR5' .
+                'cGUiOiJ3ZWJhdXRobi5jcmVhdGUifQ=='
             ],
         ];
     }
