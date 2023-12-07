@@ -95,16 +95,10 @@ class Packed implements AttestationStatementInterface
             // CN: string of vendor's choosing
             assert($parsed['extensions']['basicConstraints'] === 'CA:FALSE');
 
-            // var_dump($parsed);
-            // var_dump(openssl_pkey_get_details($certPubKey));
-
-
-
             if (array_key_exists(self::AAGUID_EXTENSION_OID, $parsed['extensions'] ?? [])) {
                 // This is in ASN.1 notation. Skip full parsing in favor of
                 // a direct read.
                 $oid = $parsed['extensions'][self::AAGUID_EXTENSION_OID];
-                // echo bin2hex($oid);
                 if (strlen($oid) !== 18) {
                     throw new \Exception('idofido-gen-ce-aaguid extension is malformed');
                 }
@@ -112,9 +106,9 @@ class Packed implements AttestationStatementInterface
                 if (!str_starts_with(haystack: $oid, needle: "\x04\x10")) {
                     throw new \Exception('idofido-gen-ce-aaguid extension is malformed');
                 }
+
                 $certAaguid = substr($oid, 2);
                 assert(strlen($certAaguid) === 16);
-
                 if (!hash_equals($acd->aaguid->unwrap(), $certAaguid)) {
                     throw new \Exception('aaguid in extension mismatch');
                 }
