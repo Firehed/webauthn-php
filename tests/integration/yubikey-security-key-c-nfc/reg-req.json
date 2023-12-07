@@ -1,0 +1,24 @@
+{
+    "publicKey": {
+        "rp": {
+            "name": "RP name"
+        },
+        "user": {
+            "id": "pD6tRlteWV0x3RddObcblCUHZ15UH4j-uMvZMvTy4-_hVLAYmrEHCWhJtOeboBN9HMn2rvssQ5IGF_hjERXo3g",
+            "name": "Test",
+            "displayName": "Test"
+        },
+        "challenge": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY",
+        "pubKeyCredParams": [
+            {
+                "type": "public-key",
+                "alg": -7
+            }
+        ],
+        "timeout": 30000,
+        "attestation": "direct",
+        "authenticatorSelection": {
+            "userVerification": "preferred"
+        }
+    }
+}
