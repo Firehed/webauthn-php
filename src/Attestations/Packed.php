@@ -50,21 +50,9 @@ class Packed implements AttestationStatementInterface
 
         if (array_key_exists('x5c', $this->data)) {
             $attCert = new Certificate(new BinaryString($this->data['x5c'][0]));
-            print_r($attCert);
             $certPubKey = openssl_pkey_get_public($attCert->getPemFormatted());
-            echo ($attCert->getPemFormatted());
-            print_r($certPubKey);
-
-            $parsed = openssl_x509_parse($attCert->getPemFormatted());
-            print_r($parsed);
-            if (array_key_exists(self::AAGUID_EXTENSION_OID, $parsed['extensions'])) {
-                $oid = $parsed['extensions'][self::AAGUID_EXTENSION_OID];
-                var_dump($oid);
-                $bs = new BinaryString($oid);
-                var_dump($bs);
-                $dec = new Decoder();
-                $oddd = $dec->decode($oid);
-                var_dump($oddd);
+            if ($certPubKey === false) {
+                throw new \Exception('Public key not readable');
             }
 
             $result = openssl_verify(
@@ -74,37 +62,70 @@ class Packed implements AttestationStatementInterface
                 \OPENSSL_ALGO_SHA256,
             );
 
+            // Verify that `sig` is ...
             if ($result !== 1) {
                 throw new \Exception('OpenSSL signature verification failed');
             }
-            var_dump($result);
 
-            print_r($acd);
+            // echo ($attCert->getPemFormatted());
+            // print_r($certPubKey);
 
+            $parsed = openssl_x509_parse($attCert->getPemFormatted());
+            if ($parsed === false) {
+                throw new \Exception('Attestation certificate could not be parsed');
+            }
 
-            $info = openssl_pkey_get_details($certPubKey);
-            print_r($info);
-            // print_r(array_map(bin2hex(...), $this->data['x5c']));
-            // THIS IS THEORETICAL AND NOT YET TESTED
-            // $x5c = $this->data['x5c'];
-            // assert(is_array($x5c) && count($x5c) >= 1);
-            // $attestnCertX509 = $x5c[0];
+            // Enforce att. cert requirements: §8.2.1
+            // https://www.w3.org/TR/webauthn-3/#sctn-packed-attestation-cert-requirements
             //
-            // Convert to PEM (or not?) and run through openssl cert parsing
-            // openssl_verify w/ signedData, sig, $attestnCert
+            // Note: as of writing, $parsed's format is EXPLICITLY
+            // undocumented, so this needs to play a little loose right now.
 
-            // check for extension OID 1.3.6.1.4.1.45724.1.1.4 (id-fido-gen-ce-aaguid)
-            // if present, check that it === $acd->aaguid
+            // version == 3 (asn1 integer 2)
+            if (!array_key_exists('version', $parsed) || $parsed['version'] !== 2) {
+                throw new \Exception('Attestation certificate invalid version');
+            }
+            if (!array_key_exists('subject', $parsed)) {
+                throw new \Exception('Attestation certificate missing subject');
+            }
+            $subject = $parsed['subject'];
+            assert(strlen($subject['C']) === 2);
+            // O: vendor name
+            assert($subject['OU'] === 'Authenticator Attestation');
+            // CN: string of vendor's choosing
+            assert($parsed['extensions']['basicConstraints'] === 'CA:FALSE');
 
-            // Optionally, inspect x5c and consult externally provided
-            // knowledge to determine whether attStmt conveys a Basic or
-            // AttCA attestation.
+            // var_dump($parsed);
+            // var_dump(openssl_pkey_get_details($certPubKey));
 
-            // Once there are some known test vectors, this will get built out
-            // for real.
-            throw new UnexpectedValueException(
-                'X5C trust path is not yet implemented for packed attestations'
-            );
+
+
+            if (array_key_exists(self::AAGUID_EXTENSION_OID, $parsed['extensions'] ?? [])) {
+                // This is in ASN.1 notation. Skip full parsing in favor of
+                // a direct read.
+                $oid = $parsed['extensions'][self::AAGUID_EXTENSION_OID];
+                // echo bin2hex($oid);
+                if (strlen($oid) !== 18) {
+                    throw new \Exception('idofido-gen-ce-aaguid extension is malformed');
+                }
+                // OCTET STRING, length 0x10 (==16)
+                if (!str_starts_with(haystack: $oid, needle: "\x04\x10")) {
+                    throw new \Exception('idofido-gen-ce-aaguid extension is malformed');
+                }
+                $certAaguid = substr($oid, 2);
+                assert(strlen($certAaguid) === 16);
+
+                if (!hash_equals($acd->aaguid->unwrap(), $certAaguid)) {
+                    throw new \Exception('aaguid in extension mismatch');
+                }
+            }
+
+            // TODO: "Optionally, inspect x5c and consult externally provided
+            // knowledge to determine whether attStmt conveys a Basic or AttCA
+            // attestation."
+            return new VerificationResult(AttestationType::Uncertain, [
+                $attCert,
+            ]);
         } else {
             // Self attestation in use
             $credentialPublicKey = $acd->coseKey->getPublicKey();
