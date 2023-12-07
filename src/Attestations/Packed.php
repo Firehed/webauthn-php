@@ -21,6 +21,7 @@ use UnexpectedValueException;
 class Packed implements AttestationStatementInterface
 {
     private const AAGUID_EXTENSION_OID = '1.3.6.1.4.1.45724.1.1.4';
+
     /**
      * @param array{
      *   alg: int,
@@ -62,14 +63,12 @@ class Packed implements AttestationStatementInterface
                 \OPENSSL_ALGO_SHA256,
             );
 
-            // Verify that `sig` is ...
+            // Verify that `sig` is a valid signature over ...
             if ($result !== 1) {
                 throw new \Exception('OpenSSL signature verification failed');
             }
 
-            // echo ($attCert->getPemFormatted());
-            // print_r($certPubKey);
-
+            // Extract info about the cert
             $parsed = openssl_x509_parse($attCert->getPemFormatted());
             if ($parsed === false) {
                 throw new \Exception('Attestation certificate could not be parsed');
