@@ -20,6 +20,7 @@ use UnexpectedValueException;
  */
 class Packed implements AttestationStatementInterface
 {
+    private const AAGUID_EXTENSION_OID = '1.3.6.1.4.1.45724.1.1.4';
     /**
      * @param array{
      *   alg: int,
@@ -48,6 +49,42 @@ class Packed implements AttestationStatementInterface
         }
 
         if (array_key_exists('x5c', $this->data)) {
+            $attCert = new Certificate(new BinaryString($this->data['x5c'][0]));
+            print_r($attCert);
+            $certPubKey = openssl_pkey_get_public($attCert->getPemFormatted());
+            echo ($attCert->getPemFormatted());
+            print_r($certPubKey);
+
+            $parsed = openssl_x509_parse($attCert->getPemFormatted());
+            print_r($parsed);
+            if (array_key_exists(self::AAGUID_EXTENSION_OID, $parsed['extensions'])) {
+                $oid = $parsed['extensions'][self::AAGUID_EXTENSION_OID];
+                var_dump($oid);
+                $bs = new BinaryString($oid);
+                var_dump($bs);
+                $dec = new Decoder();
+                $oddd = $dec->decode($oid);
+                var_dump($oddd);
+            }
+
+            $result = openssl_verify(
+                $signedData->unwrap(),
+                $this->data['sig'],
+                $certPubKey,
+                \OPENSSL_ALGO_SHA256,
+            );
+
+            if ($result !== 1) {
+                throw new \Exception('OpenSSL signature verification failed');
+            }
+            var_dump($result);
+
+            print_r($acd);
+
+
+            $info = openssl_pkey_get_details($certPubKey);
+            print_r($info);
+            // print_r(array_map(bin2hex(...), $this->data['x5c']));
             // THIS IS THEORETICAL AND NOT YET TESTED
             // $x5c = $this->data['x5c'];
             // assert(is_array($x5c) && count($x5c) >= 1);
