@@ -683,7 +683,7 @@ Due to an inability to generate responses with all formats, not all are supporte
 
 | Format | Supported | Spec | Notes |
 | --- | --- | --- | --- |
-| `packed` | ⚠️ | 8.2 | Only Self-attestation mode is supported. |
+| `packed` | ✅⚠️ | 8.2 | Parses fine, attestation trust path support is limited. |
 | `tpm` | ❌ | 8.3 | |
 | `android-key` | ❌ | 8.4 | |
 | `android-safetynet` | ❌ | 8.5 | |
