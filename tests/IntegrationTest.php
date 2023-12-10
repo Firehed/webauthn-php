@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Performs general integration testing with known-good data covering various
  * formats, attestation requirements, etc.
  *
+ * @covers \Firehed\WebAuthn\Attestations\Apple
  * @covers \Firehed\WebAuthn\Attestations\FidoU2F
  * @covers \Firehed\WebAuthn\Attestations\None
  * @covers \Firehed\WebAuthn\Attestations\Packed

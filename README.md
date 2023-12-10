@@ -689,7 +689,7 @@ Due to an inability to generate responses with all formats, not all are supporte
 | `android-safetynet` | ❌ | 8.5 | |
 | `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
 | `none` | ✅ | 8.7 | Used by Apple in Safari when using Passkeys (even when direct attestation is requested) |
-| `apple` | ❌ | 8.8 | Apple does not appear to use this format, instead providing non-attested credentials. |
+| `apple` | ✅⚠️ [^ext-vec] | 8.8 | Apple no longer appears to use this format, instead providing non-attested credentials (fmt=none). |
 | `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
 
 If you receive an `UnhandledMatchError` from the library pertaining to a format, please file an issue.
@@ -716,3 +716,5 @@ General quickstart guide:
 
 Intro to passkeys:
 - https://developer.apple.com/videos/play/wwdc2021/10106/
+
+[^ext-vec]: Support is based on [unofficial test vectors](https://github.com/w3c/webauthn/issues/1633).
