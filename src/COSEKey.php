@@ -84,4 +84,9 @@ class COSEKey
         assert($this->algorithm === COSE\Algorithm::EcdsaSha256);
         return new PublicKey\EllipticCurve($this->x, $this->y);
     }
+
+    public function getAlgorithm(): COSE\Algorithm
+    {
+        return $this->parsed->getAlgorithm();
+    }
 }

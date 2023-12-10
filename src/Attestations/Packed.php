@@ -58,7 +58,7 @@ class Packed implements AttestationStatementInterface
 
         $acd = $data->getAttestedCredentialData();
         $alg = COSE\Algorithm::tryFrom($this->data['alg']);
-        if ($alg !== $acd->coseKey->algorithm) {
+        if ($alg !== $acd->coseKey->getAlgorithm()) {
             throw new Exception('8.2/v3.a');
         }
 
