@@ -28,6 +28,7 @@ class RSA implements KeyInterface
 
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
+        // TODO: figure out the appropriate format mangling to make this work.
     }
 
     public function getAlgorithm(): Algorithm
