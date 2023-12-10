@@ -31,11 +31,11 @@ class AttestationObject implements AttestationObjectInterface
         assert(array_key_exists('authData', $decoded));
 
         $stmt = match (Format::tryFrom($decoded['fmt'])) { // @phpstan-ignore-line
+            Format::AndroidSafetyNet => new AndroidSafetyNet($decoded['attStmt']),
+            Format::Apple => new Apple($decoded['attStmt']),
             Format::None => new None($decoded['attStmt']),
             Format::Packed => new Packed($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
-            Format::Apple => new Apple($decoded['attStmt']),
-            Format::AndroidSafetyNet => new AndroidSafetyNet($decoded['attStmt']),
             default => throw new UnhandledMatchError('Unhandled attestation format ' . $decoded['fmt']),
         };
 
