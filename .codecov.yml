@@ -1,6 +1,8 @@
 coverage:
   status:
     patch:
-      threshold: 25%
+      default:
+        threshold: 5%
     project:
-      threshold: 5%
+      default:
+        threshold: 5%
