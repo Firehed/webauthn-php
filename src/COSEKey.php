@@ -28,9 +28,9 @@ class COSEKey
 {
     // Data structure indexes
     // @see section 7.1
-    private const INDEX_KEY_TYPE = 1;
+    // private const INDEX_KEY_TYPE = 1;
     // KID=2
-    private const INDEX_ALGORITHM = 3;
+    // private const INDEX_ALGORITHM = 3;
     //  key_ops = 4
     // base iv = 5
 
@@ -41,14 +41,14 @@ class COSEKey
     private const INDEX_PRIVATE_KEY = -4; // ECC, OKP @phpstan-ignore-line
     // index_key_value = -1 (same as index_curve, for Symmetric)
 
-    private COSE\KeyType $keyType;
-    public readonly COSE\Algorithm $algorithm;
-    private COSE\Curve $curve;
-    private BinaryString $x;
-    private BinaryString $y;
+    // private COSE\KeyType $keyType;
+    // public readonly COSE\Algorithm $algorithm;
+    // private COSE\Curve $curve;
+    // private BinaryString $x;
+    // private BinaryString $y;
     // d ~ private key
 
-    private mixed $parsed;
+    private COSE\KeyInterface $parsed;
 
     public function __construct(public readonly BinaryString $cbor)
     {
@@ -56,51 +56,13 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
+        $keyType = COSE\KeyType::from($decodedCbor[COSE\KeyType::COSE_INDEX]);
 
         $this->parsed = match ($keyType) {
             COSE\KeyType::EllipticCurve => new COSE\EC2($decodedCbor),
             COSE\KeyType::Rsa => new COSE\RSA($decodedCbor),
         };
 
-        return;
-
-        if ($keyType === COSE\KeyType::Rsa) {
-            print_r(array_keys($decodedCbor));
-            var_dump($decodedCbor[self::INDEX_ALGORITHM]);
-            $n = $decodedCbor[-1];
-            $e = $decodedCbor[-2];
-            $d = $decodedCbor[-3];
-            // $p = $ke
-        }
-        var_dump($keyType, $decodedCbor);
-        if ($keyType !== COSE\KeyType::EllipticCurve) {
-            throw new DomainException('Only EC2 keys supported');
-        }
-
-        $algorithm = COSE\Algorithm::tryFrom($decodedCbor[self::INDEX_ALGORITHM]);
-        if ($algorithm !== COSE\Algorithm::EcdsaSha256) {
-            throw new DomainException('Only ES256 supported');
-        }
-
-        $curve = COSE\Curve::tryFrom($decodedCbor[self::INDEX_CURVE]);
-        if ($curve !== COSE\Curve::P256) {
-            throw new DomainException('Only curve P-256 (secp256r1) supported');
-        }
-
-        $this->keyType = $keyType;
-        $this->algorithm = $algorithm;
-        $this->curve = $curve;
-
-        if (strlen($decodedCbor[self::INDEX_X_COORDINATE]) !== 32) {
-            throw new DomainException('X coordinate not 32 bytes');
-        }
-        $this->x = new BinaryString($decodedCbor[self::INDEX_X_COORDINATE]);
-
-        if (strlen($decodedCbor[self::INDEX_Y_COORDINATE]) !== 32) {
-            throw new DomainException('X coordinate not 32 bytes');
-        }
-        $this->y = new BinaryString($decodedCbor[self::INDEX_Y_COORDINATE]);
 
         // d = cbor[INDEX_PRIVATE_KEY]
 
@@ -113,6 +75,7 @@ class COSEKey
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
+        return $this->parsed->getPublicKey();
         // These are valid; the internal formats are brittle right now.
         assert($this->keyType === COSE\KeyType::EllipticCurve);
         assert($this->curve === COSE\Curve::P256);
