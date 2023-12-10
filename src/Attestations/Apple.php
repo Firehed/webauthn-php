@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Attestations;
 
+use Exception;
 use Firehed\CBOR\Decoder;
 use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
 use Firehed\WebAuthn\PublicKey\EllipticCurve;
+use OpenSSLCertificate;
 
 class Apple implements AttestationStatementInterface
 {
@@ -17,7 +19,7 @@ class Apple implements AttestationStatementInterface
     /**
      * @param array{
      *   x5c: string[],
-     * } @data
+     * } $data
      */
     public function __construct(
         private array $data,
@@ -27,69 +29,70 @@ class Apple implements AttestationStatementInterface
     // 8.8
     public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult
     {
+        // ¶2
         $nonceToHash = new BinaryString(
             $data->getRaw()->unwrap() . $clientDataHash->unwrap()
         );
-        $rawNonce = hash('sha256', $nonceToHash->unwrap(), binary: true);
-        $nonce = new BinaryString($rawNonce);
+        // ¶3
+        $nonce = hash('sha256', $nonceToHash->unwrap(), binary: true);
 
+        // ¶4 - there's a whole lot of validation and data extraction that the
+        // spec glosses over.
         $certs = array_map(self::parseDer(...), $this->data['x5c']);
+        assert(count($certs) >= 1);
         $credCert = array_shift($certs);
-        // var_dump($certs);
-        // $info = array_map(openssl_x509_parse(...), $certs);
         $info = openssl_x509_parse($credCert);
-        $certExt = $info['extensions'];
-        assert(array_key_exists(self::OID, $certExt));
-        $certNonce = new BinaryString($certExt[self::OID]);
-        // var_dump($nonce);
-        // var_dump($certNonce);
-
-        // 3024a1220420
-        // 3024 SEQUENCE legnth 36
-        //   a122 set(..) legnth 34 ?
-        //     0420 OCTECT STRING length 32
-        // ok, this ain't right
-        $len = $certNonce->getLength();
-        assert($len === 38);
-        // 6, 32 = (oid stuff) (actual nonce)
-        $overage = $len - (256/8); // sha output
-        $leading = $certNonce->read($overage);
-        $real = $certNonce->getRemaining();
-        $leadingBS = new BinaryString($leading);
-        $realBS = new BinaryString($real);
-        // var_dump($leadingBS, $realBS);
-        // var_dump($leadingBS->unwrap());
-
-
-
-        if ($realBS->equals($nonce)) {
-            // this matches
-            // var_dump("OK!");
-        } else {
-            throw new \Exception('no');
+        if ($info === false) {
+            throw new Exception('Invalid certificate');
         }
-        // print_r($info);
+        if (!array_key_exists('extensions', $info)) {
+            throw new Exception('No extensions in credential cert');
+        }
+        $certExt = $info['extensions'];
+        if (!array_key_exists(self::OID, $certExt)) {
+            throw new Exception('Expected OID not present in cert extensions');
+        }
+        $nonceInCert = $certExt[self::OID];
+        // This isn't clear in the spec, but the value arrives ASN.1-encoded.
+        // Manually verify some length assumptions instead of doing some
+        // full-on parsing.
+        if (strlen($nonceInCert) !== 38) {
+            throw new Exception("Malformed nonce in cert");
+        }
+        // 0x3024 SEQUENCE (constructed) legnth 36
+        //   0xA122 Element 1, length 34
+        //     0x0420 OCTET STRING length 32
+        if (!str_starts_with(needle: "\x30\x24\xA1\x22\x04\x20", haystack: $nonceInCert)) {
+            throw new Exception("Cert nonce has weird encoding");
+        }
+        // (finally, the actual verification procedure)
+        $decodedNonceInCert = substr($nonceInCert, 6);
+        if (!hash_equals($nonce, $decodedNonceInCert)) {
+            throw new Exception('Nonce mismatch of expected value');
+        }
 
+        // ¶5
         $pubKey = openssl_pkey_get_public($credCert);
-        // var_dump($pubKey);g
+        if ($pubKey === false) {
+            throw new Exception('Could not read pubkey of certificate');
+        }
         $pkd = openssl_pkey_get_details($pubKey);
-        // var_dump($pkd);
-        // probably a better way
+        if ($pkd === false) {
+            throw new Exception('Could not extract public key info');
+        }
         $credPK = $data->getAttestedCredentialData()->coseKey;
         $credPKPem = $credPK->getPublicKey()->getPemFormatted();
-        // var_dump($credPKPem);
-        if (trim($pkd['key']) === trim($credPKPem)) {
-            return new VerificationResult(
-                AttestationType::AnonymizationCA,
-                // trustPath: rest of x5c
-            );
-        } else {
-            // fail
+        // ¶6
+        if (trim($pkd['key']) !== trim($credPKPem)) {
+            throw new Exception('Credential public key does not match cert subject');
         }
-
+        return new VerificationResult(
+            AttestationType::AnonymizationCA,
+            // trustPath: rest of x5c
+        );
     }
 
-    private static function parseDer(string $certificate)
+    private static function parseDer(string $certificate): OpenSSLCertificate
     {
         // Convert DER to PEM format
         $certificate = "-----BEGIN CERTIFICATE-----\n"
@@ -98,7 +101,9 @@ class Apple implements AttestationStatementInterface
 
         // Read and parse the certificate
         $certResource = openssl_x509_read($certificate);
-
-        return ($certResource);
+        if ($certResource === false) {
+            throw new Exception('Certiticate parsing error');
+        }
+        return $certResource;
     }
 }
