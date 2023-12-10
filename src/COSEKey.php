@@ -29,7 +29,11 @@ class COSEKey
     // Data structure indexes
     // @see section 7.1
     private const INDEX_KEY_TYPE = 1;
+    // KID=2
     private const INDEX_ALGORITHM = 3;
+    //  key_ops = 4
+    // base iv = 5
+
     // 13.1.1-13.2
     private const INDEX_CURVE = -1; // ECC, OKP
     private const INDEX_X_COORDINATE = -2; // ECC, OKP
@@ -44,6 +48,8 @@ class COSEKey
     private BinaryString $y;
     // d ~ private key
 
+    private mixed $parsed;
+
     public function __construct(public readonly BinaryString $cbor)
     {
         $decoder = new Decoder();
@@ -51,6 +57,23 @@ class COSEKey
 
         // Note: these limitations may be lifted in the future
         $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
+
+        $this->parsed = match ($keyType) {
+            COSE\KeyType::EllipticCurve => new COSE\EC2($decodedCbor),
+            COSE\KeyType::Rsa => new COSE\RSA($decodedCbor),
+        };
+
+        return;
+
+        if ($keyType === COSE\KeyType::Rsa) {
+            print_r(array_keys($decodedCbor));
+            var_dump($decodedCbor[self::INDEX_ALGORITHM]);
+            $n = $decodedCbor[-1];
+            $e = $decodedCbor[-2];
+            $d = $decodedCbor[-3];
+            // $p = $ke
+        }
+        var_dump($keyType, $decodedCbor);
         if ($keyType !== COSE\KeyType::EllipticCurve) {
             throw new DomainException('Only EC2 keys supported');
         }
