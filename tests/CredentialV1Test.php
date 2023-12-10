@@ -16,18 +16,18 @@ class CredentialV1Test extends \PHPUnit\Framework\TestCase
         $coseKey->method('getPublicKey')
             ->willReturn($pk);
         $credential = new CredentialV1(
-            id: BinaryString::fromHex('FFFF'),
+            id: BinaryString::fromHex('B0BACAFE'),
             coseKey: $coseKey,
             signCount: 10,
         );
 
         self::assertSame(10, $credential->getSignCount(), 'Sign count wrong');
-        self::assertTrue(BinaryString::fromHex('FFFF')->equals($credential->getId()), 'ID changed');
+        self::assertTrue(BinaryString::fromHex('B0BACAFE')->equals($credential->getId()), 'ID changed');
         // Leaving out the COSEey CBOR for now...tat needs work!
         self::assertSame($pk, $credential->getPublicKey(), 'PubKey changed');
         // This test is flexible...storageId needs to be kept stable but the
         // pre-1.0 version could change before final release
-        self::assertSame('ffff', $credential->getStorageId(), 'Storage ID wrong');
+        self::assertSame('sLrK_g', $credential->getStorageId(), 'Storage ID wrong');
 
         self::assertFalse($credential->isBackupEligible(), 'Backup tracking not in format');
         self::assertFalse($credential->isBackedUp(), 'Backup tracking not in format');

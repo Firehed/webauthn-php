@@ -28,7 +28,7 @@ class CredentialV1 implements CredentialInterface
 
     public function getStorageId(): string
     {
-        return bin2hex($this->id->unwrap());
+        return $this->id->toBase64Url();
     }
 
     public function getSignCount(): int

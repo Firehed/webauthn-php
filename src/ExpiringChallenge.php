@@ -58,6 +58,14 @@ class ExpiringChallenge implements ChallengeInterface
         return $this->wrapped->getBase64();
     }
 
+    public function getBase64Url(): string
+    {
+        if ($this->isExpired()) {
+            throw new Errors\ExpiredChallengeError();
+        }
+        return $this->wrapped->getBase64Url();
+    }
+
     public function getBinary(): BinaryString
     {
         if ($this->isExpired()) {
@@ -89,9 +97,7 @@ class ExpiringChallenge implements ChallengeInterface
      */
     public function __unserialize(array $serialized): void
     {
-        $bin = base64_decode($serialized['c'], true);
-        assert($bin !== false);
-        $this->wrapped = new Challenge(new BinaryString($bin));
+        $this->wrapped = new Challenge(BinaryString::fromBase64($serialized['c']));
         $this->expiration = new DateTimeImmutable('@' . $serialized['e']);
     }
 }

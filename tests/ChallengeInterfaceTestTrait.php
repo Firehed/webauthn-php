@@ -38,11 +38,18 @@ trait ChallengeInterfaceTestTrait
 
         $binary = $challenge->getBinary();
         $base64 = $challenge->getBase64();
+        $base64Url = $challenge->getBase64Url();
 
         self::assertSame(
             $base64,
             base64_encode($binary->unwrap()),
             'Base64 encoding the unwrapped binary did not match getBase64 result',
+        );
+
+        self::assertSame(
+            $base64Url,
+            $binary->toBase64Url(),
+            'Base64URL encoding was incorrect',
         );
     }
 

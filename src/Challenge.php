@@ -45,29 +45,14 @@ class Challenge implements ChallengeInterface
         return $this->wrapped;
     }
 
-    /**
-     * This produces a string that can be decoded with Javascript's `atob`
-     * function. The result of that will need to be further encoded into a
-     * BufferSource to be used in the `publicKey.challenge`; e.g. transformed
-     * into a `Uint8Array`:
-     *
-     * ```php
-     * header('Content-type: application/json');
-     * echo json_encode($challenge->getBase64());
-     * ```
-     *
-     * ```javascript
-     * const response = await fetch(request to above endpoint)
-     * const challengeB64 = await response.json()
-     * const challenge = atob(challengeB64)
-     * return Uint8Array.from(challenge, c => c.charCodeAt(0))
-     * ```
-     *
-     * @api
-     */
     public function getBase64(): string
     {
         return base64_encode($this->wrapped->unwrap());
+    }
+
+    public function getBase64Url(): string
+    {
+        return $this->wrapped->toBase64Url();
     }
 
     /**
@@ -83,8 +68,6 @@ class Challenge implements ChallengeInterface
      */
     public function __unserialize(array $serialized): void
     {
-        $bin = base64_decode($serialized['b64'], true);
-        assert($bin !== false);
-        $this->wrapped = new BinaryString($bin);
+        $this->wrapped = BinaryString::fromBase64($serialized['b64']);
     }
 }

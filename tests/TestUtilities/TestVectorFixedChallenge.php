@@ -30,4 +30,9 @@ class TestVectorFixedChallenge implements ChallengeInterface
     {
         throw new Exception('Not for use during testing');
     }
+
+    public function getBase64Url(): string
+    {
+        throw new Exception('Not for use during testing');
+    }
 }
