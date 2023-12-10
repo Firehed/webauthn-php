@@ -46,7 +46,7 @@ class FidoU2F implements AttestationStatementInterface
         if ($info['type'] !== OPENSSL_KEYTYPE_EC) {
             throw new \Exception('Certificate PubKey is not Elliptic Curve');
         }
-        // OID for P-156 curve
+        // OID for P-256 curve
         // http://oid-info.com/get/1.2.840.10045.3.1.7
         // See also EllipticCurve
         if ($info['ec']['curve_oid'] !== '1.2.840.10045.3.1.7') {
