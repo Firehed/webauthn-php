@@ -62,7 +62,9 @@ class IntegrationTest extends TestCase
         assert($dirs !== false);
         $out = [];
         foreach ($dirs as $dir) {
-            $out[$dir] = [$dir];
+            if (is_dir($dir)) {
+                $out[$dir] = [$dir];
+            }
         }
         return $out;
     }
