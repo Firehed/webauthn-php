@@ -33,6 +33,7 @@ class AttestationObject implements AttestationObjectInterface
             Format::Apple => new Apple($decoded['attStmt']),
             Format::None => new None($decoded['attStmt']),
             Format::Packed => new Packed($decoded['attStmt']),
+            Format::TPM => new Tpm($decoded['attStmt']),
             Format::U2F => new FidoU2F($decoded['attStmt']),
         };
 
