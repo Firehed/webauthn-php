@@ -29,5 +29,6 @@ interface AttestationInterface
         ChallengeManagerInterface $challenge,
         RelyingPartyInterface $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
+        bool $rejectUncertainTrustPaths = true,
     ): CredentialInterface;
 }
