@@ -51,10 +51,10 @@ class AttestationObject implements AttestationObjectInterface
     public function verify(BinaryString $clientDataHash): VerificationResult
     {
         $statement = match ($this->format) {
-            Format::Apple => new Apple($this->attStmt),
+            Format::Apple => new Apple($this->attStmt), // @phpstan-ignore-line
             Format::None => new None($this->attStmt),
-            Format::Packed => new Packed($this->attStmt),
-            Format::U2F => new FidoU2F($this->attStmt),
+            Format::Packed => new Packed($this->attStmt), // @phpstan-ignore-line
+            Format::U2F => new FidoU2F($this->attStmt), // @phpstan-ignore-line
             default => new LibraryUnsupported(),
         };
         return $statement->verify($this->data, $clientDataHash);
