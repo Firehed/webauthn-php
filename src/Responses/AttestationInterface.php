@@ -20,6 +20,9 @@ use Firehed\WebAuthn\{
  */
 interface AttestationInterface
 {
+    // isBackupEligible: bool (7.1.17)
+    // isBackedUp: bool (7.1.18)
+    //
     public function isUserVerified(): bool;
 
     public function verify(

@@ -113,6 +113,7 @@ class CreateResponse implements Responses\AttestationInterface
         // 7.1.19
         // js options ~ publicKey.pubKeyCredParams[].alg
         // match $authData->ACD->alg (== ECDSA-SHA-256 = -7)
+        // This doesn't do much until supporting >1 algo
 
         // 7.1.20
         // TODO: clientExtensionResults / options.extensions
