@@ -44,6 +44,7 @@ class IntegrationTest extends TestCase
         $cred = $createResponse->verify(
             $challengeManager,
             $rp,
+            rejectUncertainTrustPaths: false,
         );
 
         // More assertions to come!

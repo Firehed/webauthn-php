@@ -17,6 +17,12 @@ interface CredentialInterface
      *
      * @internal
      *
+     * A future public API may manifest as e.g. `reVerify()` which (if this
+     * data exists) would do something like:
+     * [$ao, $cdj] = getAttestationData()
+     * $hash = sha256(cdj)
+     * return $ao->verify($hash)
+     *
      * @return ?array{Attestations\AttestationObjectInterface, BinaryString}
      */
     public function getAttestationData(): ?array;

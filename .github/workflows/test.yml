@@ -22,6 +22,8 @@ jobs:
         php:
           - '8.1'
           - '8.2'
+          - '8.3'
+          - '8.4-dev'
 
     steps:
       - name: Check out code
@@ -77,4 +79,4 @@ jobs:
 
       - name: Submit code coverage
         if: ${{ always() }}
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
