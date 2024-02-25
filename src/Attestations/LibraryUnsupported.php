@@ -9,13 +9,6 @@ use Firehed\WebAuthn\BinaryString;
 
 class LibraryUnsupported implements AttestationStatementInterface
 {
-    /**
-     * @param mixed[] $data
-     */
-    public function __construct(private array $data)
-    {
-    }
-
     public function verify(AuthenticatorData $data, BinaryString $clientDataHash): VerificationResult
     {
         return new VerificationResult(AttestationType::Uncertain);

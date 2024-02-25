@@ -55,7 +55,7 @@ class AttestationObject implements AttestationObjectInterface
             Format::None => new None($this->attStmt),
             Format::Packed => new Packed($this->attStmt),
             Format::U2F => new FidoU2F($this->attStmt),
-            default => new LibraryUnsupported($this->attStmt),
+            default => new LibraryUnsupported(),
         };
         return $statement->verify($this->data, $clientDataHash);
     }
