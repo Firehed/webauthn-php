@@ -18,32 +18,27 @@ use UnhandledMatchError;
 class AttestationObject implements AttestationObjectInterface
 {
     private readonly AuthenticatorData $data;
-    private readonly AttestationStatementInterface $stmt;
+    private Format $format;
+    /** @var mixed[] */
+    private array $attStmt;
 
     public function __construct(
         private readonly BinaryString $rawCbor,
     ) {
         $decoder = new Decoder();
+        // 7.1.12
         $decoded = $decoder->decode($rawCbor->unwrap());
 
         assert(array_key_exists('fmt', $decoded));
         assert(array_key_exists('attStmt', $decoded));
         assert(array_key_exists('authData', $decoded));
 
-        $stmt = match (Format::tryFrom($decoded['fmt'])) { // @phpstan-ignore-line
-            Format::AndroidSafetyNet => new AndroidSafetyNet($decoded['attStmt']),
-            Format::Apple => new Apple($decoded['attStmt']),
-            Format::None => new None($decoded['attStmt']),
-            Format::Packed => new Packed($decoded['attStmt']),
-            Format::U2F => new FidoU2F($decoded['attStmt']),
-            default => throw new UnhandledMatchError('Unhandled attestation format ' . $decoded['fmt']),
-        };
+        // 7.1.21
+        $this->format = Format::from($decoded['fmt']);
 
-        $ad = AuthenticatorData::parse(new BinaryString($decoded['authData']));
+        $this->attStmt = $decoded['attStmt'];
 
-        $this->data = $ad;
-        $this->stmt = $stmt;
-        // print_r($this);
+        $this->data = AuthenticatorData::parse(new BinaryString($decoded['authData']));
     }
 
     public function getAuthenticatorData(): AuthenticatorData
@@ -56,7 +51,15 @@ class AttestationObject implements AttestationObjectInterface
      */
     public function verify(BinaryString $clientDataHash): VerificationResult
     {
-        return $this->stmt->verify($this->data, $clientDataHash);
+        $statement = match ($this->format) {
+            Format::AndroidSafetyNet => new AndroidSafetyNet($this->attStmt),
+            Format::Apple => new Apple($this->attStmt), // @phpstan-ignore-line
+            Format::None => new None($this->attStmt),
+            Format::Packed => new Packed($this->attStmt), // @phpstan-ignore-line
+            Format::U2F => new FidoU2F($this->attStmt), // @phpstan-ignore-line
+            default => new LibraryUnsupported(),
+        };
+        return $statement->verify($this->data, $clientDataHash);
     }
 
     public function getCbor(): BinaryString
