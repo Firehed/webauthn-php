@@ -1,0 +1,13 @@
+# https://docs.codecov.com/docs/common-recipe-list
+# curl --data-binary @codecov.yml https://codecov.io/validate
+coverage:
+  status:
+    patch:
+      default:
+        informational: true
+    project:
+      default:
+        informational: true
+codecov:
+  notify:
+    wait_for_ci: false
