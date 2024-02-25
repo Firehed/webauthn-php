@@ -43,6 +43,7 @@ class CreateResponse implements Responses\AttestationInterface
         ChallengeManagerInterface $challenge,
         RelyingPartyInterface $rp,
         Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
+        bool $rejectUncertainTrustPaths = true,
     ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code
         // 7.1.4 is temporarily skpped
@@ -113,6 +114,7 @@ class CreateResponse implements Responses\AttestationInterface
         // 7.1.19
         // js options ~ publicKey.pubKeyCredParams[].alg
         // match $authData->ACD->alg (== ECDSA-SHA-256 = -7)
+        // This doesn't do much until supporting >1 algo
 
         // 7.1.20
         // TODO: clientExtensionResults / options.extensions
@@ -142,12 +144,17 @@ class CreateResponse implements Responses\AttestationInterface
         //
         // here, it would be something like
         // ```php
-        $trustworthiness = match ($result->type) {
-            Attestations\AttestationType::None,
-            Attestations\AttestationType::Basic => null, // check if $rp permits this?
-            default => null, // openssl_x509_checkpurpose ?
-        };
+        // $trustworthiness = match ($result->type) {
+        //     Attestations\AttestationType::None,
+        //     Attestations\AttestationType::Basic => null, // check if $rp permits this?
+        //     default => null, // openssl_x509_checkpurpose ?
+        // };
         // ```
+        // For now, provide a crude escape-hatch. This will almost certainly
+        // change once all documented foramts are fully supported.
+        if ($result->type === Attestations\AttestationType::Uncertain && $rejectUncertainTrustPaths) {
+            $this->fail('7.1.24', 'Insufficient attestation trustworthiness');
+        }
 
         // 7.1.25
         if ($this->id->getLength() > 1023) {

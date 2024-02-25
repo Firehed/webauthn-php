@@ -692,8 +692,16 @@ Due to an inability to generate responses with all formats, not all are supporte
 | `apple` | ✅⚠️ [^ext-vec], [^limited-trust-path] | 8.8 | Apple no longer appears to use this format, instead providing non-attested credentials (fmt=none). |
 | `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
 
-If you receive an `UnhandledMatchError` from the library pertaining to a format, please file an issue.
+By default, the `$registration->verify()` process will reject uncertain trust paths.
+If you receive a `RegistratonError` from the library referencing `7.1.24` or `insufficient attestation trustworthiness`, it's due to this default.
+
+First, *please* file an issue containing the registration data you were attempting to use (the JSON over the network is fine; this contains no PII) - this will help improve the compatibility of the library.
+Then, if desired, you can pass `rejectUncertainTrustPaths: false` into the `verify()` arguments (this is easiest with named arguments).
+Doing so provides more flexibility in the registration process, at the expense of looser verification of credentials.
+
 The library aims to have full format coverage eventually, but _needs your help_ in order to get there.
+
+Complete support for trustworthiness rules is a tricky API to get right, so for now, this is the only escape-hatch!
 
 ## Resources and Errata
 
