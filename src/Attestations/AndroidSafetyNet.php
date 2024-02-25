@@ -21,7 +21,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
     public function __construct(
         private array $data,
     ) {
-        print_r($data);
+        // print_r($data);
     }
 
     // 8.5
@@ -35,7 +35,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
 
         $headerObj = json_decode($headerDecoded, true, flags: JSON_THROW_ON_ERROR);
         $payloadObj = json_decode($payloadDecoded, true, flags: JSON_THROW_ON_ERROR);
-        var_dump($headerObj, $payloadObj, $sig);
+        // var_dump($headerObj, $payloadObj, $sig);
 
         // Verify response.payload.nonce matches:
         $signed = new BinaryString($data->getRaw()->unwrap() . $clientDataHash->unwrap());

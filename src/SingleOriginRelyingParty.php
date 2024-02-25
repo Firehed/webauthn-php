@@ -28,7 +28,7 @@ class SingleOriginRelyingParty implements RelyingPartyInterface
 
     public function permitsRpIdHash(AuthenticatorData $authData): bool
     {
-        print_r($authData);
+        // print_r($authData);
         $expected = hash('sha256', $this->id, true);
         return hash_equals($expected, $authData->getRpIdHash()->unwrap());
     }
