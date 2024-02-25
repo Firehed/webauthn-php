@@ -21,6 +21,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
     public function __construct(
         private array $data,
     ) {
+        print_r($data);
     }
 
     // 8.5
@@ -34,7 +35,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
 
         $headerObj = json_decode($headerDecoded, true, flags: JSON_THROW_ON_ERROR);
         $payloadObj = json_decode($payloadDecoded, true, flags: JSON_THROW_ON_ERROR);
-        // var_dump($headerObj, $payloadObj, $sig);
+        var_dump($headerObj, $payloadObj, $sig);
 
         // Verify response.payload.nonce matches:
         $signed = new BinaryString($data->getRaw()->unwrap() . $clientDataHash->unwrap());
@@ -52,7 +53,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
         foreach ($headerObj['x5c'] as $cert) {
             $crt = self::parseDer($cert);
             $info = openssl_x509_parse($crt);
-            // print_r($info);
+            print_r($info);
         }
 // Validate the SSL certificate chain and use SSL hostname matching to verify that the leaf certificate was issued to the hostname attest.android.com.
 // Use the certificate to verify the signature of the JWS message.
