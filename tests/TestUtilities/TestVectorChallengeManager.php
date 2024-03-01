@@ -17,7 +17,7 @@ class TestVectorChallengeManager implements ChallengeManagerInterface
     {
     }
 
-    public function manageChallenge(ChallengeInterface: $c): void
+    public function manageChallenge(ChallengeInterface $c): void
     {
         throw new Exception('Not for use during testing');
     }

@@ -8,19 +8,11 @@ trait ChallengeManagerTestTrait
 {
     abstract protected function getChallengeManager(): ChallengeManagerInterface;
 
-    public function testCreateChallengeIsUnique(): void
-    {
-        $cm = $this->getChallengeManager();
-        $c1 = $cm->createChallenge();
-        $c2 = $cm->createChallenge();
-        self::assertNotSame($c1, $c2);
-        self::assertNotSame($c1->getBase64(), $c2->getBase64());
-    }
-
     public function testMostRecentChallengeCanBeRetrieved(): void
     {
         $cm = $this->getChallengeManager();
-        $c = $cm->createChallenge();
+        $c = $this->createChallenge();
+        $cm->manageChallenge($c);
         $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
@@ -31,7 +23,8 @@ trait ChallengeManagerTestTrait
     public function testMostRecentChallengeCanBeRetrievedOnlyOnce(): void
     {
         $cm = $this->getChallengeManager();
-        $c = $cm->createChallenge();
+        $c = $this->createChallenge();
+        $cm->manageChallenge($c);
         $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
@@ -45,7 +38,8 @@ trait ChallengeManagerTestTrait
     {
         $cm = $this->getChallengeManager();
 
-        $c = Challenge::random();
+        $c = $this->createChallenge();
+        // Do NOT manage it
         $cdjValue = $c->getBinary()->toBase64Url();
 
         $found = $cm->useFromClientDataJSON($cdjValue);
@@ -56,9 +50,10 @@ trait ChallengeManagerTestTrait
     public function testRetrievalDoesNotCreateChallengeFromUserData(): void
     {
         $cm = $this->getChallengeManager();
-        $c = $cm->createChallenge();
+        $c = $this->createChallenge();
+        $cm->manageChallenge($c);
 
-        $userChallenge = Challenge::random();
+        $userChallenge = $this->createChallenge();
         $cdjValue = $userChallenge->getBinary()->toBase64Url();
 
         $retrieved = $cm->useFromClientDataJSON($cdjValue);
@@ -66,5 +61,10 @@ trait ChallengeManagerTestTrait
         // but MUST NOT attempt to reconstruct the challenge from the user-
         // provided value.
         self::assertNotSame($userChallenge->getBase64(), $retrieved?->getBase64());
+    }
+
+    private function createChallenge(): ChallengeInterface
+    {
+        return Challenge::random();
     }
 }
