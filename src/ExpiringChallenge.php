@@ -74,6 +74,11 @@ class ExpiringChallenge implements ChallengeInterface
         return $this->wrapped->getBinary();
     }
 
+    public function getExpiration(): DateTimeImmutable
+    {
+        return DateTimeImmutable::createFromInterface($this->expiration);
+    }
+
     private function isExpired(): bool
     {
         $diff = $this->expiration->diff(new DateTimeImmutable());

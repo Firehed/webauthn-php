@@ -50,7 +50,7 @@ class GetResponse implements Responses\AssertionInterface
      * @link https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion
      */
     public function verify(
-        ChallengeManagerInterface $challenge,
+        ChallengeLoaderInterface $challengeLoader,
         RelyingPartyInterface $rp,
         CredentialContainer | CredentialInterface $credential,
         Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
@@ -108,7 +108,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.13
         $cdjChallenge = $C['challenge'];
-        $challenge = $challenge->useFromClientDataJSON($cdjChallenge);
+        $challenge = $challengeLoader->useFromClientDataJSON($cdjChallenge);
         if ($challenge === null) {
             $this->fail('7.2.12', 'C.challenge');
         }

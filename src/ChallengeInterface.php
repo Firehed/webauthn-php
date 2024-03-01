@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use DateTimeImmutable;
+
 interface ChallengeInterface
 {
     /**
@@ -44,4 +46,17 @@ interface ChallengeInterface
      * @internal
      */
     public function getBinary(): BinaryString;
+
+    /**
+     * If non-null, indicates when the challenge should be considered expired.
+     * This should be used in conjunction with request generation and align
+     * with the `timeout` used by `pkOptions`. Be aware that browsers may
+     * override the specified value; the current W3C recommendation (lv3) is
+     * between 5 and 10 minutes (300-600 seconds).
+     *
+     * At present, this is intended as a convenience for storage mechanisms and
+     * expected to be enforced by _ChallengeInterface_ implemetions, not the RP
+     * server and associated internals.
+     */
+    public function getExpiration(): ?DateTimeImmutable;
 }

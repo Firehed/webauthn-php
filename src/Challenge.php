@@ -55,6 +55,11 @@ class Challenge implements ChallengeInterface
         return $this->wrapped->toBase64Url();
     }
 
+    public function getExpiration(): null
+    {
+        return null;
+    }
+
     /**
      * @return SerializationFormat
      */

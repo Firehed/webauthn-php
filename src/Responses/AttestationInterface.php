@@ -6,7 +6,7 @@ namespace Firehed\WebAuthn\Responses;
 
 use Firehed\WebAuthn\{
     ChallengeInterface,
-    ChallengeManagerInterface,
+    ChallengeLoaderInterface,
     CredentialInterface,
     RelyingPartyInterface,
     Enums\UserVerificationRequirement,
@@ -26,7 +26,7 @@ interface AttestationInterface
     public function isUserVerified(): bool;
 
     public function verify(
-        ChallengeManagerInterface $challenge,
+        ChallengeLoaderInterface $challengeLoader,
         RelyingPartyInterface $rp,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,
         bool $rejectUncertainTrustPaths = true,
