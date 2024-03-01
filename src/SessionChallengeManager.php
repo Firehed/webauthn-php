@@ -23,11 +23,9 @@ class SessionChallengeManager implements ChallengeManagerInterface
         }
     }
 
-    public function createChallenge(): ChallengeInterface
+    public function manageChallenge(ChallengeInterface $c): void
     {
-        $c = ExpiringChallenge::withLifetime(120);
         $_SESSION[self::SESSION_KEY] = $c;
-        return $c;
     }
 
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface

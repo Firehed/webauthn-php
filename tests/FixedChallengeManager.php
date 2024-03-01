@@ -15,7 +15,7 @@ class FixedChallengeManager implements ChallengeManagerInterface
     {
     }
 
-    public function createChallenge(): ChallengeInterface
+    public function manageChallenge(ChallengeInterface $c): void
     {
         throw new BadMethodCallException('Should not be used during testing');
     }

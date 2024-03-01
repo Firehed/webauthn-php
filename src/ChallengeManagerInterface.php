@@ -12,7 +12,7 @@ interface ChallengeManagerInterface
      *
      * @api
      */
-    public function createChallenge(): ChallengeInterface;
+    public function manageChallenge(ChallengeInterface $challenge): void;
 
     /**
      * Consumes the challenge associated with the ClientDataJSON value from the
