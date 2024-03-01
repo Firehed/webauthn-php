@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+/**
+ * Trait for adding PHPUnit test cases to both packaged and custom
+ * ChallengeManagerInterface implementations.
+ *
+ * @api
+ */
 trait ChallengeManagerTestTrait
 {
     abstract protected function getChallengeManager(): ChallengeManagerInterface;
