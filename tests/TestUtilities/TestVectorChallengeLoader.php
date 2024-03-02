@@ -8,18 +8,13 @@ use Exception;
 use Firehed\WebAuthn\{
     BinaryString,
     ChallengeInterface,
-    ChallengeManagerInterface,
+    ChallengeLoaderInterface,
 };
 
-class TestVectorChallengeManager implements ChallengeManagerInterface
+class TestVectorChallengeLoader implements ChallengeLoaderInterface
 {
     public function __construct(private string $b64u)
     {
-    }
-
-    public function manageChallenge(ChallengeInterface $c): void
-    {
-        throw new Exception('Not for use during testing');
     }
 
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
