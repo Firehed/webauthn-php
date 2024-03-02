@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use DateTimeImmutable;
+
 /**
  * The Challenge object has limited public-facing API:
  * - Create a challenge through the `::random()` method
@@ -55,7 +57,7 @@ class Challenge implements ChallengeInterface
         return $this->wrapped->toBase64Url();
     }
 
-    public function getExpiration(): null
+    public function getExpiration(): ?DateTimeImmutable
     {
         return null;
     }
