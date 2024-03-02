@@ -32,7 +32,7 @@ class IntegrationTest extends TestCase
         $rp = new SingleOriginRelyingParty($metadata['origin']);
 
         $createReq = self::read($dir, 'reg-req');
-        $challengeManager = new TestUtilities\TestVectorChallengeManager(
+        $challengeManager = new TestUtilities\TestVectorChallengeLoader(
             $createReq['publicKey']['challenge'], // @phpstan-ignore-line
         );
 

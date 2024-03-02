@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn\Responses;
 use Firehed\WebAuthn\{
     BinaryString,
     ChallengeInterface,
-    ChallengeManagerInterface,
+    ChallengeLoaderInterface,
     CredentialContainer,
     CredentialInterface,
     RelyingPartyInterface,
@@ -57,7 +57,7 @@ interface AssertionInterface
      * @api
      */
     public function verify(
-        ChallengeManagerInterface $challenge,
+        ChallengeLoaderInterface $challengeLoader,
         RelyingPartyInterface $rp,
         CredentialContainer | CredentialInterface $credential,
         UserVerificationRequirement $uv = UserVerificationRequirement::Preferred,

@@ -12,7 +12,7 @@ use Firehed\WebAuthn\{
 };
 
 /**
- * Like TestVectorChallengeManager, this would be quite dangerous to use unless
+ * Like TestVectorChallengeLoader, this would be quite dangerous to use unless
  * challenges are coming from a known source. DO NOT USE THIS as an example
  * implementation.
  */
