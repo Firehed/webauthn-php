@@ -25,6 +25,16 @@ trait ChallengeLoaderTestTrait
         self::assertNull($result2);
     }
 
+    public function testManagerDoesNotReturnUnmanagedChallenge(): void
+    {
+        $c = Challenge::random();
+        $cl = $this->getChallengeLoaderManagingChallenge($c);
+
+        $c2 = Challenge::random();
+        assert($c->getBase64Url() !== $c2->getBase64Url());
+        self::assertNull($cl->useFromClientDataJSON($c2->getBase64Url()));
+    }
+
     abstract protected function getChallengeLoaderManagingChallenge(
         ChallengeInterface $challenge,
     ): ChallengeLoaderInterface;
