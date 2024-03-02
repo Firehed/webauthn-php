@@ -10,9 +10,11 @@ namespace Firehed\WebAuthn;
  * them, and subsequently verify them if they're found in storage. This is
  * intended as the primary data flow, and is the recommended path.
  *
- * In rare circumstances, you may need to verify externally-managed challenges,
- * where the
- * @api
+ * In rare circumstances, you may need to verify externally-managed challenges.
+ * If so, the loading component may opt to only implement this interface. Doing
+ * so is NOT RECOMMENDED at this time.
+ *
+ * @api (with the above caveats)
  */
 interface ChallengeLoaderInterface
 {
