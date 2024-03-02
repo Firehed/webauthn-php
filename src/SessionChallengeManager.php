@@ -35,7 +35,10 @@ class SessionChallengeManager implements ChallengeManagerInterface
         }
         $challenge = $_SESSION[self::SESSION_KEY];
         unset($_SESSION[self::SESSION_KEY]);
-        // Validate that the stored challenge matches the CDJ value?
-        return $challenge;
+        // Validate that the stored challenge matches the CDJ value
+        if ($challenge->getBase64Url() === $base64Url) {
+            return $challenge;
+        }
+        return null;
     }
 }
