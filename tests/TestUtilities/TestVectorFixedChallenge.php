@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\TestUtilities;
 
+use DateTimeImmutable;
 use Exception;
 use Firehed\WebAuthn\{
     BinaryString,
@@ -21,7 +22,7 @@ class TestVectorFixedChallenge implements ChallengeInterface
     {
     }
 
-    public function getExpiration(): null
+    public function getExpiration(): ?DateTimeImmutable
     {
         return null;
     }
