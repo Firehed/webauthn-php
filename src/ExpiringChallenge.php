@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-use DateTimeInterface;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -24,7 +23,7 @@ use InvalidArgumentException;
 class ExpiringChallenge implements ChallengeInterface
 {
     private ChallengeInterface $wrapped;
-    private DateTimeInterface $expiration;
+    private DateTimeImmutable $expiration;
 
     /**
      * @internal
@@ -76,7 +75,7 @@ class ExpiringChallenge implements ChallengeInterface
 
     public function getExpiration(): DateTimeImmutable
     {
-        return DateTimeImmutable::createFromInterface($this->expiration);
+        return $this->expiration;
     }
 
     private function isExpired(): bool
