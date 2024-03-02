@@ -10,8 +10,7 @@ namespace Firehed\WebAuthn;
 interface ChallengeManagerInterface extends ChallengeLoaderInterface
 {
     /**
-     * Generates a new Challenge, stores it in the backing mechanism, and
-     * returns it.
+     * Takes the provided challenge and stores it in the backing mechanism.
      *
      * @api
      */
