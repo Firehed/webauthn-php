@@ -21,6 +21,11 @@ class TestVectorFixedChallenge implements ChallengeInterface
     {
     }
 
+    public function getExpiration(): null
+    {
+        return null;
+    }
+
     public function getBinary(): BinaryString
     {
         return BinaryString::fromBase64Url($this->b64u);
