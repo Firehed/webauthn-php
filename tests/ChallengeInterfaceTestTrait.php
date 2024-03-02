@@ -30,6 +30,11 @@ trait ChallengeInterfaceTestTrait
             $unserialized->getBase64(),
             'Base64 changed',
         );
+
+        self::assertEquals(
+            $challenge->getExpiration(),
+            $unserialized->getExpiration(),
+        );
     }
 
     public function testBinaryMatchesBase64(): void

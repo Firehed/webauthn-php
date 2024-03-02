@@ -17,7 +17,7 @@ use InvalidArgumentException;
  *
  * @phpstan-type SerializationFormat array{
  *   c: string,
- *   e: int,
+ *   e: numeric-string,
  * }
  */
 class ExpiringChallenge implements ChallengeInterface
@@ -92,7 +92,7 @@ class ExpiringChallenge implements ChallengeInterface
     {
         return [
             'c' => $this->wrapped->getBase64(),
-            'e' => $this->expiration->getTimestamp(),
+            'e' => $this->expiration->format('U.u'),
         ];
     }
 
