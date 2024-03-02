@@ -12,6 +12,15 @@ namespace Firehed\WebAuthn;
  */
 trait ChallengeManagerTestTrait
 {
+    use ChallengeLoaderTestTrait;
+
+    protected function getChallengeLoaderManagingChallenge(ChallengeInterface $challenge): ChallengeLoaderInterface
+    {
+        $cm = $this->getChallengeManager();
+        $cm->manageChallenge($challenge);
+        return $cm;
+    }
+
     abstract protected function getChallengeManager(): ChallengeManagerInterface;
 
     public function testMostRecentChallengeCanBeRetrieved(): void
