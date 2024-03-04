@@ -41,6 +41,7 @@
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
         "phpunit/phpunit": "^9.3",
+        "psr/simple-cache": "^3.0",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "scripts": {
@@ -54,5 +55,8 @@
         "phpstan": "phpstan analyse",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
         "phpcs": "phpcs"
+    },
+    "suggest": {
+      "psr/simple-cache": "Allows use of CacheChallengeManager"
     }
 }

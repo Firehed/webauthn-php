@@ -47,6 +47,7 @@ $rp = new \Firehed\WebAuthn\SingleOriginRelyingParty('https://www.example.com');
 
 Also create a `ChallengeManagerInterface`.
 This will store and validate the one-time use challenges that are central to the WebAuthn protocol.
+There are multiple options available which can suit different applications.
 See the [Challenge Management](#challenge-management) section below for more information.
 
 ```php
@@ -584,6 +585,7 @@ Your application SHOULD use one of the library-provided `ChallengeManagerInterfa
 
 | Implementation | Usage |
 | --- | --- |
+| `CacheChallengeManager` | Manages challenges in a site-wide pool stored in a [PSR-16](https://www.php-fig.org/psr/psr-16/) SimpleCache implementation. |
 | `SessionChallengeManager` | Manages challenges through native PHP [Sessions](https://www.php.net/manual/en/intro.session.php). |
 
 If one of the provided options is not suitable, you MAY implement the interface yourself or manage challenges manually.
