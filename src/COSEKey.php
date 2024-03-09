@@ -23,32 +23,23 @@ use Firehed\CBOR\Decoder;
  * @link https://www.rfc-editor.org/rfc/rfc8152.html
  *
  * @see RFC 8230 (RSA key support - not yet implemented)
+ *
+ * @see RFC 9052
+ * @link https://www.rfc-editor.org/rfc/rfc9052
  */
 class COSEKey
 {
     // Data structure indexes
-    // @see section 7.1
-    // private const INDEX_KEY_TYPE = 1;
-    // KID=2
-    // private const INDEX_ALGORITHM = 3;
-    //  key_ops = 4
-    // base iv = 5
+    // @see RFC 9052 §7.1
+    public const INDEX_KEY_TYPE = 1;
+    public const INDEX_KEY_ID = 2;
+    public const INDEX_ALGORITHM = 3;
+    public const INDEX_KEY_OPS = 4;
+    public const INDEX_BASE_IV = 5;
 
-    // 13.1.1-13.2
-    private const INDEX_CURVE = -1; // ECC, OKP
-    private const INDEX_X_COORDINATE = -2; // ECC, OKP
-    private const INDEX_Y_COORDINATE = -3; // ECC
-    private const INDEX_PRIVATE_KEY = -4; // ECC, OKP @phpstan-ignore-line
-    // index_key_value = -1 (same as index_curve, for Symmetric)
-
-    // private COSE\KeyType $keyType;
-    // public readonly COSE\Algorithm $algorithm;
-    // private COSE\Curve $curve;
-    // private BinaryString $x;
-    // private BinaryString $y;
-    // d ~ private key
-
-    private COSE\KeyInterface $parsed;
+    private PublicKey\PublicKeyInterface $publicKey;
+    // TODO: move to PublicKeyInterface?
+    public readonly COSE\Algorithm $algorithm;
 
     public function __construct(public readonly BinaryString $cbor)
     {
@@ -56,15 +47,24 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        $keyType = COSE\KeyType::from($decodedCbor[COSE\KeyType::COSE_INDEX]);
+        $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);
 
-        $this->parsed = match ($keyType) {
-            COSE\KeyType::EllipticCurve => new COSE\EC2($decodedCbor),
-            COSE\KeyType::Rsa => new COSE\RSA($decodedCbor),
+// <<<<<<< HEAD
+//         $this->parsed = match ($keyType) {
+//             COSE\KeyType::EllipticCurve => new COSE\EC2($decodedCbor),
+//             COSE\KeyType::Rsa => new COSE\RSA($decodedCbor),
+//         };
+
+
+//         // d = cbor[INDEX_PRIVATE_KEY]
+// =======
+        $this->publicKey = match ($keyType) {
+            COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
         };
 
-
-        // d = cbor[INDEX_PRIVATE_KEY]
+        assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
+        $this->algorithm = COSE\Algorithm::from($decodedCbor[self::INDEX_ALGORITHM]);
+// >>>>>>> main
 
         // Future: rfc8152/13.2
         // if keytype == .OctetKeyPair, set `x` and `d`
@@ -75,14 +75,7 @@ class COSEKey
      */
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
-        return $this->parsed->getPublicKey();
-        // These are valid; the internal formats are brittle right now.
-        assert($this->keyType === COSE\KeyType::EllipticCurve);
-        assert($this->curve === COSE\Curve::P256);
-        // This I don't think conveys anything useful. Mostly retained to
-        // silence a warning about unused variables.
-        assert($this->algorithm === COSE\Algorithm::EcdsaSha256);
-        return new PublicKey\EllipticCurve($this->x, $this->y);
+        return $this->publicKey;
     }
 
     public function getAlgorithm(): COSE\Algorithm

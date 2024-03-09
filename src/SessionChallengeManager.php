@@ -23,11 +23,9 @@ class SessionChallengeManager implements ChallengeManagerInterface
         }
     }
 
-    public function createChallenge(): ChallengeInterface
+    public function manageChallenge(ChallengeInterface $c): void
     {
-        $c = ExpiringChallenge::withLifetime(120);
         $_SESSION[self::SESSION_KEY] = $c;
-        return $c;
     }
 
     public function useFromClientDataJSON(string $base64Url): ?ChallengeInterface
@@ -37,7 +35,10 @@ class SessionChallengeManager implements ChallengeManagerInterface
         }
         $challenge = $_SESSION[self::SESSION_KEY];
         unset($_SESSION[self::SESSION_KEY]);
-        // Validate that the stored challenge matches the CDJ value?
-        return $challenge;
+        // Validate that the stored challenge matches the CDJ value
+        if ($challenge->getBase64Url() === $base64Url) {
+            return $challenge;
+        }
+        return null;
     }
 }
