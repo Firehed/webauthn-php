@@ -7,6 +7,8 @@ namespace Firehed\WebAuthn\COSE;
 /**
  * @link https://www.rfc-editor.org/rfc/rfc9053.html
  * @see §7, table 17
+ *
+ * @link https://www.iana.org/assignments/cose/cose.xhtml#key-type
  */
 enum KeyType: int
 {
