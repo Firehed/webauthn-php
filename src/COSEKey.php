@@ -39,7 +39,7 @@ class COSEKey
 
     private PublicKey\PublicKeyInterface $publicKey;
     // private COSE\KeyType $keyType;
-    // public readonly COSE\Algorithm $algorithm;
+    public readonly COSE\Algorithm $algorithm;
     // private COSE\Curve $curve;
     // private BinaryString $x;
     // private BinaryString $y;
@@ -68,7 +68,8 @@ class COSEKey
 //         }
 
         // $this->keyType = $keyType;
-        // $this->algorithm = $algorithm;
+        assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
+        $this->algorithm = COSE\Algorithm::from($decodedCbor[self::INDEX_ALGORITHM]);
         // $this->curve = $curve;
 
         // d = cbor[INDEX_PRIVATE_KEY]
