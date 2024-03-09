@@ -47,24 +47,17 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);
+        $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
+        if ($keyType !== COSE\KeyType::EllipticCurve) {
+            throw new DomainException('Only EC2 keys supported');
+        }
 
-// <<<<<<< HEAD
-//         $this->parsed = match ($keyType) {
-//             COSE\KeyType::EllipticCurve => new COSE\EC2($decodedCbor),
-//             COSE\KeyType::Rsa => new COSE\RSA($decodedCbor),
-//         };
-
-
-//         // d = cbor[INDEX_PRIVATE_KEY]
-// =======
         $this->publicKey = match ($keyType) {
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
         };
 
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
         $this->algorithm = COSE\Algorithm::from($decodedCbor[self::INDEX_ALGORITHM]);
-// >>>>>>> main
 
         // Future: rfc8152/13.2
         // if keytype == .OctetKeyPair, set `x` and `d`
@@ -76,10 +69,5 @@ class COSEKey
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
         return $this->publicKey;
-    }
-
-    public function getAlgorithm(): COSE\Algorithm
-    {
-        return $this->parsed->getAlgorithm();
     }
 }
