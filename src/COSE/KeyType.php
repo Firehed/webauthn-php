@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\COSE;
 
 /**
- * @link https://www.rfc-editor.org/rfc/rfc8152.html
- * @see Section 13, table 21
+ * @link https://www.rfc-editor.org/rfc/rfc9053.html
+ * @see §7, table 17
+ *
+ * @link https://www.iana.org/assignments/cose/cose.xhtml#key-type
  */
 enum KeyType: int
 {

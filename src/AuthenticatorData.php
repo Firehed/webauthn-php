@@ -11,6 +11,7 @@ use OutOfRangeException;
  * @internal
  *
  * @link https://www.w3.org/TR/webauthn-3/#sctn-authenticator-data
+ * @see §6.5
  */
 class AuthenticatorData
 {
