@@ -1,0 +1,10 @@
+{
+    "rawId": "f25BX23OovR-Ti84WI6lQcp_qfc",
+    "response": {
+        "authenticatorData": "KSqtX-Wo3JpWQpsrCGT2kSTRHZYWuoNy4MTSFTN75b0FAAAAAA",
+        "signature": "MEYCIQD0k_JpKy4CkioPR3sjXMCCPGMijKkgMTHyyBZvZU7cQgIhAKt8RiooBfbVebwdeCuSAp7tDxp2rMISABa5pXXfJ9lh",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiVjdOc3o1bWMyb2wwTEttZ1FuRFZYUnJsRjJFUlV5NHd2QU1IbHgxMDE5byIsIm9yaWdpbiI6Imh0dHBzOi8vbW9iaWxlcGtpLm9yZyJ9"
+
+    },
+    "type": "public-key"
+}
