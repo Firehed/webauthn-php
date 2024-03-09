@@ -30,4 +30,12 @@ enum Curve: int
     case ED25519 = 6; // OKP
 
     case ED448 = 7; // OKP
+
+    public function getOid(): string
+    {
+        return match ($this) { // @phpstan-ignore-line default unhandled match is desired
+            self::P256 => '1.2.840.10045.3.1.7',
+            // TODO: add others as support increases
+        };
+    }
 }

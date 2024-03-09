@@ -8,6 +8,7 @@ use Firehed\CBOR\Decoder;
 use Firehed\WebAuthn\AuthenticatorData;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\Certificate;
+use Firehed\WebAuthn\COSE\Curve;
 use Firehed\WebAuthn\PublicKey\EllipticCurve;
 
 /**
@@ -46,10 +47,7 @@ class FidoU2F implements AttestationStatementInterface
         if ($info['type'] !== OPENSSL_KEYTYPE_EC) {
             throw new \Exception('Certificate PubKey is not Elliptic Curve');
         }
-        // OID for P-156 curve
-        // http://oid-info.com/get/1.2.840.10045.3.1.7
-        // See also EllipticCurve
-        if ($info['ec']['curve_oid'] !== '1.2.840.10045.3.1.7') {
+        if ($info['ec']['curve_oid'] !== Curve::P256->getOid()) {
             throw new \Exception('Certificate PubKey is not Elliptic Curve');
         }
 
