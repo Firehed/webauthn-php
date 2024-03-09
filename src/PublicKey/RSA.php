@@ -52,7 +52,6 @@ class RSA implements PublicKeyInterface
         $n = new BinaryString($decoded[self::INDEX_MODULUS]);
         assert(array_key_exists(self::INDEX_PUB_EXPONENT, $decoded));
         $e = new BinaryString($decoded[self::INDEX_PUB_EXPONENT]);
-        // print_r($decoded);
 
         return new RSA(
             n: $n,

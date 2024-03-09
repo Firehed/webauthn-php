@@ -52,6 +52,25 @@ class IntegrationTest extends TestCase
 
         // More assertions to come!
         self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Credential ID wrong');
+
+
+        if (!file_exists($dir . '/auth-req.json')) {
+            self::markTestIncomplete('no auth done');
+        }
+
+        $authReq = self::read($dir, 'auth-req');
+        $authResponse = $jrp->parseGetResponse(self::read($dir, 'auth-res'));
+        print_r($authReq);
+        print_r($authResponse);
+        $authCred = $authResponse->verify(
+            new TestUtilities\TestVectorChallengeLoader($authReq['publicKey']['challenge']),
+            $rp,
+            $cred,
+        );
+
+        var_dump($dir);
+        var_dump($authCred);
+
     }
 
     /**
