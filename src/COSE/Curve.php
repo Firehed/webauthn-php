@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\COSE;
 
 /**
- * @link https://www.rfc-editor.org/rfc/rfc8152.html
- * @see Section 13.1, table 22
+ * @link https://www.rfc-editor.org/rfc/rfc9053.html
+ * @see §7.1, table 18
  */
 enum Curve: int
 {

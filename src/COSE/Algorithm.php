@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\COSE;
 
 /**
- * @link https://www.rfc-editor.org/rfc/rfc8152.html
- * @see Section 8.1, table 5
+ * @link https://www.rfc-editor.org/rfc/rfc9053.html
+ * @see §2.1, table 1
  */
 enum Algorithm: int
 {
