@@ -31,7 +31,7 @@ class EllipticCurve implements PublicKeyInterface
     // index_key_value = -1 (same as index_curve, for Symmetric)
 
 
-    private function __construct(
+    public function __construct(
         private COSE\Curve $curve,
         private BinaryString $x,
         private BinaryString $y,
