@@ -13,7 +13,9 @@ namespace Firehed\WebAuthn\COSE;
 enum Algorithm: int
 {
     case EcdsaSha256 = -7;
-    case EcdsaSha384 = -35;
-    case EcdsaSha512 = -36;
+    // case EcdsaSha384 = -35;
+    // case EcdsaSha512 = -36;
     // section 8.2: EdDSA = -8;
+
+    case Rs256 = -257;
 }
