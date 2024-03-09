@@ -38,12 +38,8 @@ class COSEKey
     public const INDEX_BASE_IV = 5;
 
     private PublicKey\PublicKeyInterface $publicKey;
-    // private COSE\KeyType $keyType;
+    // TODO: move to PublicKeyInterface?
     public readonly COSE\Algorithm $algorithm;
-    // private COSE\Curve $curve;
-    // private BinaryString $x;
-    // private BinaryString $y;
-    // d ~ private key
 
     public function __construct(public readonly BinaryString $cbor)
     {
@@ -60,19 +56,8 @@ class COSEKey
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
         };
 
-
-
-//         $curve = COSE\Curve::tryFrom($decodedCbor[self::INDEX_CURVE]);
-//         if ($curve !== COSE\Curve::P256) {
-//             throw new DomainException('Only curve P-256 (secp256r1) supported');
-//         }
-
-        // $this->keyType = $keyType;
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
         $this->algorithm = COSE\Algorithm::from($decodedCbor[self::INDEX_ALGORITHM]);
-        // $this->curve = $curve;
-
-        // d = cbor[INDEX_PRIVATE_KEY]
 
         // Future: rfc8152/13.2
         // if keytype == .OctetKeyPair, set `x` and `d`
@@ -84,12 +69,5 @@ class COSEKey
     public function getPublicKey(): PublicKey\PublicKeyInterface
     {
         return $this->publicKey;
-        // These are valid; the internal formats are brittle right now.
-        assert($this->keyType === COSE\KeyType::EllipticCurve);
-        assert($this->curve === COSE\Curve::P256);
-        // This I don't think conveys anything useful. Mostly retained to
-        // silence a warning about unused variables.
-        assert($this->algorithm === COSE\Algorithm::EcdsaSha256);
-        return new PublicKey\EllipticCurve($this->x, $this->y);
     }
 }
