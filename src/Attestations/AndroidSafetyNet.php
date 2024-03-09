@@ -16,7 +16,7 @@ class AndroidSafetyNet implements AttestationStatementInterface
      * @param array{
      *   ver: string,
      *   response: string,
-     * } @data
+     * } $data
      */
     public function __construct(
         private array $data,
