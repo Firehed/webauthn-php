@@ -44,7 +44,7 @@ class RSA implements PublicKeyInterface
         $algorithm = COSE\Algorithm::from($decoded[COSEKey::INDEX_ALGORITHM]);
         // TODO: support other algorithms
         if ($algorithm !== COSE\Algorithm::Rs256) {
-            throw new \DomainException('Only ES256 is supported');
+            throw new \DomainException('Only RS256 is supported');
         }
 
 
