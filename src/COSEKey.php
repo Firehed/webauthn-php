@@ -61,7 +61,17 @@ class COSEKey
         }
 
         $curve = COSE\Curve::tryFrom($decodedCbor[self::INDEX_CURVE]);
-        if ($curve !== COSE\Curve::P256) {
+        // https://www.w3.org/TR/webauthn-3/#sctn-alg-identifier
+        // 5.8.5 - curve must match algorithm
+        $expectedCurve = match ($algorithm) {
+            COSE\Algorithm::EcdsaSha256 => COSE\Curve::P256,
+            // Permit more later.
+            // COSE\Algorithm::EcdsaSha384 => COSE\Curve::P384,
+            // COSE\Algorithm::EcdsaSha512 => COSE\Curve::P521,
+            // COSE\Algorithm::EdDSA  => COSE\Curve::ED25519,
+        };
+
+        if ($curve !== $expectedCurve) {
             throw new DomainException('Only curve P-256 (secp256r1) supported');
         }
 
