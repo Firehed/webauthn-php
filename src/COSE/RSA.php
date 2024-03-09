@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn\COSE;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\PublicKey;
 
-class RSA implements KeyInterface
+class RSA // implements KeyInterface
 {
     private Algorithm $algorithm;
 
