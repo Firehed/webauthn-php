@@ -60,15 +60,15 @@ class IntegrationTest extends TestCase
 
         $authReq = self::read($dir, 'auth-req');
         $authResponse = $jrp->parseGetResponse(self::read($dir, 'auth-res'));
-        print_r($authReq);
-        print_r($authResponse);
+        // print_r($authReq);
+        // print_r($authResponse);
         $authCred = $authResponse->verify(
             new TestUtilities\TestVectorChallengeLoader($authReq['publicKey']['challenge']),
             $rp,
             $cred,
         );
 
-        var_dump($dir);
+        // var_dump($dir);
         var_dump($authCred);
 
     }
