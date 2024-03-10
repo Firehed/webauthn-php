@@ -9,6 +9,9 @@ namespace Firehed\WebAuthn\COSE;
  * @see §2.1, table 1
  *
  * @link https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+ *
+ * Any of these values SHOULD be safe to put in the publicKeyCredParams, but
+ * results may vary as not all combinations are thoroughly tested.
  */
 enum Algorithm: int
 {
