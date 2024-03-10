@@ -21,7 +21,7 @@ class RSA implements PublicKeyInterface
     private const INDEX_PUB_EXPONENT = -2;
     // Other values not relevant
 
-    private function __construct(
+    public function __construct(
         private BinaryString $n,
         private BinaryString $e,
     ) {
@@ -64,6 +64,9 @@ class RSA implements PublicKeyInterface
             // RFC 5280 §4.1.1.2 (AlgorithmIdentifier)
             new ASN\Constructed\Sequence(
                 new ASN\Primitive\ObjectIdentifier('1.2.840.113549.1.1.1'),
+                // This doesn't really matter for processing, but the PEM
+                // formatting checks don't align without it.
+                new ASN\Primitive\NullType(),
             ),
             // subjectPublicKey
             new ASN\Primitive\BitString($publicKey->toDER()),
