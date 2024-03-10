@@ -684,11 +684,11 @@ There are additional notes in Best Practices / Data Handling around this.
 
 | Name | [IANA ID](https://www.iana.org/assignments/cose/cose.xhtml#algorithms) | Supported | Notes |
 | --- | --- | --- | --- |
-| ES256 | `-7` | ✅ | |
-| EdDSA | `-8` | ❌ | |
-| ES384 | `-35` | ❌ | [^alg-needs-tests] |
-| ES512 | `-36` | ❌ | [^alg-needs-tests] |
-| RS256 | `-257` | ✅⚠️ | [^ext-vec] |
+| `ES256` | `-7` | ✅ | |
+| `EdDSA` | `-8` | ❌ | |
+| `ES384` | `-35` | ❌ | [^alg-needs-tests] |
+| `ES512` | `-36` | ❌ | [^alg-needs-tests] |
+| `RS256` | `-257` | ✅⚠️ | [^ext-vec] |
 
 ## Supported Identifiers
 
