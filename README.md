@@ -682,7 +682,7 @@ There are additional notes in Best Practices / Data Handling around this.
 
 ## Supported Algorithms
 
-| Name | IANA ID | Supported | Notes |
+| Name | [IANA ID](https://www.iana.org/assignments/cose/cose.xhtml#algorithms) | Supported | Notes |
 | --- | --- | --- | --- |
 | ES256 | `-7` | ✅ | |
 | EdDSA | `-8` | ❌ | |
