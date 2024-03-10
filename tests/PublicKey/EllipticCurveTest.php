@@ -9,6 +9,7 @@ use Firehed\WebAuthn\COSE\Curve;
 
 /**
  * @covers Firehed\WebAuthn\PublicKey\EllipticCurve
+ * @covers Firehed\WebAuthn\COSE\Curve
  */
 class EllipticCurveTest extends \PHPUnit\Framework\TestCase
 {
