@@ -32,7 +32,8 @@
         "ext-gmp": "*",
         "ext-hash": "*",
         "ext-openssl": "*",
-        "firehed/cbor": "^0.1.0"
+        "firehed/cbor": "^0.1.0",
+        "sop/asn1": "^4.1"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.1",
