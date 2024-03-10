@@ -36,6 +36,8 @@ enum Curve: int
 
     case ED448 = 7; // OKP
 
+    // RFC 5480
+    // §2.1.1.1 OIDs for named curves
     public function getOid(): string
     {
         return match ($this) {
