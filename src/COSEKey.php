@@ -48,12 +48,13 @@ class COSEKey
 
         // Note: these limitations may be lifted in the future
         $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
-        if ($keyType !== COSE\KeyType::EllipticCurve) {
-            throw new DomainException('Only EC2 keys supported');
-        }
+        // if ($keyType !== COSE\KeyType::EllipticCurve) {
+        //     throw new DomainException('Only EC2 keys supported');
+        // }
 
         $this->publicKey = match ($keyType) {
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
+            COSE\KeyType::RSA => PublicKey\RSA::fromDecodedCbor($decodedCbor),
         };
 
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
