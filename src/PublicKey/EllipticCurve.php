@@ -11,6 +11,13 @@ use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\Errors\VerificationError;
 use UnexpectedValueException;
 
+use function gmp_pow;
+use function gmp_add;
+use function gmp_cmp;
+use function gmp_import;
+use function gmp_mod;
+use function gmp_mul;
+
 /**
  * @internal
  *
