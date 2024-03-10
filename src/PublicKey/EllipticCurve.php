@@ -9,6 +9,7 @@ use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSE;
 use Firehed\WebAuthn\COSEKey;
 use Firehed\WebAuthn\Errors\VerificationError;
+use Sop\ASN1\Type as ASN;
 use UnexpectedValueException;
 
 use function gmp_pow;
@@ -31,6 +32,8 @@ use function gmp_mul;
  */
 class EllipticCurve implements PublicKeyInterface
 {
+    private const OID = '1.2.840.10045.2.1';
+
     // CBOR decoding: RFC 9053 §7.1.1
     private const INDEX_CURVE = -1; // ECC, OKP
     private const INDEX_X_COORDINATE = -2; // ECC, OKP
@@ -121,22 +124,19 @@ class EllipticCurve implements PublicKeyInterface
         if ($this->curve !== COSE\Curve::P256) {
             throw new DomainException('Only P256 curves can be PEM-formatted so far');
         }
-        // Described in RFC 5480
-        // §2.1.1.1
-        // Just use an OID calculator to figure out *that* encoding
-        $der = hex2bin(
-            '3059' // SEQUENCE, length 89
-                . '3013' // SEQUENCE, length 19
-                    . '0607' // OID, length 7
-                        . '2a8648ce3d0201' // 1.2.840.10045.2.1 = EC Public Key
-                    . '0608' // OID, length 8
-                        . '2a8648ce3d030107' // 1.2.840.10045.3.1.7 = P-256 Curve
-                . '0342' // BIT STRING, length 66
-                    . '00' // prepend with NUL
-                    . '04' // uncompressed format
+
+        $asn = new ASN\Constructed\Sequence(
+            new ASN\Constructed\Sequence(
+                new ASN\Primitive\ObjectIdentifier(self::OID),
+                new ASN\Primitive\ObjectIdentifier($this->curve->getOid()),
+            ),
+            new ASN\Primitive\BitString(
+                "\x04" // Uncompressed
+                . $this->x->unwrap()
+                . $this->y->unwrap(),
+            ),
         );
-        $der .= $this->x->unwrap();
-        $der .= $this->y->unwrap();
+        $der = $asn->toDER();
 
         $pem  = "-----BEGIN PUBLIC KEY-----\n";
         $pem .= chunk_split(base64_encode($der), 64, "\n");
