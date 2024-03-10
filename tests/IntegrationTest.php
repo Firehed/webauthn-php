@@ -41,8 +41,6 @@ class IntegrationTest extends TestCase
         $createData = self::read($dir, 'reg-res');
         $createResponse = $jrp->parseCreateResponse($createData);
 
-        // var_dump($metadata);
-
         $cred = $createResponse->verify(
             $challengeManager,
             $rp,
@@ -90,7 +88,6 @@ class IntegrationTest extends TestCase
     {
         $request = self::read($dir, $file);
         assert(is_array($request['publicKey']));
-        // assert(($request['publicKey']['challenge'] ?? null) !== null);
         return new TestUtilities\TestVectorChallengeLoader($request['publicKey']['challenge']);
     }
 
