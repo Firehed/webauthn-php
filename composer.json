@@ -29,6 +29,7 @@
     },
     "require": {
         "php": "^8.1",
+        "ext-gmp": "*",
         "ext-hash": "*",
         "ext-openssl": "*",
         "firehed/cbor": "^0.1.0"
