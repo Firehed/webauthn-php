@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn\COSE;
 
 use GMP;
+use UnhandledMatchError;
 
 use function gmp_init;
 
@@ -37,9 +38,9 @@ enum Curve: int
 
     public function getOid(): string
     {
-        return match ($this) { // @phpstan-ignore-line default unhandled match is desired
+        return match ($this) {
             self::P256 => '1.2.840.10045.3.1.7',
-            // TODO: add others as support increases
+            default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
 
@@ -49,6 +50,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0xFFFFFFFF 00000001 00000000 00000000 00000000 FFFFFFFF FFFFFFFF FFFFFFFC'),
+            default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
 
@@ -56,6 +58,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0x5AC635D8 AA3A93E7 B3EBBD55 769886BC 651D06B0 CC53B0F6 3BCE3C3E 27D2604B'),
+            default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
 
@@ -63,6 +66,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0xFFFFFFFF 00000001 00000000 00000000 00000000 FFFFFFFF FFFFFFFF FFFFFFFF'),
+            default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
 }
