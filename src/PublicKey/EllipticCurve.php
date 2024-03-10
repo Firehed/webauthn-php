@@ -8,6 +8,7 @@ use DomainException;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSE;
 use Firehed\WebAuthn\COSEKey;
+use Firehed\WebAuthn\Errors\VerificationError;
 use UnexpectedValueException;
 
 /**
@@ -41,6 +42,9 @@ class EllipticCurve implements PublicKeyInterface
         }
         if ($y->getLength() !== 32) {
             throw new UnexpectedValueException('Y-coordinate not 32 bytes');
+        }
+        if (!$this->isOnCurve()) {
+            throw new VerificationError('5.8.5', 'Point not on curve');
         }
     }
 
@@ -131,5 +135,27 @@ class EllipticCurve implements PublicKeyInterface
         $pem .= chunk_split(base64_encode($der), 64, "\n");
         $pem .= "-----END PUBLIC KEY-----";
         return $pem;
+    }
+
+    private function isOnCurve(): bool
+    {
+        // The curve E: y^2 = x^3 + ax + b over Fp is defined by:
+        $a = $this->curve->getA();
+        $b = $this->curve->getB();
+        $p = $this->curve->getP();
+
+        $x = gmp_import($this->x->unwrap());
+        $y = gmp_import($this->y->unwrap());
+
+        // This is only tested with P256 (secp256r1) but SHOULD be the same for
+        // the other curves (none of which are supported yet)/
+        $x3 = gmp_pow($x, 3);
+        $ax = gmp_mul($a, $x);
+        $rhs = gmp_mod(gmp_add($x3, gmp_add($ax, $b)), $p);
+
+        $y2 = gmp_pow($y, 2);
+        $lhs = gmp_mod($y2, $p);
+
+        return 0 === gmp_cmp($lhs, $rhs); // Values match
     }
 }
