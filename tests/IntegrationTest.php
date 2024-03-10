@@ -41,14 +41,33 @@ class IntegrationTest extends TestCase
         $createData = self::read($dir, 'reg-res');
         $createResponse = $jrp->parseCreateResponse($createData);
 
+        // var_dump($metadata);
+
         $cred = $createResponse->verify(
             $challengeManager,
             $rp,
             rejectUncertainTrustPaths: false,
         );
 
+
         // More assertions to come!
-        self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Credential ID wrong');
+        self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Registration: Credential ID wrong');
+
+
+        if (!file_exists($dir . '/auth-req.json')) {
+            self::markTestIncomplete('no auth done');
+        }
+
+        $authResponse = $jrp->parseGetResponse(self::read($dir, 'auth-res'));
+        $authCred = $authResponse->verify(
+            self::getChallengeFromVector($dir, 'auth-req'),
+            $rp,
+            $cred,
+        );
+
+        // This is mostly testing that known-good challenges are passing. Might
+        // want to add some data mangling to also assert failures.
+        self::assertSame($metadata['id'], $authCred->getId()->toBase64Url(), 'Auth: Credential ID wrong');
     }
 
     /**
@@ -60,9 +79,19 @@ class IntegrationTest extends TestCase
         assert($dirs !== false);
         $out = [];
         foreach ($dirs as $dir) {
-            $out[$dir] = [$dir];
+            if (is_dir($dir)) {
+                $out[$dir] = [$dir];
+            }
         }
         return $out;
+    }
+
+    private static function getChallengeFromVector(string $dir, string $file): ChallengeLoaderInterface
+    {
+        $request = self::read($dir, $file);
+        assert(is_array($request['publicKey']));
+        // assert(($request['publicKey']['challenge'] ?? null) !== null);
+        return new TestUtilities\TestVectorChallengeLoader($request['publicKey']['challenge']);
     }
 
     /**
