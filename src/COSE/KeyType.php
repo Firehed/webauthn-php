@@ -12,8 +12,9 @@ namespace Firehed\WebAuthn\COSE;
  */
 enum KeyType: int
 {
-    case OctetKeyPair = 1;
+    // case Reserved = 0;
+    // case OctetKeyPair = 1;
     case EllipticCurve = 2;
-    case Symmetric = 4;
-    case Reserved = 0;
+    case Rsa = 3;
+    // case Symmetric = 4;
 }

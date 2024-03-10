@@ -20,11 +20,12 @@ use Firehed\CBOR\Decoder;
  * but re-inventing a wheel is very undesirable!).
  *
  * @see RFC 8152
- * @link https://www.rfc-editor.org/rfc/rfc8152.html
+ * @link https://www.rfc-editor.org/rfc/rfc8152
  *
- * @see RFC 8230 (RSA key support - not yet implemented)
+ * @see RFC 8230 (RSA keys)
+ * @link https://www.rfc-editor.org/rfc/rfc8230
  *
- * @see RFC 9052
+ * @see RFC 9052 (EC keys)
  * @link https://www.rfc-editor.org/rfc/rfc9052
  */
 class COSEKey
@@ -47,13 +48,13 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
-        if ($keyType !== COSE\KeyType::EllipticCurve) {
-            throw new DomainException('Only EC2 keys supported');
-        }
+        $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);
 
         $this->publicKey = match ($keyType) {
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
+            COSE\KeyType::Rsa => PublicKey\RSA::fromDecodedCbor($decodedCbor),
+            // Other syntactially-valid key types exist, but the library
+            // doesn't handle them (yet?)
         };
 
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));

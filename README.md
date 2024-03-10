@@ -680,6 +680,16 @@ If there are any unclear areas, please file an issue.
 
 There are additional notes in Best Practices / Data Handling around this.
 
+## Supported Algorithms
+
+| Name | [IANA ID](https://www.iana.org/assignments/cose/cose.xhtml#algorithms) | Supported | Notes |
+| --- | --- | --- | --- |
+| `ES256` | `-7` | ✅ | |
+| `EdDSA` | `-8` | ❌ | |
+| `ES384` | `-35` | ❌ | [^alg-needs-tests] |
+| `ES512` | `-36` | ❌ | [^alg-needs-tests] |
+| `RS256` | `-257` | ✅⚠️ | [^ext-vec] |
+
 ## Supported Identifiers
 
 When generating a credential, the client will attest to its authenticity.
@@ -731,3 +741,4 @@ Intro to passkeys:
 
 [^ext-vec]: Support is based on [unofficial test vectors](https://github.com/w3c/webauthn/issues/1633).
 [^limited-trust-path]: Handling of attestation trust path is limited.
+[^alg-needs-tests]: This should be easy add support, but test vectors are needed
