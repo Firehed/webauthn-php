@@ -54,7 +54,7 @@ class COSEKey
 
         $this->publicKey = match ($keyType) {
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
-            COSE\KeyType::RSA => PublicKey\RSA::fromDecodedCbor($decodedCbor),
+            COSE\KeyType::Rsa => PublicKey\RSA::fromDecodedCbor($decodedCbor),
         };
 
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
