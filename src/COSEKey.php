@@ -47,7 +47,7 @@ class COSEKey
         $decodedCbor = $decoder->decode($cbor->unwrap());
 
         // Note: these limitations may be lifted in the future
-        $keyType = COSE\KeyType::tryFrom($decodedCbor[self::INDEX_KEY_TYPE]);
+        $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);
         // if ($keyType !== COSE\KeyType::EllipticCurve) {
         //     throw new DomainException('Only EC2 keys supported');
         // }
