@@ -16,6 +16,8 @@ use PHPUnit\Framework\TestCase;
  * @covers \Firehed\WebAuthn\Attestations\None
  * @covers \Firehed\WebAuthn\Attestations\Packed
  * @covers \Firehed\WebAuthn\AuthenticatorData
+ * @covers \Firehed\WebAuthn\PublicKey\EllipticCurve
+ * @covers \Firehed\WebAuthn\PublicKey\RSA
  *
  * TODO: merge EndToEndTest into here
  */
@@ -31,30 +33,43 @@ class IntegrationTest extends TestCase
         // @phpstan-ignore-next-line
         $rp = new SingleOriginRelyingParty($metadata['origin']);
 
-        $createReq = self::read($dir, 'reg-req');
-        $challengeManager = new TestUtilities\TestVectorChallengeLoader(
-            $createReq['publicKey']['challenge'], // @phpstan-ignore-line
-        );
-
         $jrp = new JsonResponseParser();
 
         $createData = self::read($dir, 'reg-res');
         $createResponse = $jrp->parseCreateResponse($createData);
 
         $cred = $createResponse->verify(
-            $challengeManager,
+            self::getChallengeFromVector($dir, 'reg-req'),
             $rp,
             rejectUncertainTrustPaths: false,
         );
 
-
         // More assertions to come!
         self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Registration: Credential ID wrong');
+    }
 
-
+    /**
+     * @dataProvider vectors
+     */
+    public function testAuth(string $dir): void
+    {
         if (!file_exists($dir . '/auth-req.json')) {
-            self::markTestIncomplete('no auth done');
+            self::markTestIncomplete('No auth vector');
         }
+
+        $metadata = self::read($dir, 'metadata');
+        $rp = new SingleOriginRelyingParty($metadata['origin']); // @phpstan-ignore-line
+        // Note: I wanted to @depend this, but it seems incompatible with
+        // @dataProvider... so it's duplicated
+        $jrp = new JsonResponseParser();
+
+        $createResponse = $jrp->parseCreateResponse(self::read($dir, 'reg-res'));
+        $cred = $createResponse->verify(
+            self::getChallengeFromVector($dir, 'reg-req'),
+            $rp,
+            rejectUncertainTrustPaths: false,
+        );
+
 
         $authResponse = $jrp->parseGetResponse(self::read($dir, 'auth-res'));
         $authCred = $authResponse->verify(
