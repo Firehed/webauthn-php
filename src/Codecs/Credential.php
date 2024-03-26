@@ -220,7 +220,7 @@ class Credential
 
         $binary = pack(self::PACK_UINT8, $version) . $versionSpecificFormat;
 
-        return base64_encode($binary);
+        return (new BinaryString($binary))->toBase64Url();
     }
 
     /**
@@ -253,10 +253,7 @@ class Credential
 
     public function decode(string $encoded): CredentialInterface
     {
-        $binary = base64_decode($encoded, true);
-        assert($binary !== false);
-
-        $bytes = new BinaryString($binary);
+        $bytes = BinaryString::fromBase64Url($encoded);
 
         $version = $bytes->readUint8();
         assert(($version & 0x80) === 0, 'High bit in version must not be set');
