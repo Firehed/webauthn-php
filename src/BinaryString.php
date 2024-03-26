@@ -26,6 +26,10 @@ class BinaryString
     ) {
     }
 
+    /**
+     * This accepts strings encoded in either standard base64 or base64url,
+     * since it converts the latter to the former while decoding.
+     */
     public static function fromBase64Url(string $base64Url): BinaryString
     {
         $base64 = strtr($base64Url, ['-' => '+', '_' => '/']);
