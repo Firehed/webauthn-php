@@ -146,6 +146,11 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
                 'v+hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
                 '8aW5GWVNe7kOMQ==',
             ],
+            'no att cert base64url' => [
+                'AgsACv69Y58M4y3CsWkAADEXAAAATaUBAgMmIAEhWCBOknC_s6jMNgiYeThI' .
+                'v-hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
+                '8aW5GWVNe7kOMQ',
+            ],
             'saved att cert' => [
                 'AhgACr/Sj9YstWchvM4AADBlAAAATaUBAgMmIAEhWCBOknC/s6jMNgiYeThI' .
                 'v+hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
@@ -172,6 +177,33 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
                 'bGxlbmdlIjoiNkVScmZFSVNYaXJYTm1iX1hMa0NlM2REdml0cEdkYVlvX3FY' .
                 'N0J5YmFvQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6Nzc3NyIsInR5' .
                 'cGUiOiJ3ZWJhdXRobi5jcmVhdGUifQ=='
+            ],
+            'saved att cert base64url' => [
+                'AhgACr_Sj9YstWchvM4AADBlAAAATaUBAgMmIAEhWCBOknC_s6jMNgiYeThI' .
+                'v-hUUYF9qszFOeJYoCfBEY2BoiJYIBuUBOTsbnswM3PD9Lj61GTyVQBalOm2' .
+                '8aW5GWVNe7kODAAAA20AAAB1o2NmbXRoZmlkby11MmZnYXR0U3RtdKJjeDVj' .
+                'gVkCMTCCAi0wggEXoAMCAQICBAW2BXkwCwYJKoZIhvcNAQELMC4xLDAqBgNV' .
+                'BAMTI1l1YmljbyBVMkYgUm9vdCBDQSBTZXJpYWwgNDU3MjAwNjMxMCAXDTE0' .
+                'MDgwMTAwMDAwMFoYDzIwNTAwOTA0MDAwMDAwWjAoMSYwJAYDVQQDDB1ZdWJp' .
+                'Y28gVTJGIEVFIFNlcmlhbCA5NTgxNTAzMzBZMBMGByqGSM49AgEGCCqGSM49' .
+                'AwEHA0IABP243rOh7XDrY2wGbrYAaZal-XD8tduI_DswXUHllm8MG1S4Uv7w' .
+                'oJB-0X87_8KdTTIbnPioSizqoDjKvTXVmN6jJjAkMCIGCSsGAQQBgsQKAgQV' .
+                'MS4zLjYuMS40LjEuNDE0ODIuMS4xMAsGCSqGSIb3DQEBCwOCAQEAftP7bMwl' .
+                'IBP4LyGMKjfaYDHSDn8wgdr8rrEo_H-bIzkUv7ZNYTXxfOIh-nZPRT7xJzqM' .
+                '6WWVZEK7Lx5HSD9zfcvJi1hTd_71CycOAon4hDbxrc9JsmIe5eMC31VbmrdC' .
+                'cuBp-RgUmz3sTxIiixDA-I3javWKdLtEK4WuAFNkvaZwIFj8Hy2Hm1MBEepg' .
+                '6Gxj8X-llEzIPwqiaYSLPuOIpsCeawWVP8u49H6Don4AcqY8Mq1khk6SbXES' .
+                '-hmX94OWVvuzK-j3iJ0PAUVRmiev3Y5GsEykKQ2FQLY0uIYWHnWIyGKZ3N1k' .
+                'NdFnijpvCnSCnE3T9ww1JNHd8W14rdIbZGNzaWdYSDBGAiEA6Q_IoHy9emgq' .
+                'byDa_5id6H0_MJvAkT28HNb0iEO36MUCIQDD-UZZBz0PIZUrJ77OliPPmtFO' .
+                'SOW_u1vzX7aYe4lcLWhhdXRoRGF0YVjESZYN5YgOjGh0NBcPZHZgW4_krrmi' .
+                'hjLHmVzzuoMdl2NBAAAAAAAAAAAAAAAAAAAAAAAAAAAAQHyt9XuGzGoH2Hhm' .
+                'Gh_lNyFaCv-v9V79jigJZuZ5LtnWuOw9Ph-WfrA1HeHw33tqFbQ_5AYjo6E6' .
+                'atlqFXZ6NRqlAQIDJiABIVggaORWdx8A3Tw55VDl5Hi3H-RC_TxUJvuyeFjT' .
+                'FHz4zHwiWCC2nNEOYCncBKKLJpU536AHVsp4sHIJWtt8fAqF5ihlmHsiY2hh' .
+                'bGxlbmdlIjoiNkVScmZFSVNYaXJYTm1iX1hMa0NlM2REdml0cEdkYVlvX3FY' .
+                'N0J5YmFvQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6Nzc3NyIsInR5' .
+                'cGUiOiJ3ZWJhdXRobi5jcmVhdGUifQ'
             ],
         ];
     }
