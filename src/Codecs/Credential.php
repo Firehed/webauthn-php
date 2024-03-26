@@ -22,8 +22,8 @@ use UnhandledMatchError;
  * an opaque string without inspection or modification. This library makes
  * the following promises:
  *
- * - The opaque strings will not be outside of the base64 character range
- * (A-Za-z0-9/+=)
+ * - The opaque strings will not be outside of the base64(+url) character range
+ * (A-Za-z0-9-_/+=)
  * - The opaque strings are versioned, and if a new version is introduced,
  * there will be an upgrade/conversion path
  * - The opaque strings will not exceed 64KiB (65535 bytes)
@@ -46,7 +46,7 @@ use UnhandledMatchError;
  * Format spec:
  *
  * A CredentialObj shall be encoded to a string.
- * That string shall be a base64-encoded representation of:
+ * That string shall be a base64url-encoded representation of:
  *
  * [ version ] [ version-specific data ]
  *
