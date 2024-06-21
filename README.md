@@ -7,6 +7,19 @@ A way to move beyond passwords
 [![Lint](https://github.com/Firehed/webauthn-php/actions/workflows/lint.yml/badge.svg)](https://github.com/Firehed/webauthn-php/actions/workflows/lint.yml)
 [![codecov](https://codecov.io/gh/Firehed/webauthn-php/branch/main/graph/badge.svg?token=xr69yhtCBl)](https://codecov.io/gh/Firehed/webauthn-php)
 
+## Support Passkeys and WebAuthn in your PHP app
+
+This library will help you get your PHP app ready to support passkeys and WebAuthn.
+It handles the processing and cryptographic verification of client data, and assists with credential storage and retrieval.
+
+There's a non-trivial amount of client-side work to also perform.
+Numerous examples are provided, but you'll want to be familiar with the WebAuthn spec and browser APIs.
+
+> [!TIP]
+> Want a hosted option?
+> [SnapAuth](https://www.snapauth.app?utm_source=github&utm_campaign=library&utm_content=webauthn-php) will have you up and running in minutes.
+> Both client and server integrations are handled for you in just a couple lines of code.
+
 ## What is Web Authentication?
 Web Authentication, frequently referenced as `WebAuthn`, is a set of technologies and APIs to provide user authentication using modern cryptography.
 Instead of passwords and hashing, WebAuthn allows users to generate encryption keypairs, provide the public key to the server, and authenticate by signing server-generated challenges using the private key that never leaves their possession.
@@ -197,9 +210,6 @@ header('HTTP/1.1 200 OK');
 4) There is no step 4. The verified credential is now stored and associated with the user!
 
 ### Authenticating a user with an existing WebAuthn credential
-
-Note: this workflow may be a little different if supporting [passkeys](https://developer.apple.com/passkeys/).
-Updated samples will follow.
 
 Before starting, you will need to collect the username or id of the user trying to authenticate, and retrieve the user info from storage.
 This assumes the same schema from the previous Registration example.
