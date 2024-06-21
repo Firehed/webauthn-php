@@ -12,9 +12,13 @@ A way to move beyond passwords
 This library will help you get your PHP app ready to support passkeys and WebAuthn.
 It handles the processing and cryptographic verification of client data, and assists with credential storage and retrieval.
 
+There's a non-trivial amount of client-side work to also perform.
+Numerous examples are provided, but you'll want to be familiar with the WebAuthn spec and browser APIs.
+
 > [!TIP]
 > Want a hosted option?
-> [SnapAuth](https://www.snapauth.app?utm_source=github&utm_campaign=library&utm_content=webauthn-php) will have you up and running in minutes with only a couple lines of code.
+> [SnapAuth](https://www.snapauth.app?utm_source=github&utm_campaign=library&utm_content=webauthn-php) will have you up and running in minutes.
+> Both client and server integrations are handled for you in just a couple lines of code.
 
 ## What is Web Authentication?
 Web Authentication, frequently referenced as `WebAuthn`, is a set of technologies and APIs to provide user authentication using modern cryptography.
