@@ -1,7 +1,15 @@
 {
     "name": "firehed/webauthn",
-    "description": "Web Authentication",
-    "keywords": [],
+    "description": "Support passkeys and Web Authentication",
+    "keywords": [
+        "passkeys",
+        "webauthn",
+        "web authentication",
+        "u2f",
+        "fido",
+        "mfa",
+        "2fa"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -14,6 +22,10 @@
         "optimize-autoloader": true,
         "sort-packages": true
     },
+    "funding": [
+        { "type": "github", "url": "https://github.com/sponsors/Firehed" },
+        { "type": "other", "url": "https://www.snapauth.app" }
+    ],
     "autoload": {
         "psr-4": {
             "Firehed\\WebAuthn\\": "src"
