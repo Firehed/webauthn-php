@@ -44,6 +44,7 @@ class CreateResponse implements Responses\AttestationInterface
         RelyingPartyInterface $rp,
         Enums\UserVerificationRequirement $uv = Enums\UserVerificationRequirement::Preferred,
         bool $rejectUncertainTrustPaths = true,
+        Enums\CredentialMediationRequirement $mediation = Enums\CredentialMediationRequirement::Optional,
     ): CredentialInterface {
         // 7.1.1 - 7.1.3 are client code
         // 7.1.4 is temporarily skpped
@@ -93,7 +94,7 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.14
-        if (!$authData->isUserPresent()) {
+        if (!$authData->isUserPresent() && $mediation !== Enums\CredentialMediationRequirement::Conditional) {
             $this->fail('7.1.14', 'authData.isUserPresent');
         }
 
