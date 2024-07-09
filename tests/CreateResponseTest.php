@@ -263,14 +263,62 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
     // 7.1.14
     public function testUserNotPresentIsError(): void
     {
-        // override authData
-        self::markTestIncomplete();
+        $ad = self::createMock(AuthenticatorData::class);
+        $ad->method('isUserPresent')->willReturn(false);
+        $ad->method('getRpIdHash')->willReturn(new BinaryString(hash('sha256', 'localhost', true)));
+
+        $ao = self::createMock(Attestations\AttestationObjectInterface::class);
+        $ao->method('getAuthenticatorData')->willReturn($ad);
+
+        $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id,
+            ao: $ao,
+            clientDataJson: $this->clientDataJson,
+            transports: [],
+        );
+
+        $this->expectRegistrationError('7.1.14');
+        $response->verify(
+            challengeLoader: $this->cm,
+            rp: $this->rp,
+        );
     }
 
     public function testUserNotPresentIsAllowedDuringConditionalRegistration(): void
     {
-        // override authData
-        self::markTestIncomplete();
+        $ad = self::createMock(AuthenticatorData::class);
+        $ad->method('isUserPresent')->willReturn(false);
+        $ad->method('getRpIdHash')->willReturn(new BinaryString(hash('sha256', 'localhost', true)));
+        $acd = new AttestedCredentialData(
+            aaguid: new BinaryString(''),
+            credentialId: $this->id,
+            coseKey: self::createMock(COSEKey::class),
+        );
+        $ad->method('getAttestedCredentialData')->willReturn($acd);
+
+        $ao = self::createMock(Attestations\AttestationObjectInterface::class);
+        $ao->method('getAuthenticatorData')->willReturn($ad);
+        $ao->method('verify')->willReturn(
+            new Attestations\VerificationResult(Attestations\AttestationType::None)
+        );
+
+        $response = new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id,
+            ao: $ao,
+            clientDataJson: $this->clientDataJson,
+            transports: [],
+        );
+
+        $credential = $response->verify(
+            challengeLoader: $this->cm,
+            rp: $this->rp,
+            mediation: Enums\CredentialMediationRequirement::Conditional,
+        );
+
+        // This is mostly a smoke-test to inverse testUserNotPresentIsError
+        self::assertSame($this->id, $credential->getId());
     }
 
     // 7.1.15
