@@ -267,6 +267,12 @@ class CreateResponseTest extends \PHPUnit\Framework\TestCase
         self::markTestIncomplete();
     }
 
+    public function testUserNotPresentIsAllowedDuringConditionalRegistration(): void
+    {
+        // override authData
+        self::markTestIncomplete();
+    }
+
     // 7.1.15
     public function testUserVerifiedNotPresentWhenRequiredIsError(): void
     {
