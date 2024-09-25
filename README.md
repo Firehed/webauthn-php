@@ -710,7 +710,7 @@ Due to an inability to generate responses with all formats, not all are supporte
 | `packed` | ✅⚠️[^limited-trust-path] | 8.2 | |
 | `tpm` | ❌ | 8.3 | |
 | `android-key` | ❌ | 8.4 | |
-| `android-safetynet` | ❌ | 8.5 | |
+| `android-safetynet` | ❌ | 8.5 | SafetyNet attestation has been [deprecated](https://android-developers.googleblog.com/2024/09/attestation-format-change-for-android-fido2-api.html), so this library will not be adding support. |
 | `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
 | `none` | ✅ | 8.7 | Used by Apple in Safari when using Passkeys (even when direct attestation is requested) |
 | `apple` | ✅⚠️ [^ext-vec], [^limited-trust-path] | 8.8 | Apple no longer appears to use this format, instead providing non-attested credentials (fmt=none). |
