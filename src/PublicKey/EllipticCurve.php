@@ -156,11 +156,11 @@ class EllipticCurve implements PublicKeyInterface
 
         // This is only tested with P256 (secp256r1) but SHOULD be the same for
         // the other curves (none of which are supported yet)/
-        $x3 = gmp_pow($x, 3);
+        $x3 = $x ** 3;
         $ax = gmp_mul($a, $x);
         $rhs = gmp_mod(gmp_add($x3, gmp_add($ax, $b)), $p);
 
-        $y2 = gmp_pow($y, 2);
+        $y2 = $y ** 2;
         $lhs = gmp_mod($y2, $p);
 
         return 0 === gmp_cmp($lhs, $rhs); // Values match
