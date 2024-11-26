@@ -152,11 +152,11 @@ class EllipticCurve implements PublicKeyInterface
 
         // This is only tested with P256 (secp256r1) but SHOULD be the same for
         // the other curves (none of which are supported yet)/
-        $x3 = $x ** 3;
-        $ax = $a * $x;
-        $rhs = ($x3 + $ax + $b) % $p;
+        $x3 = $x ** 3; // @phpstan-ignore binaryOp.invalid (phpstan/phpstan#12123)
+        $ax = $a * $x; // @phpstan-ignore binaryOp.invalid
+        $rhs = ($x3 + $ax + $b) % $p; // @phpstan-ignore binaryOp.invalid
 
-        $y2 = $y ** 2;
+        $y2 = $y ** 2; // @phpstan-ignore binaryOp.invalid
         $lhs = $y2 % $p;
 
         // Functionaly, `$lhs === $rhs` but avoids reference equality issues
