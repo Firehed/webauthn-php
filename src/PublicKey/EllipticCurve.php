@@ -163,6 +163,6 @@ class EllipticCurve implements PublicKeyInterface
         $y2 = $y ** 2;
         $lhs = $y2 % $p;
 
-        return 0 === gmp_cmp($lhs, $rhs); // Values match
+        return ($lhs - $rhs) === 0;
     }
 }
