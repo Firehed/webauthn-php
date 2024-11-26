@@ -12,6 +12,7 @@ use Firehed\WebAuthn\Errors\VerificationError;
 use Sop\ASN1\Type as ASN;
 use UnexpectedValueException;
 
+use function gmp_cmp;
 use function gmp_import;
 
 /**
@@ -158,6 +159,8 @@ class EllipticCurve implements PublicKeyInterface
         $y2 = $y ** 2;
         $lhs = $y2 % $p;
 
-        return ($lhs - $rhs) === 0;
+        // Functionaly, `$lhs === $rhs` but avoids reference equality issues
+        // w/out having to introduce loose comparision ($lhs == $rhs works)
+        return 0 === gmp_cmp($lhs, $rhs);
     }
 }
