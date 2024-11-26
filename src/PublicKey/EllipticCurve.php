@@ -158,10 +158,10 @@ class EllipticCurve implements PublicKeyInterface
         // the other curves (none of which are supported yet)/
         $x3 = $x ** 3;
         $ax = $a * $x;
-        $rhs = gmp_mod($x3 + $ax + $b, $p);
+        $rhs = ($x3 + $ax + $b) % $p;
 
         $y2 = $y ** 2;
-        $lhs = gmp_mod($y2, $p);
+        $lhs = $y2 % $p;
 
         return 0 === gmp_cmp($lhs, $rhs); // Values match
     }
