@@ -12,12 +12,8 @@ use Firehed\WebAuthn\Errors\VerificationError;
 use Sop\ASN1\Type as ASN;
 use UnexpectedValueException;
 
-use function gmp_pow;
-use function gmp_add;
 use function gmp_cmp;
 use function gmp_import;
-use function gmp_mod;
-use function gmp_mul;
 
 /**
  * @internal
@@ -156,13 +152,15 @@ class EllipticCurve implements PublicKeyInterface
 
         // This is only tested with P256 (secp256r1) but SHOULD be the same for
         // the other curves (none of which are supported yet)/
-        $x3 = gmp_pow($x, 3);
-        $ax = gmp_mul($a, $x);
-        $rhs = gmp_mod(gmp_add($x3, gmp_add($ax, $b)), $p);
+        $x3 = $x ** 3; // @phpstan-ignore binaryOp.invalid (phpstan/phpstan#12123)
+        $ax = $a * $x; // @phpstan-ignore binaryOp.invalid
+        $rhs = ($x3 + $ax + $b) % $p; // @phpstan-ignore binaryOp.invalid
 
-        $y2 = gmp_pow($y, 2);
-        $lhs = gmp_mod($y2, $p);
+        $y2 = $y ** 2; // @phpstan-ignore binaryOp.invalid
+        $lhs = $y2 % $p;
 
-        return 0 === gmp_cmp($lhs, $rhs); // Values match
+        // Functionaly, `$lhs === $rhs` but avoids reference equality issues
+        // w/out having to introduce loose comparision ($lhs == $rhs works)
+        return 0 === gmp_cmp($lhs, $rhs);
     }
 }
