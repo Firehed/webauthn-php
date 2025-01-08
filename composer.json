@@ -65,7 +65,7 @@
         ],
         "autofix": "phpcbf",
         "phpunit": "phpunit",
-        "phpstan": "phpstan analyse",
+        "phpstan": "phpstan analyse --memory-limit=1G",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
         "phpcs": "phpcs"
     }
