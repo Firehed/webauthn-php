@@ -45,7 +45,7 @@
         "ext-hash": "*",
         "ext-openssl": "*",
         "firehed/cbor": "^0.1.0",
-        "sop/asn1": "^4.1"
+        "sop/asn1": "^4.1.2"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.1",
@@ -65,7 +65,7 @@
         ],
         "autofix": "phpcbf",
         "phpunit": "phpunit",
-        "phpstan": "phpstan analyse",
+        "phpstan": "phpstan analyse --memory-limit=1G",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
         "phpcs": "phpcs"
     }
