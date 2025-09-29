@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn;
 use InvalidArgumentException;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\WildcardRelyingParty
+ * @coversDefaultClass \Firehed\WebAuthn\WildcardRelyingParty
  * @covers ::<protected>
  * @covers ::<private>
  */

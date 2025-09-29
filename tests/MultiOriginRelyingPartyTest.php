@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn;
 use InvalidArgumentException;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\MultiOriginRelyingParty
+ * @coversDefaultClass \Firehed\WebAuthn\MultiOriginRelyingParty
  * @covers ::<protected>
  * @covers ::<private>
  */

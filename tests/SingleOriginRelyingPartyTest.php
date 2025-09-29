@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @coversDefaultClass Firehed\WebAuthn\SingleOriginRelyingParty
+ * @coversDefaultClass \Firehed\WebAuthn\SingleOriginRelyingParty
  * @covers ::<protected>
  * @covers ::<private>
  */
