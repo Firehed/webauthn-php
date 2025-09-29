@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\AuthenticatorData
- */
-class AuthenticatorDataTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Throwable;
+
+#[CoversClass(AuthenticatorData::class)]
+class AuthenticatorDataTest extends TestCase
 {
     public function testParseAssertion(): void
     {
@@ -31,7 +33,7 @@ class AuthenticatorDataTest extends \PHPUnit\Framework\TestCase
         try {
             $_ = $ad->getAttestedCredentialData();
             self::fail('AuthData does not include an attested credential');
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
     }
 
@@ -95,7 +97,7 @@ class AuthenticatorDataTest extends \PHPUnit\Framework\TestCase
         try {
             $_ = $ad->getAttestedCredentialData();
             self::fail('AuthData does not include an attested credential');
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
     }
 }
