@@ -17,7 +17,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseCreateResponse(string $directory): void
     {
         $parser = new JsonResponseParser();
-        $registerResponse = $this->safeReadJsonFile("$directory/register.json");
+        $registerResponse = self::safeReadJsonFile("$directory/register.json");
         $attestation = $parser->parseCreateResponse($registerResponse);
 
         self::assertInstanceOf(CreateResponse::class, $attestation);
@@ -36,7 +36,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
 
     public function testParseCreateResponseWithInvalidTransports(): void
     {
-        $response = $this->readFixture('safari-passkey-polyfill/register.json');
+        $response = self::readFixture('safari-passkey-polyfill/register.json');
         $response['response']['transports'] = ['invalid', 'usb']; // @phpstan-ignore-line
 
         $parser = new JsonResponseParser();
@@ -60,7 +60,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesFilledUserHandle(): void
     {
         $parser = new JsonResponseParser();
-        $response = $this->readFixture('safari-passkey-polyfill/login.json');
+        $response = self::readFixture('safari-passkey-polyfill/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertSame('usr_686mCXhr7Hm7wc49CPccMhpf', $assertion->getUserHandle());
@@ -69,7 +69,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesEmptyUserHandle(): void
     {
         $parser = new JsonResponseParser();
-        $response = $this->readFixture('fido-u2f-polyfill/login.json');
+        $response = self::readFixture('fido-u2f-polyfill/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertNull($assertion->getUserHandle());
@@ -78,7 +78,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesNullUserHandle(): void
     {
         $parser = new JsonResponseParser();
-        $response = $this->readFixture('fido-u2f-native/login.json');
+        $response = self::readFixture('fido-u2f-native/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertNull($assertion->getUserHandle());
@@ -87,10 +87,10 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array<mixed>[]
      */
-    public function badCreateResponses(): array
+    public static function badCreateResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->readFixture('fido-u2f-polyfill/register.json');
+            $response = self::readFixture('fido-u2f-polyfill/register.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -128,10 +128,10 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array<mixed>[]
      */
-    public function badGetResponses(): array
+    public static function badGetResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->readFixture('fido-u2f-polyfill/login.json');
+            $response = self::readFixture('fido-u2f-polyfill/login.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -175,7 +175,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponse(string $directory): void
     {
         $parser = new JsonResponseParser();
-        $loginResponse = $this->safeReadJsonFile("$directory/login.json");
+        $loginResponse = self::safeReadJsonFile("$directory/login.json");
         $assertion = $parser->parseGetResponse($loginResponse);
 
         self::assertInstanceOf(GetResponse::class, $assertion);
@@ -184,7 +184,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string}[]
      */
-    public function goodVectors(): array
+    public static function goodVectors(): array
     {
         $paths = glob(__DIR__ . '/fixtures/toJSON/*');
         assert($paths !== false);
@@ -199,7 +199,7 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return mixed[]
      */
-    private function safeReadJsonFile(string $path): array
+    private static function safeReadJsonFile(string $path): array
     {
         if (!file_exists($path)) {
             throw new \LogicException("$path is missing");
@@ -216,8 +216,8 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return mixed[]
      */
-    private function readFixture(string $relativePath): array
+    private static function readFixture(string $relativePath): array
     {
-        return $this->safeReadJsonFile(__DIR__ . '/fixtures/toJSON/' . $relativePath);
+        return self::safeReadJsonFile(__DIR__ . '/fixtures/toJSON/' . $relativePath);
     }
 }
