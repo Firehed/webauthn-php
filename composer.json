@@ -40,7 +40,7 @@
         }
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-gmp": "*",
         "ext-hash": "*",
         "ext-openssl": "*",
@@ -50,11 +50,10 @@
     "require-dev": {
         "maglnet/composer-require-checker": "^4.1",
         "mheap/phpunit-github-actions-printer": "^1.5",
-        "nikic/php-parser": "^4.14",
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^11",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "scripts": {
