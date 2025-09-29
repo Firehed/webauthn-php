@@ -15,7 +15,7 @@ use Firehed\WebAuthn\{
 };
 
 /**
- * @covers Firehed\WebAuthn\Codecs\Credential
+ * @covers \Firehed\WebAuthn\Codecs\Credential
  */
 class CredentialTest extends \PHPUnit\Framework\TestCase
 {

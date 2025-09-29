@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\AuthenticatorData
+ * @covers \Firehed\WebAuthn\AuthenticatorData
  */
 class AuthenticatorDataTest extends \PHPUnit\Framework\TestCase
 {

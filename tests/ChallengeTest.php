@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\Challenge
+ * @covers \Firehed\WebAuthn\Challenge
  */
 class ChallengeTest extends \PHPUnit\Framework\TestCase
 {

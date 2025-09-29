@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn\Attestations;
 use Firehed\WebAuthn\BinaryString;
 
 /**
- * @covers Firehed\WebAuthn\Attestations\AttestationObject
+ * @covers \Firehed\WebAuthn\Attestations\AttestationObject
  */
 class AttestationObjectTest extends \PHPUnit\Framework\TestCase
 {

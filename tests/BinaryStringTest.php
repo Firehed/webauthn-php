@@ -7,7 +7,7 @@ namespace Firehed\WebAuthn;
 use OutOfBoundsException;
 
 /**
- * @covers Firehed\WebAuthn\BinaryString
+ * @covers \Firehed\WebAuthn\BinaryString
  */
 class BinaryStringTest extends \PHPUnit\Framework\TestCase
 {

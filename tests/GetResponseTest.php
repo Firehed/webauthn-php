@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\GetResponse
+ * @covers \Firehed\WebAuthn\GetResponse
  */
 class GetResponseTest extends \PHPUnit\Framework\TestCase
 {

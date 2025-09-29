@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\CredentialV1
+ * @covers \Firehed\WebAuthn\CredentialV1
  */
 class CredentialV1Test extends \PHPUnit\Framework\TestCase
 {

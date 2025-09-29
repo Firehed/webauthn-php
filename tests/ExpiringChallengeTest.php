@@ -8,7 +8,7 @@ use DateInterval;
 use LogicException;
 
 /**
- * @covers Firehed\WebAuthn\ExpiringChallenge
+ * @covers \Firehed\WebAuthn\ExpiringChallenge
  */
 class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
 {

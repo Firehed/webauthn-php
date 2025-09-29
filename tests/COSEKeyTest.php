@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\COSEKey
+ * @covers \Firehed\WebAuthn\COSEKey
  */
 class COSEKeyTest extends \PHPUnit\Framework\TestCase
 {

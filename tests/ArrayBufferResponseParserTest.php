@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 /**
- * @covers Firehed\WebAuthn\ArrayBufferResponseParser
+ * @covers \Firehed\WebAuthn\ArrayBufferResponseParser
  */
 class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
 {
