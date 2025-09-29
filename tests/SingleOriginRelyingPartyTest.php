@@ -53,7 +53,7 @@ class SingleOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string, string}[]
      */
-    public function vectors(): array
+    public static function vectors(): array
     {
         return [
             ['http://localhost:8888', 'http://localhost:8888', true],
