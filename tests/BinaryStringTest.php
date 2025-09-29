@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use OutOfBoundsException;
 
-/**
- * @covers \Firehed\WebAuthn\BinaryString
- */
-class BinaryStringTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(BinaryString::class)]
+class BinaryStringTest extends TestCase
 {
     private BinaryString $default;
 
@@ -33,9 +34,7 @@ class BinaryStringTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @dataProvider equality
-     */
+    #[DataProvider('equality')]
     public function testEquals(BinaryString $lhs, BinaryString $rhs, bool $shouldMatch): void
     {
         self::assertSame($shouldMatch, $lhs->equals($rhs), 'lhs<->rhs');
