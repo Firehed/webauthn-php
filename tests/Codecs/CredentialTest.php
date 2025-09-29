@@ -110,7 +110,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string}[]
      */
-    public function v1Credentials(): array
+    public static function v1Credentials(): array
     {
         return [
             'touchid/none' => [

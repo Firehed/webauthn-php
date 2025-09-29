@@ -108,7 +108,7 @@ class BinaryStringTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{BinaryString, BinaryString, bool}[]
      */
-    public function equality(): array
+    public static function equality(): array
     {
         return [
             [new BinaryString('abc123'), new BinaryString('abc123'), true],
