@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\COSEKey
- */
-class COSEKeyTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(COSEKey::class)]
+class COSEKeyTest extends TestCase
 {
     public function testKeyParsing(): void
     {
