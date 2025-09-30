@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\Challenge
- */
-class ChallengeTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(Challenge::class)]
+class ChallengeTest extends TestCase
 {
     use ChallengeInterfaceTestTrait;
 
