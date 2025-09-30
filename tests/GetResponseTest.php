@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\GetResponse
- */
-class GetResponseTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(GetResponse::class)]
+class GetResponseTest extends TestCase
 {
     // These hold the values which would be kept server-side.
     private CredentialInterface $credential;
