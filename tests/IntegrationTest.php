@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -11,21 +13,19 @@ use PHPUnit\Framework\TestCase;
  * Performs general integration testing with known-good data covering various
  * formats, attestation requirements, etc.
  *
- * @covers \Firehed\WebAuthn\Attestations\Apple
- * @covers \Firehed\WebAuthn\Attestations\FidoU2F
- * @covers \Firehed\WebAuthn\Attestations\None
- * @covers \Firehed\WebAuthn\Attestations\Packed
- * @covers \Firehed\WebAuthn\AuthenticatorData
- * @covers \Firehed\WebAuthn\PublicKey\EllipticCurve
- * @covers \Firehed\WebAuthn\PublicKey\RSA
- *
+*
  * TODO: merge EndToEndTest into here
  */
+#[CoversClass(Attestations\Apple::class)]
+#[CoversClass(Attestations\FidoU2F::class)]
+#[CoversClass(Attestations\None::class)]
+#[CoversClass(Attestations\Packed::class)]
+#[CoversClass(AuthenticatorData::class)]
+#[CoversClass(PublicKey\EllipticCurve::class)]
+#[CoversClass(PublicKey\RSA::class)]
 class IntegrationTest extends TestCase
 {
-    /**
-     * @dataProvider vectors
-     */
+    #[DataProvider('vectors')]
     public function testReg(string $dir): void
     {
         $metadata = self::read($dir, 'metadata');
@@ -48,9 +48,7 @@ class IntegrationTest extends TestCase
         self::assertSame($metadata['id'], $cred->getId()->toBase64Url(), 'Registration: Credential ID wrong');
     }
 
-    /**
-     * @dataProvider vectors
-     */
+    #[DataProvider('vectors')]
     public function testAuth(string $dir): void
     {
         if (!file_exists($dir . '/auth-req.json')) {
