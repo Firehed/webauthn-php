@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Firehed\WebAuthn\SessionChallengeManager
- */
+#[CoversClass(SessionChallengeManager::class)]
 class SessionChallengeManagerTest extends TestCase
 {
     use ChallengeManagerTestTrait;
