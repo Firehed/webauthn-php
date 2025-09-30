@@ -48,7 +48,6 @@
         "sop/asn1": "^4.1.2"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "^4.1",
         "mheap/phpunit-github-actions-printer": "^1.5",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
