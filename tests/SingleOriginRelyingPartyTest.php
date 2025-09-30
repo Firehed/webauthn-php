@@ -33,7 +33,7 @@ class SingleOriginRelyingPartyTest extends TestCase
      */
     public static function rpIdHashVectors(): array
     {
-        $mbs = fn ($domainString) => new BinaryString(hash('sha256', $domainString, true));
+        $mbs = fn (string $domainString) => new BinaryString(hash('sha256', $domainString, true));
         return [
             'localhost match' => ['http://localhost:3000', $mbs('localhost'), true],
             'domain match' => ['https://example.com', $mbs('example.com'), true],

@@ -72,6 +72,7 @@ class JsonResponseParser implements ResponseParserInterface
             throw new Errors\ParseError('7.1.2', 'response.transports');
         }
         // "client platforms MUST ignore unknown values" -> tryFrom+filter
+        // @phpstan-ignore argument.type
         $transports = array_filter(array_map(Enums\AuthenticatorTransport::tryFrom(...), $response['transports']));
 
         return new CreateResponse(
@@ -130,14 +131,22 @@ class JsonResponseParser implements ResponseParserInterface
             throw new Errors\ParseError('7.2.2', 'response.signature');
         }
 
+        if (
+            array_key_exists('userHandle', $response)
+            && is_string($response['userHandle'])
+            && $response['userHandle'] !== ''
+        ) {
+            $userHandle = self::parse($response['userHandle'], '7.2.2', 'response.userHandle');
+        } else {
+            $userHandle = null;
+        }
+
         return new GetResponse(
             credentialId: self::parse($data['rawId'], '7.2.2', 'rawId'),
             rawAuthenticatorData: self::parse($response['authenticatorData'], '7.2.2', 'response.authenticatorData'),
             clientDataJson: self::parse($response['clientDataJSON'], '7.2.2', 'response.clientDataJSON'),
             signature: self::parse($response['signature'], '7.2.2', 'response.signature'),
-            userHandle: array_key_exists('userHandle', $response) && $response['userHandle'] !== ''
-                ? self::parse($response['userHandle'], '7.2.2', 'response.userHandle')
-                : null,
+            userHandle: $userHandle,
         );
     }
 

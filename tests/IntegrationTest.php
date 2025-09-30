@@ -101,6 +101,7 @@ class IntegrationTest extends TestCase
     {
         $request = self::read($dir, $file);
         assert(is_array($request['publicKey']));
+        assert(is_string($request['publicKey']['challenge']));
         return new TestUtilities\TestVectorChallengeLoader($request['publicKey']['challenge']);
     }
 

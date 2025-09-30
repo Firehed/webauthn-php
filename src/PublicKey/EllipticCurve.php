@@ -157,7 +157,7 @@ class EllipticCurve implements PublicKeyInterface
         $rhs = ($x3 + $ax + $b) % $p; // @phpstan-ignore binaryOp.invalid
 
         $y2 = $y ** 2; // @phpstan-ignore binaryOp.invalid
-        $lhs = $y2 % $p;
+        $lhs = $y2 % $p; // @phpstan-ignore binaryOp.invalid
 
         // Functionaly, `$lhs === $rhs` but avoids reference equality issues
         // w/out having to introduce loose comparision ($lhs == $rhs works)
