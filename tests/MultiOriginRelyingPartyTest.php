@@ -64,7 +64,7 @@ class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
      */
     public static function rpIdVectors(): array
     {
-        $mbs = fn ($domainString) => new BinaryString(hash('sha256', $domainString, true));
+        $mbs = fn (string $domainString) => new BinaryString(hash('sha256', $domainString, true));
         return [
             'domain match' => [$mbs('example.com'), true],
             'subdomain match' => [$mbs('www.example.com'), false],
