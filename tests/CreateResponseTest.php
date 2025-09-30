@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\CreateResponse
- */
-class CreateResponseTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(CreateResponse::class)]
+class CreateResponseTest extends TestCase
 {
     // These hold the values which would be kept server-side.
     private RelyingPartyInterface $rp;
