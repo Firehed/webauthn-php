@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Firehed\WebAuthn\CredentialV2
- */
+#[CoversClass(CredentialV2::class)]
 class CredentialV2Test extends TestCase
 {
     public function testAccessors(): CredentialV2
@@ -51,7 +51,7 @@ class CredentialV2Test extends TestCase
         return $credential;
     }
 
-    /** @depends testAccessors */
+    #[Depends('testAccessors')]
     public function testUpdateSignCount(CredentialV2 $credential): void
     {
         $updated = $credential->withUpdatedSignCount(11);

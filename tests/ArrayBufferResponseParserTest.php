@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers Firehed\WebAuthn\ArrayBufferResponseParser
- */
-class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use LogicException;
+
+#[CoversClass(ArrayBufferResponseParser::class)]
+class ArrayBufferResponseParserTest extends TestCase
 {
     /**
      * Test the happy case for various known-good responses.
-     *
-     * @dataProvider goodVectors
      */
+    #[DataProvider('goodVectors')]
     public function testParseCreateResponse(string $directory): void
     {
         $parser = new ArrayBufferResponseParser();
-        $registerResponse = $this->safeReadJsonFile("$directory/register.json");
+        $registerResponse = self::safeReadJsonFile("$directory/register.json");
         $attestation = $parser->parseCreateResponse($registerResponse);
 
         self::assertInstanceOf(CreateResponse::class, $attestation);
@@ -25,7 +27,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
 
     public function testParseCreateResponseWithTransports(): void
     {
-        $response = $this->readFixture('touchid/register.json');
+        $response = self::readFixture('touchid/register.json');
         $response['transports'] = ['internal', 'hybrid'];
 
         $parser = new ArrayBufferResponseParser();
@@ -38,7 +40,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
 
     public function testParseCreateResponseWithInvalidTransports(): void
     {
-        $response = $this->readFixture('touchid/register.json');
+        $response = self::readFixture('touchid/register.json');
         $response['transports'] = ['invalid', 'usb'];
 
         $parser = new ArrayBufferResponseParser();
@@ -49,9 +51,9 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider badCreateResponses
      * @param mixed[] $response
      */
+    #[DataProvider('badCreateResponses')]
     public function testParseCreateResponseInputValidation(array $response): void
     {
         $parser = new ArrayBufferResponseParser();
@@ -60,9 +62,9 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider badGetResponses
      * @param mixed[] $response
      */
+    #[DataProvider('badGetResponses')]
     public function testParseGetResponseInputValidation(array $response): void
     {
         $parser = new ArrayBufferResponseParser();
@@ -73,7 +75,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesEmptyUserHandle(): void
     {
         $parser = new ArrayBufferResponseParser();
-        $response = $this->readFixture('fido-u2f/login.json');
+        $response = self::readFixture('fido-u2f/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertNull($assertion->getUserHandle());
@@ -82,7 +84,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     public function testParseGetResponseHandlesProvidedUserHandle(): void
     {
         $parser = new ArrayBufferResponseParser();
-        $response = $this->readFixture('touchid/login.json');
+        $response = self::readFixture('touchid/login.json');
         $assertion = $parser->parseGetResponse($response);
 
         self::assertSame('443945aa-8acc-4b84-f05f-ec8ef86e7c5d', $assertion->getUserHandle());
@@ -91,10 +93,10 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array<mixed>[]
      */
-    public function badCreateResponses(): array
+    public static function badCreateResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->readFixture('fido-u2f/register.json');
+            $response = self::readFixture('fido-u2f/register.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -121,10 +123,10 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array<mixed>[]
      */
-    public function badGetResponses(): array
+    public static function badGetResponses(): array
     {
         $makeVector = function (array $overrides): array {
-            $response = $this->readFixture('fido-u2f/login.json');
+            $response = self::readFixture('fido-u2f/login.json');
             foreach ($overrides as $key => $value) {
                 if ($value === null) {
                     unset($response[$key]);
@@ -153,13 +155,12 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the happy case for various known-good responses.
-     *
-     * @dataProvider goodVectors
      */
+    #[DataProvider('goodVectors')]
     public function testParseGetResponse(string $directory): void
     {
         $parser = new ArrayBufferResponseParser();
-        $loginResponse = $this->safeReadJsonFile("$directory/login.json");
+        $loginResponse = self::safeReadJsonFile("$directory/login.json");
         $assertion = $parser->parseGetResponse($loginResponse);
 
         self::assertInstanceOf(GetResponse::class, $assertion);
@@ -168,7 +169,7 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string}[]
      */
-    public function goodVectors(): array
+    public static function goodVectors(): array
     {
         $paths = glob(__DIR__ . '/fixtures/ArrayBuffer/*');
         assert($paths !== false);
@@ -183,14 +184,14 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return mixed[]
      */
-    private function safeReadJsonFile(string $path): array
+    private static function safeReadJsonFile(string $path): array
     {
         if (!file_exists($path)) {
-            throw new \LogicException("$path is missing");
+            throw new LogicException("$path is missing");
         }
         $contents = file_get_contents($path);
         if ($contents === false) {
-            throw new \LogicException("$path could not be read");
+            throw new LogicException("$path could not be read");
         }
         $data = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
         assert(is_array($data));
@@ -200,8 +201,8 @@ class ArrayBufferResponseParserTest extends \PHPUnit\Framework\TestCase
     /**
      * @return mixed[]
      */
-    private function readFixture(string $relativePath): array
+    private static function readFixture(string $relativePath): array
     {
-        return $this->safeReadJsonFile(__DIR__ . '/fixtures/ArrayBuffer/' . $relativePath);
+        return self::safeReadJsonFile(__DIR__ . '/fixtures/ArrayBuffer/' . $relativePath);
     }
 }

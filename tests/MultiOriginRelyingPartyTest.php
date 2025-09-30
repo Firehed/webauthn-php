@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use InvalidArgumentException;
 
-/**
- * @coversDefaultClass Firehed\WebAuthn\MultiOriginRelyingParty
- * @covers ::<protected>
- * @covers ::<private>
- */
-class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(MultiOriginRelyingParty::class)]
+class MultiOriginRelyingPartyTest extends TestCase
 {
     private RelyingPartyInterface $rp;
 
@@ -25,17 +24,13 @@ class MultiOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
         ], rpId: 'example.com');
     }
 
-    /**
-     * @dataProvider originVectors
-     */
+    #[DataProvider('originVectors')]
     public function testOriginMatching(string $origin, bool $shouldMatch): void
     {
         self::assertSame($shouldMatch, $this->rp->matchesOrigin($origin));
     }
 
-    /**
-     * @dataProvider rpIdVectors
-     */
+    #[DataProvider('rpIdVectors')]
     public function testRpIdHashMatching(BinaryString $hash, bool $shouldMatch): void
     {
         $ad = self::createMock(AuthenticatorData::class);

@@ -40,7 +40,7 @@
         }
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-gmp": "*",
         "ext-hash": "*",
         "ext-openssl": "*",
@@ -49,10 +49,10 @@
     },
     "require-dev": {
         "mheap/phpunit-github-actions-printer": "^1.5",
-        "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^9.6",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^11",
         "squizlabs/php_codesniffer": "^3.5"
     },
     "scripts": {

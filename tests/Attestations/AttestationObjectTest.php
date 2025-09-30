@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\Attestations;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 use Firehed\WebAuthn\BinaryString;
 
-/**
- * @covers Firehed\WebAuthn\Attestations\AttestationObject
- */
-class AttestationObjectTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(AttestationObject::class)]
+class AttestationObjectTest extends TestCase
 {
     public function testParsingCBOR(): void
     {

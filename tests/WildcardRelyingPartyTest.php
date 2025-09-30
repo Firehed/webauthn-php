@@ -4,27 +4,22 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use InvalidArgumentException;
 
-/**
- * @coversDefaultClass Firehed\WebAuthn\WildcardRelyingParty
- * @covers ::<protected>
- * @covers ::<private>
- */
-class WildcardRelyingPartyTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(WildcardRelyingParty::class)]
+class WildcardRelyingPartyTest extends TestCase
 {
-    /**
-     * @dataProvider originVectors
-     */
+    #[DataProvider('originVectors')]
     public function testOriginMatching(string $rpId, string $origin, bool $shouldMatch): void
     {
         $rp = new WildcardRelyingParty($rpId);
         self::assertSame($shouldMatch, $rp->matchesOrigin($origin));
     }
 
-    /**
-     * @dataProvider rpIdVectors
-     */
+    #[DataProvider('rpIdVectors')]
     public function testRpIdHashMatching(BinaryString $hash, bool $shouldMatch): void
     {
         $rp = new WildcardRelyingParty('example.com');

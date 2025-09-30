@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @coversNothing
- */
-class EndToEndTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use LogicException;
+
+#[CoversNothing]
+class EndToEndTest extends TestCase
 {
     private RelyingPartyInterface $rp;
 
@@ -16,9 +19,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
         $this->rp = new SingleOriginRelyingParty('http://localhost:8888');
     }
 
-    /**
-     * @dataProvider vectors
-     */
+    #[DataProvider('vectors')]
     public function testRegisterAndLogin(string $directory): void
     {
         $isUserVerified = $this->safeReadJsonFileRaw("$directory/verified.json");
@@ -64,7 +65,7 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string}[]
      */
-    public function vectors(): array
+    public static function vectors(): array
     {
         $paths = glob(__DIR__ . '/fixtures/ArrayBuffer/*');
         assert($paths !== false);
@@ -89,11 +90,11 @@ class EndToEndTest extends \PHPUnit\Framework\TestCase
     private function safeReadJsonFileRaw(string $path): mixed
     {
         if (!file_exists($path)) {
-            throw new \LogicException("$path is missing");
+            throw new LogicException("$path is missing");
         }
         $contents = file_get_contents($path);
         if ($contents === false) {
-            throw new \LogicException("$path could not be read");
+            throw new LogicException("$path could not be read");
         }
         return json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
     }

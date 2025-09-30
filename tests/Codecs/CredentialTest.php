@@ -13,15 +13,14 @@ use Firehed\WebAuthn\{
     CredentialV2,
     Enums,
 };
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @covers Firehed\WebAuthn\Codecs\Credential
- */
-class CredentialTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(Credential::class)]
+class CredentialTest extends TestCase
 {
-    /**
-     * @dataProvider credentials
-     */
+    #[DataProvider('credentials')]
     public function testRoundtrip(CredentialInterface $credential): void
     {
         $codec = new Credential();
@@ -80,9 +79,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         self::assertNull($stripped->getAttestationData(), 'Attestation should have been removed');
     }
 
-    /**
-     * @dataProvider v1Credentials
-     */
+    #[DataProvider('v1Credentials')]
     public function testVersion1Import(string $encoded, BinaryString $id): void
     {
         $codec = new Credential();
@@ -97,9 +94,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
         self::assertSame($encoded, $reencoded, 'Should have reencoded to v1');
     }
 
-    /**
-     * @dataProvider v2Credentials
-     */
+    #[DataProvider('v2Credentials')]
     public function testVersion2Import(string $encoded): void
     {
         $codec = new Credential();
@@ -110,7 +105,7 @@ class CredentialTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string}[]
      */
-    public function v1Credentials(): array
+    public static function v1Credentials(): array
     {
         return [
             'touchid/none' => [

@@ -6,10 +6,13 @@ namespace Firehed\WebAuthn;
 
 use DateInterval;
 use LogicException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Medium;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Firehed\WebAuthn\ExpiringChallenge
- */
+#[CoversClass(ExpiringChallenge::class)]
+#[Medium]
 class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
 {
     use ChallengeInterfaceTestTrait;
@@ -20,9 +23,10 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @doesNotPerformAssertions This is checking that an exeption is NOT
-     * thrown when the expiration is in the future.
+     * This is checking that an exeption is NOT thrown when the expiration is in
+     * the future.
      */
+    #[DoesNotPerformAssertions]
     public function testFutureExpirationOkWhenGettingBase64(): void
     {
         $ec = new ExpiringChallenge(new DateInterval('PT2S'));
@@ -32,9 +36,10 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @doesNotPerformAssertions This is checking that an exeption is NOT
-     * thrown when the expiration is in the future.
+     * This is checking that an exeption is NOT thrown when the expiration is in
+     * the future.
      */
+    #[DoesNotPerformAssertions]
     public function testFutureExpirationOkWhenGettingBinary(): void
     {
         $ec = new ExpiringChallenge(new DateInterval('PT2S'));
@@ -74,9 +79,10 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @doesNotPerformAssertions This is checking that an exeption is NOT
-     * thrown when the expiration is in the future.
+     * This is checking that an exeption is NOT thrown when the expiration is in
+     * the future.
      */
+    #[DoesNotPerformAssertions]
     public function testFactoryInFuture(): void
     {
         $ec = ExpiringChallenge::withLifetime(86400);
@@ -98,11 +104,12 @@ class ExpiringChallengeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @doesNotPerformAssertions This indirectly asserts that exceptions are
-     * thrown
+     * This indirectly asserts that exceptions are thrown.
      *
-     * @medium
+     * (#[Medium] should be specifically on this test case, but that's not
+     * allowed)
      */
+    #[DoesNotPerformAssertions]
     public function testExpirationByWaiting(): void
     {
         $ec = new ExpiringChallenge(new DateInterval('PT1S'));

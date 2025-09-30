@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\PublicKey;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use Firehed\WebAuthn\BinaryString;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Firehed\WebAuthn\PublicKey\RSA
- */
+#[CoversClass(RSA::class)]
 class RSATest extends TestCase
 {
     public function testPemEncodingOfKnownKey(): void

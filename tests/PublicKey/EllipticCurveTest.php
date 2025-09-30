@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn\PublicKey;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 use Firehed\WebAuthn\BinaryString;
 use Firehed\WebAuthn\COSE\Curve;
 
-/**
- * @covers Firehed\WebAuthn\PublicKey\EllipticCurve
- * @covers Firehed\WebAuthn\COSE\Curve
- */
-class EllipticCurveTest extends \PHPUnit\Framework\TestCase
+#[CoversClass(EllipticCurve::class)]
+#[CoversClass(Curve::class)]
+class EllipticCurveTest extends TestCase
 {
     public function testFormatHandling(): void
     {

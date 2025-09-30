@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @coversDefaultClass Firehed\WebAuthn\SingleOriginRelyingParty
- * @covers ::<protected>
- * @covers ::<private>
- */
-class SingleOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+
+#[CoversClass(SingleOriginRelyingParty::class)]
+class SingleOriginRelyingPartyTest extends TestCase
 {
-    /**
-     * @dataProvider vectors
-     */
+    #[DataProvider('vectors')]
     public function testOriginMatching(string $original, string $check, bool $shouldMatch): void
     {
         $rp = new SingleOriginRelyingParty($original);
         self::assertSame($shouldMatch, $rp->matchesOrigin($check));
     }
 
-    /**
-     * @dataProvider rpIdHashVectors
-     */
+    #[DataProvider('rpIdHashVectors')]
     public function testRpIdHashMatching(string $origin, BinaryString $hash, bool $shouldMatch): void
     {
         $rp = new SingleOriginRelyingParty($origin);
@@ -53,7 +49,7 @@ class SingleOriginRelyingPartyTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array{string, string}[]
      */
-    public function vectors(): array
+    public static function vectors(): array
     {
         return [
             ['http://localhost:8888', 'http://localhost:8888', true],
