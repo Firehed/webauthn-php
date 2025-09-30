@@ -86,7 +86,7 @@ class IntegrationTest extends TestCase
      */
     public static function vectors(): array
     {
-        $dirs = glob('tests/integration/*');
+        $dirs = glob(__DIR__ . '/integration/*');
         assert($dirs !== false);
         $out = [];
         foreach ($dirs as $dir) {
