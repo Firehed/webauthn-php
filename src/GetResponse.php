@@ -6,6 +6,11 @@ namespace Firehed\WebAuthn;
 
 use UnexpectedValueException;
 
+use function array_key_exists;
+use function assert;
+use function is_array;
+use function is_string;
+
 /**
  * This is the internal representation of a PublicKeyCredential containing an
  * AuthenticatorAssertionResponse; i.e. the result of calling
@@ -108,6 +113,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.13
         $cdjChallenge = $C['challenge'];
+        assert(is_string($cdjChallenge));
         $challenge = $challengeLoader->useFromClientDataJSON($cdjChallenge);
         if ($challenge === null) {
             $this->fail('7.2.12', 'C.challenge');
@@ -119,6 +125,7 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.14
+        assert(array_key_exists('origin', $C) && is_string($C['origin']));
         if (!$rp->matchesOrigin($C['origin'])) {
             $this->fail('7.2.13', 'C.origin');
         }
