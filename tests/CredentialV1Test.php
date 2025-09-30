@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\CredentialV1
- */
-class CredentialV1Test extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+
+#[CoversClass(CredentialV1::class)]
+class CredentialV1Test extends TestCase
 {
     public function testAccessors(): void
     {
