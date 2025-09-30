@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Firehed\WebAuthn;
 
-/**
- * @covers \Firehed\WebAuthn\JsonResponseParser
- */
-class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use LogicException;
+
+#[CoversClass(JsonResponseParser::class)]
+class JsonResponseParserTest extends TestCase
 {
     /**
      * Test the happy case for various known-good responses.
-     *
-     * @dataProvider goodVectors
      */
+    #[DataProvider('goodVectors')]
     public function testParseCreateResponse(string $directory): void
     {
         $parser = new JsonResponseParser();
@@ -24,9 +26,9 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider badCreateResponses
      * @param mixed[] $response
      */
+    #[DataProvider('badCreateResponses')]
     public function testParseCreateResponseInputValidation(array $response): void
     {
         $parser = new JsonResponseParser();
@@ -47,9 +49,9 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider badGetResponses
      * @param mixed[] $response
      */
+    #[DataProvider('badGetResponses')]
     public function testParseGetResponseInputValidation(array $response): void
     {
         $parser = new JsonResponseParser();
@@ -169,9 +171,8 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test the happy case for various known-good responses.
-     *
-     * @dataProvider goodVectors
      */
+    #[DataProvider('goodVectors')]
     public function testParseGetResponse(string $directory): void
     {
         $parser = new JsonResponseParser();
@@ -202,11 +203,11 @@ class JsonResponseParserTest extends \PHPUnit\Framework\TestCase
     private static function safeReadJsonFile(string $path): array
     {
         if (!file_exists($path)) {
-            throw new \LogicException("$path is missing");
+            throw new LogicException("$path is missing");
         }
         $contents = file_get_contents($path);
         if ($contents === false) {
-            throw new \LogicException("$path could not be read");
+            throw new LogicException("$path could not be read");
         }
         $data = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
         assert(is_array($data));
