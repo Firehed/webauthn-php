@@ -695,10 +695,11 @@ There are additional notes in Best Practices / Data Handling around this.
 | Name | [IANA ID](https://www.iana.org/assignments/cose/cose.xhtml#algorithms) | Supported | Notes |
 | --- | --- | --- | --- |
 | `ES256` | `-7` | ✅ | |
-| `EdDSA` | `-8` | ❌ | |
-| `ES384` | `-35` | ❌ | [^alg-needs-tests] |
-| `ES512` | `-36` | ❌ | [^alg-needs-tests] |
-| `RS256` | `-257` | ✅⚠️ | [^ext-vec] |
+| `EdDSA` | `-8` | ✅ | Ed25519 |
+| `ES384` | `-35` | ✅ | |
+| `ES512` | `-36` | ✅ | |
+| `Ed448` | `-53` | ✅ | |
+| `RS256` | `-257` | ✅ | |
 
 ## Supported Identifiers
 
@@ -713,7 +714,7 @@ Due to an inability to generate responses with all formats, not all are supporte
 | `android-safetynet` | ❌ | 8.5 | SafetyNet attestation has been [deprecated](https://android-developers.googleblog.com/2024/09/attestation-format-change-for-android-fido2-api.html), so this library will not be adding support. |
 | `fido-u2f` | ✅ | 8.6 | YubiKeys and similar U2F stateless devices. |
 | `none` | ✅ | 8.7 | Used by Apple in Safari when using Passkeys (even when direct attestation is requested) |
-| `apple` | ✅⚠️ [^ext-vec], [^limited-trust-path] | 8.8 | Apple no longer appears to use this format, instead providing non-attested credentials (fmt=none). |
+| `apple` | ✅⚠️ [^limited-trust-path] | 8.8 | Apple no longer appears to use this format, instead providing non-attested credentials (fmt=none). |
 | `compound` | ❌ | 8.9 | This format only appears in the editor's draft of the spec and is not yet on the official registry. |
 
 By default, the `$registration->verify()` process will reject uncertain trust paths.
@@ -749,6 +750,4 @@ General quickstart guide:
 Intro to passkeys:
 - https://developer.apple.com/videos/play/wwdc2021/10106/
 
-[^ext-vec]: Support is based on [unofficial test vectors](https://github.com/w3c/webauthn/issues/1633).
 [^limited-trust-path]: Handling of attestation trust path is limited.
-[^alg-needs-tests]: This should be easy add support, but test vectors are needed

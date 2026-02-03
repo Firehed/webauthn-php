@@ -19,7 +19,6 @@ enum Algorithm: int
     case EcdsaSha384 = -35;
     case EcdsaSha512 = -36;
     case EdDSA = -8;
-    // RFC 9864 §2.2: fully-specified Ed448 algorithm identifier
     case Ed448 = -53;
 
     case Rs256 = -257;
