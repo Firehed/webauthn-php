@@ -42,6 +42,19 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => '1.2.840.10045.3.1.7',
+            self::P384 => '1.3.132.0.34',
+            default => throw new UnhandledMatchError('Curve unsupported'),
+        };
+    }
+
+    /**
+     * Returns the coordinate size in bytes for this curve.
+     */
+    public function getCoordinateSize(): int
+    {
+        return match ($this) {
+            self::P256 => 32,
+            self::P384 => 48,
             default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
@@ -52,6 +65,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0xFFFFFFFF 00000001 00000000 00000000 00000000 FFFFFFFF FFFFFFFF FFFFFFFC'),
+            self::P384 => gmp_init('0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFFFF 00000000 00000000 FFFFFFFC'),
             default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
@@ -60,6 +74,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0x5AC635D8 AA3A93E7 B3EBBD55 769886BC 651D06B0 CC53B0F6 3BCE3C3E 27D2604B'),
+            self::P384 => gmp_init('0xB3312FA7 E23EE7E4 988E056B E3F82D19 181D9C6E FE814112 0314088F 5013875A C656398D 8A2ED19D 2A85C8ED D3EC2AEF'),
             default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
@@ -68,6 +83,7 @@ enum Curve: int
     {
         return match ($this) {
             self::P256 => gmp_init('0xFFFFFFFF 00000001 00000000 00000000 00000000 FFFFFFFF FFFFFFFF FFFFFFFF'),
+            self::P384 => gmp_init('0xFFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFFFF 00000000 00000000 FFFFFFFF'),
             default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }

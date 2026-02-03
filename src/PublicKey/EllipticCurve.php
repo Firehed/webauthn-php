@@ -43,11 +43,12 @@ class EllipticCurve implements PublicKeyInterface
         private BinaryString $x,
         private BinaryString $y,
     ) {
-        if ($x->getLength() !== 32) {
-            throw new UnexpectedValueException('X-coordinate not 32 bytes');
+        $coordinateSize = $curve->getCoordinateSize();
+        if ($x->getLength() !== $coordinateSize) {
+            throw new UnexpectedValueException("X-coordinate not $coordinateSize bytes");
         }
-        if ($y->getLength() !== 32) {
-            throw new UnexpectedValueException('Y-coordinate not 32 bytes');
+        if ($y->getLength() !== $coordinateSize) {
+            throw new UnexpectedValueException("Y-coordinate not $coordinateSize bytes");
         }
         if (!$this->isOnCurve()) {
             throw new VerificationError('5.8.5', 'Point not on curve');
@@ -67,22 +68,27 @@ class EllipticCurve implements PublicKeyInterface
 
         assert(array_key_exists(COSEKey::INDEX_ALGORITHM, $decoded));
         $algorithm = COSE\Algorithm::from($decoded[COSEKey::INDEX_ALGORITHM]);
-        // TODO: support other algorithms
-        if ($algorithm !== COSE\Algorithm::EcdsaSha256) {
-            throw new DomainException('Only ES256 is supported');
-        }
 
         $curve = COSE\Curve::from($decoded[self::INDEX_CURVE]);
         // WebAuthn §5.8.5 - cross-reference curve to algorithm
-        assert($curve === COSE\Curve::P256);
+        $expectedCurve = match ($algorithm) {
+            COSE\Algorithm::EcdsaSha256 => COSE\Curve::P256,
+            COSE\Algorithm::EcdsaSha384 => COSE\Curve::P384,
+            default => throw new DomainException('Unsupported EC algorithm: ' . $algorithm->value),
+        };
+        if ($curve !== $expectedCurve) {
+            throw new DomainException('Curve does not match algorithm');
+        }
 
-        if (strlen($decoded[self::INDEX_X_COORDINATE]) !== 32) {
-            throw new DomainException('X coordinate not 32 bytes');
+        $coordinateSize = $curve->getCoordinateSize();
+
+        if (strlen($decoded[self::INDEX_X_COORDINATE]) !== $coordinateSize) {
+            throw new DomainException("X coordinate not $coordinateSize bytes");
         }
         $x = new BinaryString($decoded[self::INDEX_X_COORDINATE]);
 
-        if (strlen($decoded[self::INDEX_Y_COORDINATE]) !== 32) {
-            throw new DomainException('X coordinate not 32 bytes');
+        if (strlen($decoded[self::INDEX_Y_COORDINATE]) !== $coordinateSize) {
+            throw new DomainException("Y coordinate not $coordinateSize bytes");
         }
         $y = new BinaryString($decoded[self::INDEX_Y_COORDINATE]);
 
@@ -117,10 +123,6 @@ class EllipticCurve implements PublicKeyInterface
     // public key component
     public function getPemFormatted(): string
     {
-        if ($this->curve !== COSE\Curve::P256) {
-            throw new DomainException('Only P256 curves can be PEM-formatted so far');
-        }
-
         $asn = new ASN\Constructed\Sequence(
             new ASN\Constructed\Sequence(
                 new ASN\Primitive\ObjectIdentifier(self::OID),
