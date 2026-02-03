@@ -36,14 +36,16 @@ enum Curve: int
 
     case ED448 = 7; // OKP
 
-    // RFC 5480
-    // §2.1.1.1 OIDs for named curves
+    // EC curves: RFC 5480 §2.1.1.1
+    // EdDSA curves: RFC 8410 §3
     public function getOid(): string
     {
         return match ($this) {
             self::P256 => '1.2.840.10045.3.1.7',
             self::P384 => '1.3.132.0.34',
             self::P521 => '1.3.132.0.35',
+            self::ED25519 => '1.3.101.112',
+            self::ED448 => '1.3.101.113',
             default => throw new UnhandledMatchError('Curve unsupported'),
         };
     }
