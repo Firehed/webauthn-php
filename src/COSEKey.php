@@ -46,6 +46,7 @@ class COSEKey
     {
         $decoder = new Decoder();
         $decodedCbor = $decoder->decode($cbor->unwrap());
+        assert(is_array($decodedCbor));
 
         // Note: these limitations may be lifted in the future
         $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);

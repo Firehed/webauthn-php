@@ -49,20 +49,24 @@ class OctetKeyPair implements PublicKeyInterface
     {
         // Checked upstream, but re-verify
         assert(array_key_exists(COSEKey::INDEX_KEY_TYPE, $decoded));
+        assert(is_int($decoded[COSEKey::INDEX_KEY_TYPE]));
         $type = COSE\KeyType::from($decoded[COSEKey::INDEX_KEY_TYPE]);
         assert($type === COSE\KeyType::OctetKeyPair);
 
         assert(array_key_exists(COSEKey::INDEX_ALGORITHM, $decoded));
+        assert(is_int($decoded[COSEKey::INDEX_ALGORITHM]));
         $algorithm = COSE\Algorithm::from($decoded[COSEKey::INDEX_ALGORITHM]);
         if ($algorithm !== COSE\Algorithm::EdDSA && $algorithm !== COSE\Algorithm::Ed448) {
             throw new DomainException('Unsupported OKP algorithm: ' . $algorithm->value);
         }
 
+        assert(is_int($decoded[self::INDEX_CURVE]));
         $curve = COSE\Curve::from($decoded[self::INDEX_CURVE]);
         if (!isset(self::KEY_SIZES[$curve->value])) {
             throw new DomainException('Unsupported OKP curve: ' . $curve->value);
         }
 
+        assert(is_string($decoded[self::INDEX_X_COORDINATE]));
         $x = new BinaryString($decoded[self::INDEX_X_COORDINATE]);
 
         return new OctetKeyPair(curve: $curve, x: $x);
