@@ -17,7 +17,7 @@ enum Algorithm: int
 {
     case EcdsaSha256 = -7;
     case EcdsaSha384 = -35;
-    // case EcdsaSha512 = -36;
+    case EcdsaSha512 = -36;
     // section 8.2: EdDSA = -8;
 
     case Rs256 = -257;
@@ -30,6 +30,7 @@ enum Algorithm: int
         return match ($this) {
             self::EcdsaSha256, self::Rs256 => \OPENSSL_ALGO_SHA256,
             self::EcdsaSha384 => \OPENSSL_ALGO_SHA384,
+            self::EcdsaSha512 => \OPENSSL_ALGO_SHA512,
         };
     }
 }

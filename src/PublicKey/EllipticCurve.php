@@ -74,6 +74,7 @@ class EllipticCurve implements PublicKeyInterface
         $expectedCurve = match ($algorithm) {
             COSE\Algorithm::EcdsaSha256 => COSE\Curve::P256,
             COSE\Algorithm::EcdsaSha384 => COSE\Curve::P384,
+            COSE\Algorithm::EcdsaSha512 => COSE\Curve::P521,
             default => throw new DomainException('Unsupported EC algorithm: ' . $algorithm->value),
         };
         if ($curve !== $expectedCurve) {
