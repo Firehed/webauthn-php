@@ -54,7 +54,7 @@ class OctetKeyPair implements PublicKeyInterface
 
         assert(array_key_exists(COSEKey::INDEX_ALGORITHM, $decoded));
         $algorithm = COSE\Algorithm::from($decoded[COSEKey::INDEX_ALGORITHM]);
-        if ($algorithm !== COSE\Algorithm::EdDSA) {
+        if ($algorithm !== COSE\Algorithm::EdDSA && $algorithm !== COSE\Algorithm::Ed448) {
             throw new DomainException('Unsupported OKP algorithm: ' . $algorithm->value);
         }
 

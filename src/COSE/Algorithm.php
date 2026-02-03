@@ -19,6 +19,8 @@ enum Algorithm: int
     case EcdsaSha384 = -35;
     case EcdsaSha512 = -36;
     case EdDSA = -8;
+    // RFC 9864 §2.2: fully-specified Ed448 algorithm identifier
+    case Ed448 = -53;
 
     case Rs256 = -257;
 
@@ -34,7 +36,7 @@ enum Algorithm: int
             // EdDSA (Ed25519/Ed448) uses PureEdDSA which performs hashing
             // internally. OpenSSL has no named constant for this; passing
             // 0 tells openssl_verify to skip external digest computation.
-            self::EdDSA => 0,
+            self::EdDSA, self::Ed448 => 0,
         };
     }
 }
