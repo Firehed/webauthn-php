@@ -742,6 +742,7 @@ WebAuthn spec:
 
 - https://www.w3.org/TR/webauthn-2/
 - https://www.w3.org/TR/2021/REC-webauthn-2-20210408/ (spec implemented to this version)
+- https://github.com/w3c/webauthn/blob/main/index.bs
 
 General quickstart guide:
 - https://webauthn.guide/
