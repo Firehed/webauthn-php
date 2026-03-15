@@ -54,7 +54,7 @@ class BinaryString
     /**
      * Turns a list of 8-bit integers into a BinaryString
      *
-     * @param int[] $bytes
+     * @param int<0, 255>[] $bytes
      */
     public static function fromBytes(array $bytes): BinaryString
     {

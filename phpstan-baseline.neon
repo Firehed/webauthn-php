@@ -37,9 +37,15 @@ parameters:
 			path: examples/readmeRegisterStep1.php
 
 		-
-			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\>, array\<mixed, mixed\> given\.$#'
+			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\<0, 255\>\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
-			count: 8
+			count: 7
+			path: src/ArrayBufferResponseParser.php
+
+		-
+			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\<0, 255\>\>, non\-empty\-array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/ArrayBufferResponseParser.php
 
 		-
@@ -203,7 +209,6 @@ parameters:
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/ChallengeLoaderInterface.php
-
 
 		-
 			message: '#^Parameter \#1 \$string of function strlen expects string, mixed given\.$#'
