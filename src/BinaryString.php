@@ -58,7 +58,7 @@ class BinaryString
      */
     public static function fromBytes(array $bytes): BinaryString
     {
-        return new BinaryString(implode('', array_map('chr', $bytes)));
+        return new BinaryString(implode('', array_map(chr(...), $bytes)));
     }
 
     public static function fromHex(string $hex): BinaryString
