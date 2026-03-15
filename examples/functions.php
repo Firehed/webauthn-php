@@ -109,6 +109,6 @@ function uuidv4(): string
     $bytes = random_bytes(16);
     $hex = bin2hex($bytes);
     $chunks = str_split($hex, 4);
-    $chunks[3][0] = '4';
+    $chunks[3] = '4' . substr($chunks[3], 1);
     return sprintf('%s%s-%s-%s-%s-%s%s%s', ...$chunks);
 }
