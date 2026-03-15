@@ -37,9 +37,15 @@ parameters:
 			path: examples/readmeRegisterStep1.php
 
 		-
-			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\>, array\<mixed, mixed\> given\.$#'
+			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\<0, 255\>\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
-			count: 8
+			count: 7
+			path: src/ArrayBufferResponseParser.php
+
+		-
+			message: '#^Parameter \#1 \$bytes of static method Firehed\\WebAuthn\\BinaryString\:\:fromBytes\(\) expects array\<int\<0, 255\>\>, non\-empty\-array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/ArrayBufferResponseParser.php
 
 		-
@@ -205,24 +211,6 @@ parameters:
 			path: src/ChallengeLoaderInterface.php
 
 		-
-			message: '#^Binary operation "\+" between \(array\|float\|int\) and GMP results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/PublicKey/EllipticCurve.php
-
-		-
-			message: '#^Binary operation "\+" between mixed and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: src/PublicKey/EllipticCurve.php
-
-		-
-			message: '#^Parameter \#1 \$num1 of function gmp_cmp expects GMP\|int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/PublicKey/EllipticCurve.php
-
-		-
 			message: '#^Parameter \#1 \$string of function strlen expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -250,12 +238,6 @@ parameters:
 			message: '#^Parameter \#1 \$wrapped of class Firehed\\WebAuthn\\BinaryString constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
-			path: src/PublicKey/EllipticCurve.php
-
-		-
-			message: '#^Parameter \#2 \$num2 of function gmp_cmp expects GMP\|int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
 			path: src/PublicKey/EllipticCurve.php
 
 		-
