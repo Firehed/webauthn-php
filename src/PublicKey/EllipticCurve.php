@@ -154,7 +154,8 @@ class EllipticCurve implements PublicKeyInterface
         // the other curves (none of which are supported yet)/
         $x3 = $x ** 3; // @phpstan-ignore pow.leftNonNumeric, binaryOp.invalid (phpstan/phpstan#14288)
         $ax = $a * $x; // @phpstan-ignore mul.leftNonNumeric, mul.rightNonNumeric (phpstan/phpstan#14288)
-        $rhs = ($x3 + $ax + $b) % $p; // @phpstan-ignore plus.rightNonNumeric, mod.rightNonNumeric, binaryOp.invalid (phpstan/phpstan#14288)
+        // @phpstan-ignore plus.rightNonNumeric, mod.rightNonNumeric, binaryOp.invalid (phpstan/phpstan#14288)
+        $rhs = ($x3 + $ax + $b) % $p;
 
         $y2 = $y ** 2; // @phpstan-ignore pow.leftNonNumeric, binaryOp.invalid (phpstan/phpstan#14288)
         $lhs = $y2 % $p; // @phpstan-ignore mod.rightNonNumeric, binaryOp.invalid (phpstan/phpstan#14288)
