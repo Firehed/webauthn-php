@@ -168,6 +168,7 @@ class GetResponse implements Responses\AssertionInterface
 
         // 7.2.23
         $credentialPublicKey = $credential->getPublicKey();
+        $coseKey = new COSEKey($credential->getCoseCbor());
 
         // Spec note: the signature is over the concatenation of the authData
         // and the hash of clientDataJSON. Due to the above checks (relying
@@ -184,7 +185,7 @@ class GetResponse implements Responses\AssertionInterface
             $verificationData,
             $sig,
             $credentialPublicKey->getPemFormatted(),
-            \OPENSSL_ALGO_SHA256,
+            $coseKey->algorithm->getOpenSslAlgorithm(),
         );
         if ($result !== 1) {
             $this->fail('7.2.23', 'Signature verification');

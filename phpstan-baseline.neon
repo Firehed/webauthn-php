@@ -169,24 +169,6 @@ parameters:
 			path: src/BinaryString.php
 
 		-
-			message: '#^Cannot access offset 1 on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/COSEKey.php
-
-		-
-			message: '#^Parameter \#1 \$decoded of static method Firehed\\WebAuthn\\PublicKey\\EllipticCurve\:\:fromDecodedCbor\(\) expects array\<mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/COSEKey.php
-
-		-
-			message: '#^Parameter \#1 \$decoded of static method Firehed\\WebAuthn\\PublicKey\\RSA\:\:fromDecodedCbor\(\) expects array\<mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/COSEKey.php
-
-		-
 			message: '#^Parameter \#1 \$value of static method Firehed\\WebAuthn\\COSE\\Algorithm\:\:from\(\) expects int\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -194,12 +176,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$value of static method Firehed\\WebAuthn\\COSE\\KeyType\:\:from\(\) expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/COSEKey.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/COSEKey.php
