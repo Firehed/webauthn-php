@@ -51,7 +51,7 @@
         "mheap/phpunit-github-actions-printer": "^1.5",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan": "^2.1.50",
         "phpunit/phpunit": "^11",
         "squizlabs/php_codesniffer": "^3.5"
     },
