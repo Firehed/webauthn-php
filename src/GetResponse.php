@@ -7,7 +7,6 @@ namespace Firehed\WebAuthn;
 use UnexpectedValueException;
 
 use function array_key_exists;
-use function assert;
 use function is_array;
 use function is_string;
 
@@ -107,13 +106,15 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.12
-        if ($C['type'] !== 'webauthn.get') {
+        if (!array_key_exists('type', $C) || $C['type'] !== 'webauthn.get') {
             $this->fail('7.2.11', 'C.type');
         }
 
         // 7.2.13
+        if (!array_key_exists('challenge', $C) || !is_string($C['challenge'])) {
+            $this->fail('7.2.12', 'C.challenge');
+        }
         $cdjChallenge = $C['challenge'];
-        assert(is_string($cdjChallenge));
         $challenge = $challengeLoader->useFromClientDataJSON($cdjChallenge);
         if ($challenge === null) {
             $this->fail('7.2.12', 'C.challenge');
@@ -125,8 +126,11 @@ class GetResponse implements Responses\AssertionInterface
         }
 
         // 7.2.14
-        assert(array_key_exists('origin', $C) && is_string($C['origin']));
-        if (!$rp->matchesOrigin($C['origin'])) {
+        if (
+            !array_key_exists('origin', $C)
+            || !is_string($C['origin'])
+            || !$rp->matchesOrigin($C['origin'])
+        ) {
             $this->fail('7.2.13', 'C.origin');
         }
 
