@@ -46,6 +46,7 @@ class COSEKey
     {
         $decoder = new Decoder();
         $decodedCbor = $decoder->decode($cbor->unwrap());
+        assert(is_array($decodedCbor));
 
         // Note: these limitations may be lifted in the future
         $keyType = COSE\KeyType::from($decodedCbor[self::INDEX_KEY_TYPE]);
@@ -53,15 +54,12 @@ class COSEKey
         $this->publicKey = match ($keyType) {
             COSE\KeyType::EllipticCurve => PublicKey\EllipticCurve::fromDecodedCbor($decodedCbor),
             COSE\KeyType::Rsa => PublicKey\RSA::fromDecodedCbor($decodedCbor),
-            // Other syntactially-valid key types exist, but the library
-            // doesn't handle them (yet?)
+            COSE\KeyType::OctetKeyPair => PublicKey\OctetKeyPair::fromDecodedCbor($decodedCbor),
         };
 
         assert(array_key_exists(self::INDEX_ALGORITHM, $decodedCbor));
         $this->algorithm = COSE\Algorithm::from($decodedCbor[self::INDEX_ALGORITHM]);
 
-        // Future: rfc8152/13.2
-        // if keytype == .OctetKeyPair, set `x` and `d`
     }
 
     /**

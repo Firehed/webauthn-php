@@ -1,0 +1,11 @@
+{
+    "id": "uK1ZuZYEerGOLOtXIGw2LaV0WHk0gfSo6_EBx8p8wPE",
+    "rawId": "uK1ZuZYEerGOLOtXIGw2LaV0WHk0gfSo6_EBx8p8wPE",
+    "response": {
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiVGg5TVlaaHBualBCVHhraFVfU2RmZzZPTlhmVnJFRnNYenJja3FRZkotVSIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5vcmciLCJjcm9zc09yaWdpbiI6dHJ1ZSwidG9wT3JpZ2luIjoiaHR0cHM6Ly9leGFtcGxlLmNvbSJ9",
+        "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikv6vDdDKViwYzYNOtZGHJxHNa5_jt1GWSpeDwFFKy5LVBAAAAAJdYb9CXmadkAcIARVCZ7yoAILitWbmWBHqxjizrVyBsNi2ldFh5NIH0qOvxAcfKfMDxpQECAyYgASFYIKHEfB2C2k6-gs1yIHECs4BnBwGZO8NTmK4uVyZCf-AdIlgghsEIDYKYcCjH9U7LGwEYXeJDs1kpSg7SEM1HSA8K3Ig",
+        "transports": []
+    },
+    "type": "public-key",
+    "authenticatorAttachment": ""
+}

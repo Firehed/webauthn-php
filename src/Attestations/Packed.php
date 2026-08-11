@@ -58,8 +58,8 @@ class Packed implements AttestationStatementInterface
 
         $acd = $data->getAttestedCredentialData();
         $alg = COSE\Algorithm::tryFrom($this->data['alg']);
-        if ($alg !== $acd->coseKey->algorithm) {
-            throw new Exception('8.2/v3.a');
+        if ($alg === null) {
+            throw new Exception('8.2/v2: unknown algorithm');
         }
 
         if (array_key_exists('x5c', $this->data)) {
@@ -73,7 +73,7 @@ class Packed implements AttestationStatementInterface
                 $signedData->unwrap(),
                 $this->data['sig'],
                 $certPubKey,
-                OPENSSL_ALGO_SHA256,
+                $alg->getOpenSslAlgorithm(),
             );
 
             // Verify that `sig` is a valid signature over ...
@@ -144,13 +144,18 @@ class Packed implements AttestationStatementInterface
             ]);
         } else {
             // Self attestation in use
+            // §8.2/v4.a: alg must match credential key algorithm
+            if ($alg !== $acd->coseKey->algorithm) {
+                throw new Exception('8.2/v4.a');
+            }
+
             $credentialPublicKey = $acd->coseKey->getPublicKey();
 
             $result = openssl_verify(
                 $signedData->unwrap(),
                 $this->data['sig'],
                 $credentialPublicKey->getPemFormatted(),
-                OPENSSL_ALGO_SHA256,
+                $alg->getOpenSslAlgorithm(),
             );
 
             if ($result !== 1) {
