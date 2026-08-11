@@ -1,0 +1,11 @@
+{
+    "id": "bhBQwNLKLwfHVcssZqdMZPpDBlwY-Tg1TZkV2yvVzlc",
+    "rawId": "bhBQwNLKLwfHVcssZqdMZPpDBlwY-Tg1TZkV2yvVzlc",
+    "response": {
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiTy1XcXpRTlRjVUpISTBDcldXbnlRUEhZZHhiaUMyZ0hyQ01HVmZwTE8wayIsIm9yaWdpbiI6Imh0dHBzOi8vZXhhbXBsZS5vcmciLCJjcm9zc09yaWdpbiI6dHJ1ZSwiZXh0cmFEYXRhIjoiY2xpZW50RGF0YUpTT04gbWF5IGJlIGV4dGVuZGVkIHdpdGggYWRkaXRpb25hbCBmaWVsZHMgaW4gdGhlIGZ1dHVyZSwgc3VjaCBhcyB0aGlzOiB6WnF1RXREUjlEV3FwVzV0QldURnVnIn0",
+        "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikv6vDdDKViwYzYNOtZGHJxHNa5_jt1GWSpeDwFFKy5LVFAAAAAIg_T2AU8ZwJ2HqjgSO-SNAAIG4QUMDSyi8Hx1XLLGanTGT6QwZcGPk4NU2ZFdsr1c5XpQECAyYgASFYICIgCkc_kLEQeIUVUNA7TkSiJ5-MTsonsxU97f4D5Ol9Ilggy9C-ledGrW9agZG-EXVuTAQg5y9ltGbTm8VrixI6nG4",
+        "transports": []
+    },
+    "type": "public-key",
+    "authenticatorAttachment": ""
+}
