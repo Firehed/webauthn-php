@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(CreateResponse::class)]
@@ -406,10 +407,68 @@ class CreateResponseTest extends TestCase
         ], $cred->getTransports());
     }
 
+    // 7.1.7, 7.1.8, 7.1.9
+    #[DataProvider('requiredClientDataMembers')]
+    public function testAbsentCDJMemberIsError(string $member): void
+    {
+        $cdj = $this->decodedClientData();
+        unset($cdj[$member]);
+
+        $this->expectRegistrationError('7.1.x');
+        $this->responseWithClientData($cdj)->verify($this->cm, $this->rp);
+    }
+
+    // 7.1.7, 7.1.8, 7.1.9
+    #[DataProvider('requiredClientDataMembers')]
+    public function testNonStringCDJMemberIsError(string $member): void
+    {
+        $cdj = $this->decodedClientData();
+        $cdj[$member] = 42;
+
+        $this->expectRegistrationError('7.1.x');
+        $this->responseWithClientData($cdj)->verify($this->cm, $this->rp);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function requiredClientDataMembers(): array
+    {
+        return [
+            'type' => ['type'],
+            'challenge' => ['challenge'],
+            'origin' => ['origin'],
+        ];
+    }
+
     private function expectRegistrationError(string $section): void
     {
         $this->expectException(Errors\RegistrationError::class);
         // TODO: how to assert on $section
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function decodedClientData(): array
+    {
+        $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
+        return $cdj;
+    }
+
+    /**
+     * @param mixed[] $cdj
+     */
+    private function responseWithClientData(array $cdj): CreateResponse
+    {
+        return new CreateResponse(
+            type: Enums\PublicKeyCredentialType::PublicKey,
+            id: $this->id,
+            ao: $this->attestationObject,
+            clientDataJson: new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR)),
+            transports: [],
+        );
     }
 
     private function getDefaultResponse(): CreateResponse

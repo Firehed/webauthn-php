@@ -62,13 +62,15 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.7
-        if ($C['type'] !== 'webauthn.create') {
+        if (!array_key_exists('type', $C) || $C['type'] !== 'webauthn.create') {
             $this->fail('7.1.7', 'C.type');
         }
 
         // 7.1.8
+        if (!array_key_exists('challenge', $C) || !is_string($C['challenge'])) {
+            $this->fail('7.1.8', 'C.challenge');
+        }
         $cdjChallenge = $C['challenge'];
-        assert(is_string($cdjChallenge));
         $challenge = $challengeLoader->useFromClientDataJSON($cdjChallenge);
         if ($challenge === null) {
             $this->fail('7.1.8', 'C.challenge');
@@ -80,8 +82,11 @@ class CreateResponse implements Responses\AttestationInterface
         }
 
         // 7.1.9
-        assert(array_key_exists('origin', $C) && is_string($C['origin']));
-        if (!$rp->matchesOrigin($C['origin'])) {
+        if (
+            !array_key_exists('origin', $C)
+            || !is_string($C['origin'])
+            || !$rp->matchesOrigin($C['origin'])
+        ) {
             $this->fail('7.1.9', 'C.origin');
         }
 

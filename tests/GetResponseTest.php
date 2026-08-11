@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Firehed\WebAuthn;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(GetResponse::class)]
@@ -354,9 +355,67 @@ class GetResponseTest extends TestCase
         self::assertSame($handle, $response->getUserHandle());
     }
 
+    // 7.2.11, 7.2.12, 7.2.13
+    #[DataProvider('requiredClientDataMembers')]
+    public function testAbsentCDJMemberIsError(string $member): void
+    {
+        $cdj = $this->decodedClientData();
+        unset($cdj[$member]);
+
+        $this->expectVerificationError('7.2.x');
+        $this->responseWithClientData($cdj)->verify($this->cm, $this->rp, $this->credential);
+    }
+
+    // 7.2.11, 7.2.12, 7.2.13
+    #[DataProvider('requiredClientDataMembers')]
+    public function testNonStringCDJMemberIsError(string $member): void
+    {
+        $cdj = $this->decodedClientData();
+        $cdj[$member] = 42;
+
+        $this->expectVerificationError('7.2.x');
+        $this->responseWithClientData($cdj)->verify($this->cm, $this->rp, $this->credential);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function requiredClientDataMembers(): array
+    {
+        return [
+            'type' => ['type'],
+            'challenge' => ['challenge'],
+            'origin' => ['origin'],
+        ];
+    }
+
     private function expectVerificationError(string $section): void
     {
         $this->expectException(Errors\VerificationError::class);
         // TODO: how to assert on $section
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function decodedClientData(): array
+    {
+        $cdj = json_decode($this->clientDataJson->unwrap(), true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($cdj));
+        return $cdj;
+    }
+
+    /**
+     * @param mixed[] $cdj
+     */
+    private function responseWithClientData(array $cdj): GetResponse
+    {
+        return new GetResponse(
+            credentialId: $this->id,
+            rawAuthenticatorData: $this->rawAuthenticatorData,
+            clientDataJson: new BinaryString(json_encode($cdj, JSON_THROW_ON_ERROR)),
+            signature: $this->signature,
+            userHandle: null,
+        );
     }
 }
