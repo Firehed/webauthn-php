@@ -211,7 +211,7 @@ class Credential
             pack(self::PACK_UINT8, $flags),
             pack(self::PACK_UINT16, strlen($rawId)),
             $rawId,
-            pack(self::PACK_UINT32, $credential->getSignCount()),
+            pack(self::PACK_UINT32, $signCount),
             pack(self::PACK_UINT32, strlen($rawCbor)),
             $rawCbor,
             $transportFlags > 0 ? pack(self::PACK_UINT8, $transportFlags) : '',
