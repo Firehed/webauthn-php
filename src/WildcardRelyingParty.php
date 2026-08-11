@@ -28,7 +28,7 @@ class WildcardRelyingParty implements RelyingPartyInterface
             $rpId === '127.0.0.1' => true,
             // TODO: ipv6 loopback(s)
             // $rpId === '::1' => true,
-            str_ends_with('.localhost', $rpId) => true,
+            str_ends_with(haystack: $rpId, needle: '.localhost') => true,
             default => false,
         };
     }

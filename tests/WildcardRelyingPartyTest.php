@@ -46,6 +46,10 @@ class WildcardRelyingPartyTest extends TestCase
             'localhost sub' => ['localhost', 'http://foo.localhost', true],
             'localhost two sub' => ['localhost', 'http://foo.bar.localhost', true],
             'localhost port' => ['localhost', 'http://localhost:3000', true],
+            'localhost subdomain rpId' => ['app.localhost', 'http://app.localhost:3000', true],
+            'localhost subdomain rpId sub' => ['app.localhost', 'http://foo.app.localhost', true],
+            // `.localhost` suffixes must not be mistaken for local origins
+            'localhost suffix rpId' => ['host', 'http://host', false],
             'ipv4 loopback' => ['127.0.0.1', 'http://127.0.0.1', true],
             // TODO: ipv6 loopback support
             // 'ipv6 loopback' => ['::1', 'http://[::1]', true],
