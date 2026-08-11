@@ -58,8 +58,8 @@ class Packed implements AttestationStatementInterface
 
         $acd = $data->getAttestedCredentialData();
         $alg = COSE\Algorithm::tryFrom($this->data['alg']);
-        if ($alg !== $acd->coseKey->algorithm) {
-            throw new Exception('8.2/v3.a');
+        if ($alg === null) {
+            throw new Exception('8.2/v1');
         }
 
         if (array_key_exists('x5c', $this->data)) {
@@ -144,6 +144,13 @@ class Packed implements AttestationStatementInterface
             ]);
         } else {
             // Self attestation in use
+            // In the x5c branch, alg describes the attestation certificate's
+            // signature, so it is only cross-referenced against the credential
+            // key here.
+            if ($alg !== $acd->coseKey->algorithm) {
+                throw new Exception('8.2/v3.a');
+            }
+
             $credentialPublicKey = $acd->coseKey->getPublicKey();
 
             $result = openssl_verify(
