@@ -36,7 +36,8 @@
             "examples/functions.php"
         ],
         "psr-4": {
-            "Firehed\\WebAuthn\\": "tests"
+            "Firehed\\WebAuthn\\": "tests",
+            "Firehed\\WebAuthn\\Tools\\": "tools"
         }
     },
     "require": {
@@ -49,11 +50,12 @@
     },
     "require-dev": {
         "mheap/phpunit-github-actions-printer": "^1.5",
+        "phpstan/phpstan": "^2.1.50",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpstan/phpstan": "^2.1.50",
         "phpunit/phpunit": "^11",
-        "squizlabs/php_codesniffer": "^3.5"
+        "squizlabs/php_codesniffer": "^3.5",
+        "symfony/console": "^7.0"
     },
     "scripts": {
         "test": [
@@ -62,6 +64,7 @@
             "@phpcs"
         ],
         "autofix": "phpcbf",
+        "generate-test-vectors": "@php tools/console.php",
         "phpunit": "phpunit",
         "phpstan": "phpstan analyse --memory-limit=1G",
         "phpstan-baseline": "phpstan analyse --generate-baseline",
