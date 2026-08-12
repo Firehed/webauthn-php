@@ -3,6 +3,7 @@
     <!-- Default paths to cover -->
     <file>src</file>
     <file>tests</file>
+    <file>tools</file>
 
     <rule ref="PSR12"/>
 </ruleset>
